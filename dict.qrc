@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>dict.utf8</file>
+        <file>hmm_model.utf8</file>
+    </qresource>
+</RCC>
