@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/icon_settings_normal.png</file>
+        <file>image/background.jpg</file>
+        <file>image/icon_search.png</file>
+        <file>image/icon_info_normal.png</file>
+        <file>image/icon_pkg_normal.png</file>
+        <file>image/icon_add_normal.png</file>
+        <file>image/icon_back.png</file>
+        <file>image/icon_remove_normal.png</file>
+        <file>image/icon_favorite.png</file>
+        <file>image/icon_more.png</file>
+        <file>image/icon_not_favorite.png</file>
+        <file>image/icon_share.png</file>
+        <file>image/icon_back_lighter.png</file>
+        <file>image/icon_search_lighter.png</file>
+        <file>image/splash.png</file>
+        <file>image/icon_wait.gif</file>
+    </qresource>
+</RCC>
