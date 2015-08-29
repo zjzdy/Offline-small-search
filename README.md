@@ -22,8 +22,8 @@
 * Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://git.wikimedia.org/summary/openzim](https://git.wikimedia.org/summary/openzim)
 
 ##TODO
-1. 添加拍照搜索(使用OCR)
-2. 支持更多类型的搜索
+1. 添加拍照搜索(使用OCR) [tesseract](https://github.com/tesseract-ocr/tesseract)
+2. 支持更多类型的搜索:古诗文
 3. 添加设置选项,如一键搜索背景,历史记录最大储存数量
 4. 添加收藏
 5. 对横屏和桌面版进行专门适配
