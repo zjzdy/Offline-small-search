@@ -6,6 +6,9 @@
 
 项目地址: [http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
 
+##共享的离线包地址
+待补充
+
 ##软件主要开发者:
 * zjzdy(zjzengdongyang@163.com)
 
