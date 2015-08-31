@@ -106,4 +106,3 @@ Rectangle {
         font.pixelSize: 35*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
     }
 }
-
