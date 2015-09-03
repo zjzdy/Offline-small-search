@@ -80,7 +80,7 @@ Rectangle {
 
     Text {
         id: text2
-        text: qsTr("版本号: v1.1.15.8.31")
+        text: qsTr("版本号: v1.2.15.9.3")
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: text1.bottom
@@ -94,7 +94,7 @@ Rectangle {
 
     Text {
         id: text3
-        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n本程序用到的库:\nQt:qt.io(GPL)\nCppJieba:(LGPL)\nLucene++:(LGPL)\nzimlib:(GPL)")
+        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:    Qt: http://www.qt.io/\n    CppJieba: https://github.com/yanyiwu/cppjieba\n    Lucene++: https://github.com/luceneplusplus/LucenePlusPlus\n    Zimlib: http://www.openzim.org/wiki/Zimlib https://git.wikimedia.org/summary/openzim\n")
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignLeft
         anchors.top: text2.bottom
@@ -106,3 +106,4 @@ Rectangle {
         font.pixelSize: 35*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
     }
 }
+

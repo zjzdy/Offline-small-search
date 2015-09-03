@@ -65,14 +65,14 @@ RESOURCES += \
 contains(ANDROID_TARGET_ARCH,armeabi) {
     DEPENDPATH += G:/msys2/msys32/arm/include/
     INCLUDEPATH += G:/msys2/msys32/arm/include/
-    LIBS+=-LG:/msys2/msys32/arm/lib/ -LH:/crystax/build/usr/lib -llucene++ -lzim -llzma #-lboost_system
+    LIBS+=-LG:/msys2/msys32/arm/lib/ -LH:/crystax/build/usr/lib -llucene++ -Wl,-Bstatic,-lzim,-llzma,-Bdynamic -lboost_system
     ANDROID_EXTRA_LIBS = \
-        G:/msys2/msys32/arm/lib/liblzma.so \
-        G:/msys2/msys32/arm/lib/libzim.so \
-        G:/msys2/msys32/home/zjzdy/LucenePlusPlus/arm_build/src/core/liblucene++.so \
+        #G:/msys2/msys32/arm/lib/liblzma.so \
+        #G:/msys2/msys32/arm/lib/libzim.so \
+        H:/crystax/build/usr/lib/libcrystax.so \
         H:/crystax/build/usr/lib/libboost_system.so \
         H:/crystax/build/usr/lib/libz.so \
-        H:/crystax/build/usr/lib/libcrystax.so
+        G:/msys2/msys32/home/zjzdy/LucenePlusPlus/arm_build/src/core/liblucene++.so
 }
 
 DISTFILES += \

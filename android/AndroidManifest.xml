@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
-<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.1.15.8.31" android:versionCode="3" android:installLocation="auto">
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop">
+<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.2.15.9.3" android:versionCode="5" android:installLocation="auto">
+    <!-- <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon"> -->
+    <application android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
+        <activity android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop">
+        <!-- <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop"> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
