@@ -1,0 +1,3 @@
+[submodule "zimlib"]
+	path = zimlib
+	url = http://git.oschina.net/zjzdy/openzim/
