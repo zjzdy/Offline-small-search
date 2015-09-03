@@ -25,6 +25,9 @@
 * Lucene++: [https://github.com/luceneplusplus/LucenePlusPlus](https://github.com/luceneplusplus/LucenePlusPlus)
 * Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://git.wikimedia.org/summary/openzim](https://git.wikimedia.org/summary/openzim)
 
+##已知问题
+1. 在离线包管理中添加离线包时FileDialog显示错位,但按HOME返回主屏幕再进入即可解决.
+
 ##TODO
 1. 添加拍照搜索(使用OCR) [tesseract](https://github.com/tesseract-ocr/tesseract)
 2. 支持更多类型的搜索:古诗文
