@@ -20,6 +20,7 @@ Rectangle {
         main_widget.offline_pkg_list_to_data_file()
         main_widget.init_search_from_offline_pkg_list()
     }
+    z: 0
 
     Rectangle {
         id: rectangle3
@@ -31,6 +32,7 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
+        z: 1
 
         Text {
             id: text8
@@ -149,6 +151,7 @@ Rectangle {
     }
 
     Rectangle {
+        z: 1
         id: rectangle1
         width: 720*rectangle2.width/720
         height: 60*rectangle2.height/1280
@@ -202,8 +205,10 @@ Rectangle {
         anchors.left: parent.left
         anchors.topMargin: 0
         model: offline_pkg_list
+        z: 0
 
         delegate: Item {
+            z: -1
             width: 720*rectangle2.width/720
             height: 60*rectangle2.height/1280
                 Row {
@@ -262,6 +267,7 @@ Rectangle {
     }
 
     Rectangle {
+        z: 2
         id: more_info
         visible:false
         x: 90*rectangle2.width/720

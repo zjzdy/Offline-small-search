@@ -24,6 +24,9 @@ Offline_small_search::Offline_small_search(QWidget *parent) :
     QObject::connect(&search_thread,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
     search_thread.start();
     //search_thread.wait();
+    custom1.read_custom();
+    ui->main_qml->rootContext()->setContextProperty("custom1", &custom1);
+    ui->custom_qml->rootContext()->setContextProperty("custom1", &custom1);
     ui->main_qml->rootContext()->setContextProperty("main_widget", this);
     ui->more_qml->rootContext()->setContextProperty("main_widget", this);
     ui->more_search_qml->rootContext()->setContextProperty("main_widget", this);
@@ -54,6 +57,7 @@ Offline_small_search::~Offline_small_search()
     search_thread.quit();
     offline_pkg_list_to_data_file();
     history_list_to_data_file();
+    custom1.write_custom();
     clean_cache();
     delete ui;
 }
@@ -70,7 +74,6 @@ void Offline_small_search::clean_cache()
     {
         dirNames<<dirName;
     }
-        //遍历各级文件夹，并将这些文件夹中的文件删除
         for(int i=0;i<dirNames.size();++i)
         {
             dir.setPath(dirNames[i]);
@@ -78,18 +81,15 @@ void Offline_small_search::clean_cache()
             if(filst.size()>0){
                 curFi=filst.begin();
                 while(curFi!=filst.end()){
-                     //遇到文件夹,则添加至文件夹列表dirs尾部
                     if(curFi->isDir()){
                         dirNames.push_back(curFi->filePath());
                     }else if(curFi->isFile()){
-                        //遇到文件,则删除之
                         dir.remove(curFi->fileName());
                     }
                     curFi++;
-                }//end of while
+                }
             }
         }
-        //删除文件夹
         for(int i=dirNames.size()-1;i>=0;--i)
         {
             dir.setPath(dirNames[i]);
@@ -267,6 +267,7 @@ void Offline_small_search::search(QStringList type, QString str)
 {
     show_wait();
     Q_EMIT lucene_search(str,search_batch,type);
+    clean_cache();
     for(int i = 0; i < search_result_list.size(); ++i)
     {
         search_result_list.at(i)->deleteLater();
@@ -554,7 +555,8 @@ void Offline_small_search::data_file_to_history_list(QString file_path)
         bool history_img;
         QString history_time;
         QDataStream history_file_stream(&history_file);
-        while(!history_file_stream.atEnd())
+        int a = -1;
+        while((!history_file_stream.atEnd())&&(++a)<custom1.max_history())
         {
             history_file_stream >> history_str >> history_img >> history_time;
             history = new history_obj(this);
@@ -562,9 +564,10 @@ void Offline_small_search::data_file_to_history_list(QString file_path)
             history->setImg(history_img);
             history->setTime(history_time);
             history_list.append(history);
+            refresh_history_list_for_history_qml();
         }
         history_file.close();
-        refresh_offline_pkg_list_for_pkg_qml();
+        refresh_history_list_for_history_qml();
     }
     //init_search_from_offline_pkg_list();
 }

@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     luceneplusplus_search_thread.cpp \
     luceneplusplus_search.cpp \
     search_result_obj.cpp \
-    history_obj.cpp
+    history_obj.cpp \
+    custom_obj.cpp
 
 HEADERS  += \
     offline_small_search.h \
@@ -44,7 +45,8 @@ HEADERS  += \
     luceneplusplus_search_thread.h \
     luceneplusplus_search.h \
     search_result_obj.h \
-    history_obj.h
+    history_obj.h \
+    custom_obj.h
 
 FORMS    += \
     offline_small_search.ui
