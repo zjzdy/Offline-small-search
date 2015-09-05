@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>image/icon_settings_normal.png</file>
-        <file>image/background.jpg</file>
         <file>image/icon_search.png</file>
         <file>image/icon_info_normal.png</file>
         <file>image/icon_pkg_normal.png</file>

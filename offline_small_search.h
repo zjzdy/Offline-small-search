@@ -15,10 +15,10 @@
 #include <QStringList>
 #include <QDataStream>
 #include <QQuickItem>
-#include <QObjectCleanupHandler>
 #include <QFileDialog>
 #include "offline_pkg.h"
 #include "history_obj.h"
+#include "custom_obj.h"
 #include "search_result_obj.h"
 
 namespace Ui {
@@ -87,7 +87,6 @@ private:
     QList<QObject*> offline_pkg_list;
     QList<QObject*> history_list;
     QList<QObject*> search_result_list;
-    QObjectCleanupHandler search_result_list_cleanup;
     offline_pkg* offline_pkg1;
     history_obj* history;
     search_result_obj* search_result;
@@ -101,6 +100,7 @@ private:
     QString cache_dir;
     QObject* result_obj;
     QObject* search_result_wait_obj;
+    custom_obj custom1;
     QFileDialog file_dialog;
 };
 

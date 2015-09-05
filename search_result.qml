@@ -16,8 +16,10 @@ Rectangle {
     Keys.onEscapePressed: {
         main_widget.show_more()
     }
+    z: 0
 
     Rectangle {
+        z: 1
         id: rectangle3
         height: 120*rectangle2.height/1280
         color: "#f0f0f0"
@@ -71,10 +73,11 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.topMargin: 0
-        //model: offline_pkg_list
         model: search_result_obj
+        z: 0
 
         delegate: Item {
+            z: -1
             width: 720*rectangle2.width/720
             height: 200*rectangle2.height/1280
             Rectangle{
@@ -88,7 +91,6 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    //truncated: true
                     maximumLineCount: 4
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
@@ -115,6 +117,7 @@ Rectangle {
 
     AnimatedImage {
         id: image2
+        z: 1
         objectName: "wait_image"
         width: 200*rectangle2.width/720
         height: 156*rectangle2.height/1280

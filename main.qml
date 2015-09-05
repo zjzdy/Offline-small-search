@@ -8,7 +8,8 @@ Rectangle {
     id: rectangle2
     width: 720
     height: 1280
-    color: "#4681bb"
+    //color: "#4681bb"
+    color: custom1.bgc
     focus: true
     Keys.onBackPressed: {
         exit_messageDialog.visible = true
@@ -31,6 +32,7 @@ Rectangle {
         width: 720*rectangle2.width/720
         height: 105*rectangle2.height/1280
         color: "#f0f0f0"
+        z: 1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
@@ -111,11 +113,13 @@ Rectangle {
         id: custom_button
         width: 60*rectangle2.width/720
         height: 60*rectangle2.height/1280
+        z: 1
         source: "qrc:/image/icon_settings_normal.png"
         anchors.top: parent.top
         anchors.topMargin: 20*rectangle2.height/1280
         anchors.right: parent.right
         anchors.rightMargin: 20*rectangle2.width/720
+        opacity: 0.98
 
         MouseArea {
             anchors.fill: parent
@@ -128,12 +132,21 @@ Rectangle {
         height: 90*rectangle2.height/1280
         color: "#f3e9eded"
         text: qsTr("离线小搜")
+        z: 1
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: parent.top
         anchors.topMargin: 230*rectangle2.height/1280
         anchors.horizontalCenter: parent.horizontalCenter
         font.pixelSize: 90*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+    }
+
+    Image {
+        id: bgimage
+        z: 0
+        anchors.fill: parent
+        //source: "qrc:/image/background.png"
+        source: custom1.bgi
     }
 
     Rectangle {
@@ -148,6 +161,8 @@ Rectangle {
         border.width: 0
         color: "#f0f0f0"
         radius: 40*rectangle2.height/1280
+        z: 1
+        opacity: 0.95
 
         MouseArea {
             anchors.fill: parent
@@ -190,5 +205,6 @@ Rectangle {
             font.pixelSize: 45*rectangle2.height/1280
         }
     }
+
 }
 

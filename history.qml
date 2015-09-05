@@ -17,6 +17,7 @@ Rectangle {
         exit_messageDialog.visible = true
     }
 
+
     MessageDialog {
         id: exit_messageDialog
         title: qsTr("退出")
@@ -31,8 +32,10 @@ Rectangle {
         width: 720*rectangle2.width/720
         height: 105*rectangle2.height/1280
         color: "#f0f0f0"
+        z: 1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+
 
         Row {
             id: row1
@@ -111,12 +114,14 @@ Rectangle {
         id: rectangle3
         height: 120
         color: "#f0f0f0"
+        z: 1
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
+
 
         Text {
             id: text8
@@ -168,6 +173,7 @@ Rectangle {
         anchors.topMargin: 0
         model: history_list
 
+
         delegate: Item {
             width: 720*rectangle2.width/720
             height: 220*rectangle2.height/1280
@@ -183,7 +189,6 @@ Rectangle {
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
                     anchors.verticalCenter: parent.verticalCenter
-                    //truncated: true
                     maximumLineCount: 4
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
@@ -224,3 +229,4 @@ Rectangle {
 
     }
 }
+
