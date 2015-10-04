@@ -12,10 +12,10 @@ Rectangle {
     color: "#f6f6f6"
     focus: true
     Keys.onBackPressed: {
-        main_widget.show_search_result("")
+        main_widget.show_back()
     }
     Keys.onEscapePressed: {
-        main_widget.show_search_result("")
+        main_widget.show_back()
     }
 
     Rectangle {
@@ -59,7 +59,32 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.width/720
                 anchors.fill: parent
                 onClicked: {
-                    main_widget.show_search_result("")
+                    main_widget.show_back()
+                }
+            }
+        }
+        Image {
+            id: mark_img
+            objectName: "mark_img"
+            width: height
+            anchors.right: parent.right
+            anchors.rightMargin: 10*rectangle2.width/720
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20*rectangle2.height/1280
+            anchors.top: parent.top
+            anchors.topMargin: 20*rectangle2.height/1280
+            //source: "qrc:/image/icon_mark_off.png"
+
+            MouseArea {
+                id: mouseArea2
+                anchors.topMargin: -20*rectangle2.height/1280
+                anchors.bottomMargin: -20*rectangle2.height/1280
+                anchors.leftMargin: -10*rectangle2.width/720
+                anchors.rightMargin: -10*rectangle2.width/720
+                anchors.fill: parent
+                onClicked: {
+                    main_widget.check_mark()
+                    mark_list_to_data_file()
                 }
             }
         }
@@ -81,6 +106,7 @@ Rectangle {
         wrapMode: TextEdit.Wrap
     }
 */
+
     WebView {
         id: text
         objectName: "text"

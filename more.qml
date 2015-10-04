@@ -194,11 +194,11 @@ Rectangle {
                 anchors.right: text5.left
                 anchors.rightMargin: 10*rectangle2.width/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: 10*rectangle2.width/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
+                anchors.bottomMargin: 5*rectangle2.height/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5
+                anchors.topMargin: 5*rectangle2.height/1280
                 source: "qrc:/image/icon_settings_normal.png"
             }
             
@@ -251,11 +251,11 @@ Rectangle {
                 anchors.right: text6.left
                 anchors.rightMargin: 10*rectangle2.width/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: 10*rectangle2.width/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
+                anchors.bottomMargin: 5*rectangle2.height/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5
+                anchors.topMargin: 5*rectangle2.height/1280
                 source: "qrc:/image/icon_pkg_normal.png"
             }
             
@@ -278,6 +278,7 @@ Rectangle {
             anchors.top: rectangle8.bottom
             anchors.topMargin: 0
         }
+
         Rectangle {
             id: rectangle10
             height: 90*rectangle2.height/1280
@@ -288,6 +289,63 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.top: rectangle9.bottom
+            anchors.topMargin: 0
+
+            Text {
+                id: text9
+                height: 40*rectangle2.height/1280
+                text: qsTr("收藏夹")
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 100*rectangle2.width/720
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 40*rectangle2.height/1280
+            }
+
+            Image {
+                id: image3
+                anchors.right: text9.left
+                anchors.rightMargin: 10*rectangle2.width/720
+                anchors.left: parent.left
+                anchors.leftMargin: 10*rectangle2.width/720
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 5*rectangle2.height/1280
+                anchors.top: parent.top
+                anchors.topMargin: 5*rectangle2.height/1280
+                source: "qrc:/image/icon_marks.png"
+            }
+
+            MouseArea {
+                id: mouseArea3
+                anchors.fill: parent
+                onClicked: main_widget.show_mark()
+            }
+        }
+
+        Rectangle {
+            id: rectangle11
+            height: 4*rectangle2.height/1280
+            color: "#bbbbbb"
+            border.width: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.top: rectangle10.bottom
+            anchors.topMargin: 0
+        }
+
+        Rectangle {
+            id: rectangle12
+            height: 90*rectangle2.height/1280
+            color: "#ffffff"
+            border.width: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.top: rectangle11.bottom
             anchors.topMargin: 0
 
             Text {
@@ -303,27 +361,27 @@ Rectangle {
             }
 
             Image {
-                id: image3
+                id: image5
                 anchors.right: text7.left
                 anchors.rightMargin: 10*rectangle2.width/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: 10*rectangle2.width/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
+                anchors.bottomMargin: 5*rectangle2.height/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5
+                anchors.topMargin: 5*rectangle2.height/1280
                 source: "qrc:/image/icon_info_normal.png"
             }
             
             MouseArea {
-                id: mouseArea3
+                id: mouseArea4
                 anchors.fill: parent
                 onClicked: main_widget.show_about()
             }
         }
 
         Rectangle {
-            id: rectangle11
+            id: rectangle13
             height: 4*rectangle2.height/1280
             color: "#bbbbbb"
             border.width: 0
@@ -331,7 +389,7 @@ Rectangle {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            anchors.top: rectangle10.bottom
+            anchors.top: rectangle12.bottom
             anchors.topMargin: 0
         }
     }

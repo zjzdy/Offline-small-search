@@ -16,5 +16,10 @@
         <file>image/splash.png</file>
         <file>image/icon_wait.gif</file>
         <file>image/logo.png</file>
+        <file>image/icon_mark_off.png</file>
+        <file>image/icon_mark_on.png</file>
+        <file>image/icon_switch_off.png</file>
+        <file>image/icon_switch_on.png</file>
+        <file>image/icon_marks.png</file>
     </qresource>
 </RCC>

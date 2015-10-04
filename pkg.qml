@@ -11,12 +11,12 @@ Rectangle {
     color: "#f6f6f6"
     focus: true
     Keys.onBackPressed: {
-        main_widget.show_more()
+        main_widget.show_back()
         main_widget.offline_pkg_list_to_data_file()
         main_widget.init_search_from_offline_pkg_list()
     }
     Keys.onEscapePressed: {
-        main_widget.show_more()
+        main_widget.show_back()
         main_widget.offline_pkg_list_to_data_file()
         main_widget.init_search_from_offline_pkg_list()
     }
@@ -63,7 +63,7 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.width/720
                 anchors.fill: parent
                 onClicked: {
-                    main_widget.show_more()
+                    main_widget.show_back()
                     main_widget.offline_pkg_list_to_data_file()
                     main_widget.init_search_from_offline_pkg_list()
                 }
@@ -169,30 +169,25 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 width: 450*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.height/1280
-            }
-
-            Switch {
-                id: switch1
-                visible: false
+                font.pixelSize: 40*rectangle2.width/720
             }
 
             Text {
                 text: qsTr("启用")
                 anchors.top: parent.top
                 anchors.topMargin: 5*rectangle2.height/1280
-                width: 70*rectangle2.width/720//switch1.width//70*rectangle2.width/720
+                width: 70*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.width/720
             }
 
             Text {
                 text: qsTr("离线包类型")
                 anchors.top: parent.top
                 anchors.topMargin: 5*rectangle2.height/1280
-                width: (720-470)*rectangle2.width/720-switch1.width//180*rectangle2.width/720
+                width: 180*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.width/720
             }
         }
     }
@@ -222,16 +217,20 @@ Rectangle {
                         font.pixelSize: 40*rectangle2.height/1280
                     }
 
-                    Switch {
-                        checked: model.modelData.enable
+                    Image {
+                        source: model.modelData.enable ? "qrc:/image/icon_switch_on.png" : "qrc:/image/icon_switch_off.png"
                         width: 70*rectangle2.width/720
                         height: 40*rectangle2.height/1280
                         anchors.verticalCenter: parent.verticalCenter
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: main_widget.check_enable_pkg(model.modelData.path)
+                        }
                     }
 
                     Text {
                         text: model.modelData.type
-                        width: 180*rectangle2.width/720//(720-470)*rectangle2.width/720-switch1.width//180*rectangle2.width/720
+                        width: 180*rectangle2.width/720
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
                         font.pixelSize: 40*rectangle2.height/1280
@@ -254,9 +253,8 @@ Rectangle {
                                 type_only.text = model.modelData.type
                                 count_only.text = model.modelData.count
                                 name_code_only.text = model.modelData.name_code
-                                //path.text = qsTr("离线包路径: ")+model.path
                                 path_only.text = model.modelData.path
-                                switch2.checked = model.modelData.enable
+                                switch2.source = model.modelData.enable ? "qrc:/image/icon_switch_on.png" : "qrc:/image/icon_switch_off.png"
                                 more_info.visible = true
                             }
                         }
@@ -353,13 +351,18 @@ Rectangle {
             font.pixelSize: 35*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
         }
 
-        Switch {
+        Image {
+            objectName: "enable_pkg_img"
             id: switch2
-            width: 150*rectangle2.width/720
-            height: 30*rectangle2.height/1280
+            width: 130*rectangle2.width/720
+            height: 70*rectangle2.height/1280
             anchors.verticalCenter: enable.verticalCenter
             anchors.left: enable.right
             anchors.leftMargin: 30*rectangle2.width/720
+            MouseArea {
+                anchors.fill: parent
+                onClicked: main_widget.check_enable_pkg(path_only.text)
+            }
         }
 
         Text {

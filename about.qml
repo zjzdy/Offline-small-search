@@ -11,10 +11,10 @@ Rectangle {
     color: "#f6f6f6"
     focus: true
     Keys.onBackPressed: {
-        main_widget.show_more()
+        main_widget.show_back()
     }
     Keys.onEscapePressed: {
-        main_widget.show_more()
+        main_widget.show_back()
     }
 
     Rectangle {
@@ -58,7 +58,7 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.width/720
                 anchors.fill: parent
                 onClicked: {
-                    main_widget.show_more()
+                    main_widget.show_back()
                 }
             }
         }
@@ -80,7 +80,7 @@ Rectangle {
 
     Text {
         id: text2
-        text: qsTr("版本号: v1.4.15.9.5")
+        text: qsTr("版本号: v1.5.15.10 国庆版")
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: text1.bottom
@@ -94,7 +94,7 @@ Rectangle {
 
     TextArea {
         id: text3
-        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    CppJieba: https://github.com/yanyiwu/cppjieba\n    Lucene++: https://github.com/luceneplusplus/LucenePlusPlus\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n")
+        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    friso: http://git.oschina.net/lionsoul/friso\n    Lucene++: https://github.com/luceneplusplus/LucenePlusPlus\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         wrapMode: Text.Wrap

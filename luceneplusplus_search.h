@@ -1,6 +1,7 @@
 #ifndef LUCENEPLUSPLUS_SEARCH_H
 #define LUCENEPLUSPLUS_SEARCH_H
 
+//Qt
 #include <QObject>
 #include <QFile>
 #include <QFileInfoList>
@@ -13,9 +14,20 @@
 #include <QDirIterator>
 #include <QDataStream>
 #include <QList>
-#include "MPSegment.hpp"
-#include "FullSegment.hpp"
-#include "QuerySegment.hpp"
+
+//friso
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <string.h>
+#include "friso/friso.h"
+#include "friso/friso_API.h"
+#include "friso/friso_ctype.h"
+#ifdef __cplusplus
+}
+#endif
+
+//LucenePlusPlus
 #include "lucene++/targetver.h"
 #include "lucene++/LuceneHeaders.h"
 #include "lucene++/IndexWriter.h"
@@ -40,6 +52,8 @@
 #include "lucene++/SimpleFSDirectory.h"
 #include "lucene++/ReadOnlyDirectoryReader.h"
 #include "lucene++/Collector.h"
+
+//c++
 #include <iomanip>
 #include <string>
 #include <fstream>
@@ -55,8 +69,11 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace CppJieba;
 using namespace Lucene;
+
+#ifndef FRISO_MAX_TRY_COUNT
+#define FRISO_MAX_TRY_COUNT 10
+#endif
 
 class LucenePlusPlus_search : public QObject
 {
@@ -73,12 +90,19 @@ public Q_SLOTS:
     void on_search(QString str, int batch, QStringList type);
 
 private:
+    //friso
+    friso_t friso;
+    friso_config_t config;
+    friso_task_t task;
+    const char* in_str_c;
+    char* in_str;
+    //Qt
     QString segment_2(QString src);
-    QuerySegment *segment;
     QRegExp zw;
     QString str2;
     QString word2;
     vector<string> words;
+    //LucenePlusPlus
     Collection<IndexReaderPtr> indexReaders;
     IndexReaderPtr reader;
     SearcherPtr searcher;

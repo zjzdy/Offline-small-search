@@ -112,7 +112,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle3
-        height: 120
+        height: 120*rectangle2.height/1280
         color: "#f0f0f0"
         z: 1
         anchors.right: parent.right
@@ -211,7 +211,12 @@ Rectangle {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: main_widget.show_search_result(model.modelData.str)
+                    onClicked: {
+                        main_widget.search_type_clear()
+                        main_widget.search_type_add(model.modelData.search_type)
+                        main_widget.set_top_bar_height(120*rectangle2.height/1280)
+                        main_widget.show_search_result(model.modelData.str)
+                    }
                 }
             }
             Rectangle {

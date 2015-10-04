@@ -10,5 +10,6 @@
         <file>search.qml</file>
         <file>search_result.qml</file>
         <file>result.qml</file>
+        <file>mark.qml</file>
     </qresource>
 </RCC>
