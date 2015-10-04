@@ -11,11 +11,11 @@ Rectangle {
     color: "#f6f6f6"
     focus: true
     Keys.onBackPressed: {
-        main_widget.show_main()
+        main_widget.show_back()
         custom1.write_custom()
     }
     Keys.onEscapePressed: {
-        main_widget.show_main()
+        main_widget.show_back()
         custom1.write_custom()
     }
 
@@ -59,7 +59,7 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.width/720
                 anchors.fill: parent
                 onClicked: {
-                    main_widget.show_main()
+                    main_widget.show_back()
                     custom1.write_custom()
                 }
             }

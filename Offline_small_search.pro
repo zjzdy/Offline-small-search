@@ -16,28 +16,22 @@ CONFIG += no_keywords c++11
 SOURCES += main.cpp \
     offline_small_search.cpp \
     offline_pkg.cpp \
-    Limonp/HandyMacro.hpp \
-    Limonp/LocalVector.hpp \
-    Limonp/Logger.hpp \
-    Limonp/NonCopyable.hpp \
-    Limonp/StdExtension.hpp \
-    Limonp/StringUtil.hpp \
-    DictTrie.hpp \
-    FullSegment.hpp \
-    ISegment.hpp \
-    MPSegment.hpp \
-    SegmentBase.hpp \
-    TransCode.hpp \
-    Trie.hpp \
-    HMMModel.hpp \
-    HMMSegment.hpp \
-    MixSegment.hpp \
-    QuerySegment.hpp \
     luceneplusplus_search_thread.cpp \
     luceneplusplus_search.cpp \
     search_result_obj.cpp \
     history_obj.cpp \
-    custom_obj.cpp
+    custom_obj.cpp \
+    mark_obj.cpp \
+    friso/friso.c \
+    friso/friso_array.c \
+    friso/friso_ctype.c \
+    friso/friso_GBK.c \
+    friso/friso_hash.c \
+    friso/friso_lexicon.c \
+    friso/friso_link.c \
+    friso/friso_string.c \
+    friso/friso_UTF8.c \
+    more_search_obj.cpp
 
 HEADERS  += \
     offline_small_search.h \
@@ -46,7 +40,12 @@ HEADERS  += \
     luceneplusplus_search.h \
     search_result_obj.h \
     history_obj.h \
-    custom_obj.h
+    custom_obj.h \
+    mark_obj.h \
+    friso/friso.h \
+    friso/friso_API.h \
+    friso/friso_ctype.h \
+    more_search_obj.h
 
 FORMS    += \
     offline_small_search.ui

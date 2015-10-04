@@ -1,6 +1,21 @@
 <RCC>
     <qresource prefix="/">
-        <file>dict.utf8</file>
-        <file>hmm_model.utf8</file>
+        <file>dict/friso.lex.ini</file>
+        <file>dict/lex-cemixed.lex</file>
+        <file>dict/lex-chars.lex</file>
+        <file>dict/lex-dname-1.lex</file>
+        <file>dict/lex-dname-2.lex</file>
+        <file>dict/lex-ecmixed.lex</file>
+        <file>dict/lex-en.lex</file>
+        <file>dict/lex-en-pun.lex</file>
+        <file>dict/lex-flname.lex</file>
+        <file>dict/lex-ln-adorn.lex</file>
+        <file>dict/lex-lname.lex</file>
+        <file>dict/lex-main.lex</file>
+        <file>dict/lex-main2.lex</file>
+        <file>dict/lex-sname.lex</file>
+        <file>dict/lex-stopword.lex</file>
+        <file>dict/lex-study.lex</file>
+        <file>dict/lex-units.lex</file>
     </qresource>
 </RCC>

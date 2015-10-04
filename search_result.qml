@@ -11,10 +11,10 @@ Rectangle {
     color: "#f6f6f6"
     focus: true
     Keys.onBackPressed: {
-        main_widget.show_more()
+        main_widget.show_back()
     }
     Keys.onEscapePressed: {
-        main_widget.show_more()
+        main_widget.show_back()
     }
     z: 0
 
@@ -60,7 +60,7 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.width/720
                 anchors.fill: parent
                 onClicked: {
-                    main_widget.show_search()
+                    main_widget.show_back()
                 }
             }
         }
@@ -86,8 +86,8 @@ Rectangle {
                 Text {
                     text: model.modelData.str
                     anchors.fill: parent
-                    anchors.leftMargin: 35*rectangle2.width/720
-                    anchors.rightMargin: 35*rectangle2.width/720
+                    anchors.leftMargin: 30*rectangle2.width/720
+                    anchors.rightMargin: 15*rectangle2.width/720
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter

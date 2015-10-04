@@ -136,13 +136,63 @@ Rectangle {
                 font.pixelSize: 45*rectangle2.height/1280
             }
         }
-        Text {
-            id: text5
-            text: qsTr("敬请期待")
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 150*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+        GridView {
+            id: gridView1
+            anchors.top: rectangle3.bottom
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.topMargin: 0
+            model: more_search_list
+            z: -1
+            cellWidth: 240*rectangle2.width/720
+            cellHeight: 240*rectangle2.height/1280
+
+            delegate: Item {
+                width: 240*rectangle2.width/720
+                height: 240*rectangle2.height/1280
+                Column {
+                    z: -2
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 20
+                        height: 200*rectangle2.height/1280
+                        width: 200*rectangle2.width/720
+                        border.width: 0
+                        radius: 100*rectangle2.height/1280
+                        Text {
+                            text: model.modelData.type
+                            anchors.centerIn: parent
+                            font.pixelSize: 100*rectangle2.height/1280
+                        }
+                    }
+                    Text {
+                        text: model.modelData.name
+                        height: 40*rectangle2.height/1280
+                        font.pixelSize: 40*rectangle2.height/1280
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        main_widget.search_type_clear()
+                        main_widget.search_type_add(model.modelData.name_code)
+                        main_widget.set_top_bar_height(120*rectangle2.height/1280)
+                        main_widget.show_search();
+                    }
+                }
+            }
         }
     }
-}
 
+    function oppositeColor(a){
+        a=a.replace('#','');
+        var c16,c10,max16=15,b=[];
+        for(var i=0;i<a.length;i++){
+            c16=parseInt(a.charAt(i),16);
+            c10=parseInt(max16-c16,10);
+            b.push(c10.toString(16));
+        }
+        return '#'+b.join('');
+    }
+}

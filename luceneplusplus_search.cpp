@@ -5,7 +5,23 @@ LucenePlusPlus_search::LucenePlusPlus_search(QObject *parent) : QObject(parent)
 {
     zw.setMinimal(true);
     zw.setPattern("<.*>");
-    segment = new QuerySegment("dict.utf8","hmm_model.utf8","",3);
+    //init friso
+    friso = friso_new();
+    config = friso_new_config();
+    task = friso_new_task();
+    friso->dic = friso_dic_new();
+    config->max_len = 8;
+    config->add_syn = 1;//search use 1
+    config->keep_urec = 1;
+    friso->charset = (friso_charset_t) 0;
+    config->st_minl = 2;
+    memcpy(config->kpuncs, "@%.#&+", 6);
+    config->mode = (friso_mode_t) 2;
+    friso_set_mode(config, config->mode);
+    //config->kpuncs = "@%.#&+";
+    friso_dic_load_from_ifile( friso, config,
+            (fstring)"./dict/", config->max_len * (friso->charset == FRISO_UTF8 ? 3 : 2) );
+
     try{
         term_N = newLucene<Term>(StringUtils::toUnicode("N"));
         analyzer = newLucene<WhitespaceAnalyzer>();
@@ -41,25 +57,52 @@ void LucenePlusPlus_search::on_search(QString str, int batch, QStringList type)
     QStringList urls;
     words.clear();
     str2.clear();
-    str.remove("题文<p>").remove("<hr><p>属性").remove("<hr><p>答案").remove("题型").remove("难度").remove("科目").remove("来源").remove("知识点").remove(zw).remove(";").remove("[").remove("]").remove("，").remove("。").remove("_").remove("：").remove("；").remove(":").remove("．").remove("？").remove("?").remove("&nbsp").remove("&quot").remove(" ").remove("\n").remove("\n ").remove("\t").remove("\r");
-    segment->cut(str.toStdString(), words);
-    for (auto g = words.begin();g != words.end();++g)
+    str.remove("\n").remove("\t").remove("\r");
+    in_str_c = str.toStdString().c_str();
+    in_str = new char[str.toStdString().length()+1];
+    strcpy(in_str,in_str_c);
+    friso_set_text( task, in_str );
+    while ( ( config->next_token( friso, config, task ) ) != NULL )
     {
-        word2 = QString::fromStdString(*g).toLower();
-        if(word2 == "℃"||word2 == "℉"||word2 == "%"||word2 == "‰"||word2 == "％"||word2 == "％"||word2 == "％"||word2 == "°"
-                ||word2 == "㎎"||word2 == "㎏"||word2 == "㎜"||word2 == "㎝"||word2 == "㎞"||word2 == "㏄"||word2 == "㏕"
-                ||word2 == "mg"||word2 == "kg"||word2 == "mm"||word2 == "cm"||word2 == "km"||word2 == "cc"||word2 == "mil"
-                ||word2 == "′"||word2 == "″"||word2 == "㎡"||word2 == "㎥"||word2 == "ml"||word2 == "mol"||word2 == "μm")
+        str2.append(task->token->word);
+        str2.append(" ");
+    }
+
+    if(str2.isEmpty()||str2.isNull()||str2 == " "||str2.indexOf(QRegExp("[A-Za-z0-9\\x31C0-\\x9FCC]")) == -1)
+    {
+        int try_count = 0;
+        QString str3 = str;
+        string str_c = str3.toStdString();
+        while((str2.isEmpty()||str2.isNull()||str2 == " "||str2.indexOf(QRegExp("[A-Za-z0-9\\x31C0-\\x9FCC]")) == -1 )&& try_count < FRISO_MAX_TRY_COUNT)
         {
-            str2.append(word2);
-        }
-        else
-        {
-            str2.append(" "+word2);
+            delete[] in_str;
+            in_str_c = str_c.c_str();
+            in_str = new char[str_c.length()+1];
+            strcpy(in_str,in_str_c);
+            friso_set_text( task, in_str );
+            while ( ( config->next_token( friso, config, task ) ) != NULL )
+            {
+                str2.append(task->token->word);
+                str2.append(" ");
+            }
+            ++try_count;
         }
     }
+
+
+    if((str2.isEmpty()||str2.isNull()||str2 == " "||str2.indexOf(QRegExp("[A-Za-z0-9\\x31C0-\\x9FCC]")) == -1)&&str != str2)
+    {
+        QString d2 = str;
+        d2.replace(QRegExp("[\\x31C0-\\x9FCC]")," ");
+        d2.remove(QRegExp("[^A-Za-z0-9 ]"));
+        d2.replace(QRegExp(" {2,}")," ");
+        str2.append(" "+d2.toLower());
+    }
+
     str2.append(segment_2(str));
     str2.replace("  "," ");
+    qDebug()<<str2;
+    delete[] in_str;
 
     try{
         BooleanQueryPtr query_N = newLucene<BooleanQuery>();

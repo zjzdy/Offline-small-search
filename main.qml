@@ -170,6 +170,7 @@ Rectangle {
             {
                 main_widget.search_type_clear()
                 main_widget.search_type_add("ALL")
+                main_widget.set_top_bar_height(120*rectangle2.height/1280)
                 main_widget.show_search();
             }
         }

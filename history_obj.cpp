@@ -27,6 +27,17 @@ void history_obj::setStr(const QString & str)
     Q_EMIT strChanged(m_str);
 }
 
+QStringList history_obj::search_type() const
+{
+    return m_search_type;
+}
+
+void history_obj::setSearch_type(const QStringList & search_type)
+{
+    m_search_type = search_type;
+    Q_EMIT search_typeChanged(m_search_type);
+}
+
 QString history_obj::time() const
 {
     return m_time;
