@@ -11,8 +11,6 @@
         <file>image/icon_more.png</file>
         <file>image/icon_not_favorite.png</file>
         <file>image/icon_share.png</file>
-        <file>image/icon_back_lighter.png</file>
-        <file>image/icon_search_lighter.png</file>
         <file>image/splash.png</file>
         <file>image/icon_wait.gif</file>
         <file>image/logo.png</file>
@@ -21,5 +19,15 @@
         <file>image/icon_switch_off.png</file>
         <file>image/icon_switch_on.png</file>
         <file>image/icon_marks.png</file>
+        <file>image/icon_camera.png</file>
+        <file>image/icon_left.png</file>
+        <file>image/icon_right.png</file>
+        <file>image/icon_checkmark.png</file>
+        <file>image/icon_folder.png</file>
+        <file>image/icon_locked.png</file>
+        <file>image/icon_unlocked.png</file>
+        <file>image/icon_next.png</file>
+        <file>image/icon_download.png</file>
+        <file>image/icon_wait2.gif</file>
     </qresource>
 </RCC>

@@ -1,9 +1,10 @@
 #include "offline_pkg.h"
+#include <QDebug>
 
 offline_pkg::offline_pkg(QObject *parent) : QObject(parent)
 {
     zim_exist = false;
-    img.setPattern("[\"'\\(](pic.*)[\"'\\)]");
+    img.setPattern("[\"'\\(]([a-zA-Z0-9-_@&\\./\\\\]*\\.[a-gi-zA-GI-Z0-9]{2,4})[\"'\\)]");
     img.setMinimal(true);
     img.setCaseSensitivity(Qt::CaseInsensitive);
 }
@@ -46,6 +47,7 @@ void offline_pkg::setPath(const QString & path)
     {
         try{
             zim_file = new zim::File(QString(path+"/data.zim").toStdString());
+            qDebug()<<"open zim"<<path+"/data.zim";
             zim_exist = true;
         }
         catch(...) {zim_exist = false;}
@@ -99,25 +101,21 @@ void offline_pkg::setEnable(const bool & enable)
 QString offline_pkg::get_text_from_url(QString & url)
 {
     if(!zim_exist) return "";
+    url.remove(QRegExp("^/"));
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
-        if(m_type == "ST")
+        if (!it.first)
         {
-            it = zim_file->findx("A/"+url.toUpper().toStdString()+".html");
+            it = zim_file->findx(url.toStdString());
             if (!it.first)
             {
-                it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
+                it = zim_file->findx("A/"+url.toStdString()+".html");
                 if (!it.first)
                 {
-                    it = zim_file->findx("A/"+url.toUpper().toStdString());
-                    if (!it.first)
-                    {
-                        it = zim_file->findx("A/"+url.toStdString());
-                    }
+                    it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
                 }
             }
         }
-
         if(it.first)
         {
             if (it.second->isRedirect())
@@ -125,33 +123,29 @@ QString offline_pkg::get_text_from_url(QString & url)
             else
               return QString::fromStdString(std::string(it.second->getData().data(), it.second->getData().size()));
         }
-        else return "";
+        else return tr("对不起，没找到内容");
     }
-    catch(...) {return "";}
+    catch(...) {return tr("对不起，程序出错了!");}
 }
 
 QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_dir)
 {
     if(!zim_exist) return "";
+    url.remove(QRegExp("^/"));
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
-        if(m_type == "ST")
+        if (!it.first)
         {
-            it = zim_file->findx("A/"+url.toUpper().toStdString()+".html");
+            it = zim_file->findx(url.toStdString());
             if (!it.first)
             {
-                it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
+                it = zim_file->findx("A/"+url.toStdString()+".html");
                 if (!it.first)
                 {
-                    it = zim_file->findx("A/"+url.toUpper().toStdString());
-                    if (!it.first)
-                    {
-                        it = zim_file->findx("A/"+url.toStdString());
-                    }
+                    it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
                 }
             }
         }
-
         if(it.first)
         {
             if (it.second->isRedirect())
@@ -159,17 +153,19 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
             else
               str =  QString::fromStdString(std::string(it.second->getData().data(), it.second->getData().size()));
         }
-        else return "";
+        else return tr("对不起，没找到内容");
 
         int pos = 0;
         while ((pos = img.indexIn(str, pos)) != -1)
         {
-            it = zim_file->findx("A/"+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/").toStdString());
-            img_file.setFileName(cache_dir+img.cap(1));
-            fileinfo.setFile(img_file);
-            dir.mkpath(fileinfo.absolutePath());
+            pos += img.matchedLength();
+            if(QFile::exists(cache_dir+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1))) continue;
+            it = zim_file->findx(QString("A/"+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toStdString());
             if (it.first)
             {
+                img_file.setFileName(cache_dir+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1));
+                fileinfo.setFile(img_file);
+                dir.mkpath(fileinfo.absolutePath());
                 if (it.second->isRedirect())
                 {
                     img_file.open(QFile::ReadWrite);
@@ -184,10 +180,8 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
                     img_file.close();
                 }
             }
-            pos += img.matchedLength();
         }
-        //str.replace("\"pic",("\"file:///"+cachedir+"pic")).replace("(pic",("(file:///"+cachedir+"pic")).replace("'pic",("'file:///"+cachedir+"pic"));
         return str;
     }
-    catch(...) {return "";}
+    catch(...) {return tr("对不起，程序出错了!");}
 }

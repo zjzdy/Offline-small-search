@@ -1,15 +1,19 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>more.qml</file>
-        <file>history.qml</file>
-        <file>more_search.qml</file>
-        <file>about.qml</file>
-        <file>pkg.qml</file>
-        <file>custom.qml</file>
-        <file>search.qml</file>
-        <file>search_result.qml</file>
-        <file>result.qml</file>
-        <file>mark.qml</file>
+        <file>Main.qml</file>
+        <file>More.qml</file>
+        <file>History.qml</file>
+        <file>MoreSearch.qml</file>
+        <file>About.qml</file>
+        <file>Pkg.qml</file>
+        <file>Custom.qml</file>
+        <file>Search.qml</file>
+        <file>SearchResult.qml</file>
+        <file>Result.qml</file>
+        <file>Mark.qml</file>
+        <file>Crop.qml</file>
+        <file>CornerPoint.qml</file>
+        <file>OnlineDownload.qml</file>
+        <file>all.qml</file>
     </qresource>
 </RCC>
