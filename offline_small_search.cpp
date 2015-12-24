@@ -1,129 +1,112 @@
 #include "offline_small_search.h"
-#include "ui_offline_small_search.h"
+//#include "ui_offline_small_search.h"
 #include "QDebug"
+extern QObject *g_listener;
 
-Offline_small_search::Offline_small_search(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Offline_small_search)
+Offline_small_search::Offline_small_search(QObject *parent) :
+    QObject(parent)
 {
-    ui->setupUi(this);
-    if (!QFile::exists("dict"))
+    if (!QFile::exists("tmp"))
     {
         QDir dict;
-        dict.mkpath("dict");
-    }
-    if (!QFile::exists("dict/friso.lex.ini"))
-    {
-        QFile::copy(":/dict/friso.lex.ini","dict/friso.lex.ini");
-    }
-    if (!QFile::exists("dict/lex-main.lex"))
-    {
-        QFile::copy(":/dict/lex-main.lex","dict/lex-main.lex");
-    }
-    if (!QFile::exists("dict/lex-main2.lex"))
-    {
-        QFile::copy(":/dict/lex-main2.lex","dict/lex-main2.lex");
-    }
-    if (!QFile::exists("dict/lex-chars.lex"))
-    {
-        QFile::copy(":/dict/lex-chars.lex","dict/lex-chars.lex");
-    }
-    if (!QFile::exists("dict/lex-flname.lex"))
-    {
-        QFile::copy(":/dict/lex-flname.lex","dict/lex-flname.lex");
-    }
-    if (!QFile::exists("dict/lex-study.lex"))
-    {
-        QFile::copy(":/dict/lex-study.lex","dict/lex-study.lex");
-    }
-    if (!QFile::exists("dict/lex-units.lex"))
-    {
-        QFile::copy(":/dict/lex-units.lex","dict/lex-units.lex");
-    }
-    if (!QFile::exists("dict/lex-ecmixed.lex"))
-    {
-        QFile::copy(":/dict/lex-ecmixed.lex","dict/lex-ecmixed.lex");
-    }
-    if (!QFile::exists("dict/lex-cemixed.lex"))
-    {
-        QFile::copy(":/dict/lex-cemixed.lex","dict/lex-cemixed.lex");
-    }
-    if (!QFile::exists("dict/lex-lname.lex"))
-    {
-        QFile::copy(":/dict/lex-lname.lex","dict/lex-lname.lex");
-    }
-    if (!QFile::exists("dict/lex-sname.lex"))
-    {
-        QFile::copy(":/dict/lex-sname.lex","dict/lex-sname.lex");
-    }
-    if (!QFile::exists("dict/lex-dname-1.lex"))
-    {
-        QFile::copy(":/dict/lex-dname-1.lex","dict/lex-dname-1.lex");
-    }
-    if (!QFile::exists("dict/lex-dname-2.lex"))
-    {
-        QFile::copy(":/dict/lex-dname-2.lex","dict/lex-dname-2.lex");
-    }
-    if (!QFile::exists("dict/lex-ln-adorn.lex"))
-    {
-        QFile::copy(":/dict/lex-ln-adorn.lex","dict/lex-ln-adorn.lex");
-    }
-    if (!QFile::exists("dict/lex-stopword.lex"))
-    {
-        QFile::copy(":/dict/lex-stopword.lex","dict/lex-stopword.lex");
-    }
-    if (!QFile::exists("dict/lex-en-pun.lex"))
-    {
-        QFile::copy(":/dict/lex-en-pun.lex","dict/lex-en-pun.lex");
-    }
-    if (!QFile::exists("dict/lex-en.lex"))
-    {
-        QFile::copy(":/dict/lex-en.lex","dict/lex-en.lex");
+        dict.mkpath("tmp");
     }
     remove_name_reg.setPattern(":/.*$");
     remove_name_reg.setMinimal(false);
     first_body_reg.setPattern(".{1,130}");
     first_body_reg.setMinimal(false);
-    QObject::connect(&search_thread,SIGNAL(init_finish(int)),this,SLOT(on_init_finish(int)));
+    only_file_name.setPattern(".*[/\\\\]");
+    only_file_name.setMinimal(false);
+    QObject::connect(&search_thread,SIGNAL(init_finish(int)),this,SLOT(on_search_init_finish(int)));
     QObject::connect(&search_thread,SIGNAL(search_result(QStringList,int)),this,SLOT(on_search_result(QStringList,int)));
-    QObject::connect(this,SIGNAL(lucene_search(QString,int,QStringList)),&search_thread,SIGNAL(search(QString,int,QStringList)));
+    QObject::connect(this,SIGNAL(xapian_search(QString,int,QStringList)),&search_thread,SIGNAL(search(QString,int,QStringList)));
     QObject::connect(this,SIGNAL(init_search(QStringList,int)),&search_thread,SIGNAL(init(QStringList,int)));
     QObject::connect(&search_thread,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
     search_thread.start();
+
+    QObject::connect(&crop_thread_obj,SIGNAL(init_finish(int)),this,SLOT(on_crop_ocr_init_finish(int)));
+    QObject::connect(&crop_thread_obj,SIGNAL(ocr_result(QString,int)),this,SLOT(on_crop_ocr_result(QString,int)));
+    QObject::connect(&crop_thread_obj,SIGNAL(rotate_finish(QString,int)),this,SLOT(on_crop_ocr_rotate_finish(QString,int)));
+    QObject::connect(this,SIGNAL(rotate(QString,int,int)),&crop_thread_obj,SIGNAL(rotate(QString,int,int)));
+    QObject::connect(this,SIGNAL(crop_ocr(QString,QVariant,int)),&crop_thread_obj,SIGNAL(crop_ocr(QString,QVariant,int)));
+    QObject::connect(this,SIGNAL(init_ocr(QString,int)),&crop_thread_obj,SIGNAL(init(QString,int)));
+    //QObject::connect(&crop_thread_obj,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
+    crop_thread_obj.start();
+
+    QObject::connect(&unzip_thread_obj,SIGNAL(unzip_finish(int)),this,SLOT(on_unzip_finish(int)));
+    QObject::connect(this,SIGNAL(unzip(QString,QString,int)),&unzip_thread_obj,SIGNAL(unzip(QString,QString,int)));
+    unzip_thread_obj.start();
     //search_thread.wait();
     custom1.read_custom();
-    ui->main_qml->rootContext()->setContextProperty("custom1", &custom1);
-    ui->custom_qml->rootContext()->setContextProperty("custom1", &custom1);
-    ui->main_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->more_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->more_search_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->custom_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->history_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->about_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->search_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->search_result_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->pkg_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->result_qml->rootContext()->setContextProperty("main_widget", this);
-    ui->mark_qml->rootContext()->setContextProperty("main_widget", this);
-    result_obj = ui->result_qml->rootObject()->findChild<QObject*>("text");
-    mark_img_obj = ui->result_qml->rootObject()->findChild<QObject*>("mark_img");
-    search_result_wait_obj = ui->search_result_qml->rootObject()->findChild<QObject*>("wait_image");
-    enable_pkg_img_obj = ui->pkg_qml->rootObject()->findChild<QObject*>("enable_pkg_img");
-    search_top_bar_obj = ui->search_qml->rootObject()->findChild<QObject*>("search_top_bar");
     search_batch = 0;
+    crop_batch = 0;
+    unzip_batch = 0;
     init_search_batch = 0;
     cache_dir = QDir::currentPath()+"/tmp/";
+    clean_cache();
+    view.append(0);
+    if(is_exist("/ocr/zh_cn.zip",1))
+        Q_EMIT init_ocr(get_data_dir()+"/zh_cn",++crop_batch);
+}
+void Offline_small_search::init_con(QQmlContext *rootcon)
+{
+    rootcon->setContextProperty("custom1", &custom1);
+    rootContext = rootcon;
+}
+
+void Offline_small_search::init_obj(QObject *rootobj)
+{
+    rootObject = rootobj;
+    tabView_obj = rootobj->findChild<QObject*>("tabView");
+    setCurrentIndex(4);
+    setCurrentIndex(7);
+    setCurrentIndex(8);
+    setCurrentIndex(9);
+    setCurrentIndex(11);
+    setCurrentIndex(0);
+    result_obj = rootobj->findChild<QObject*>("text");
+    mark_img_obj = rootobj->findChild<QObject*>("mark_img");
+    search_result_wait_obj = rootobj->findChild<QObject*>("wait_image");
+    enable_pkg_img_obj = rootobj->findChild<QObject*>("enable_pkg_img");
+    search_top_bar_obj = rootobj->findChild<QObject*>("search_top_bar");
+    cropView_obj = rootobj->findChild<QObject*>("cropView");
+    search_text_obj = rootobj->findChild<QObject*>("search_text");
+    if(!(result_obj)) qDebug()<<"result_obj not find";
+    if(!(tabView_obj)) qDebug()<<"tabView_obj not find";
+    if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
+}
+
+void Offline_small_search::init_obj()
+{
+    qDebug()<<"init obj 2";
+    result_obj = rootObject->findChild<QObject*>("text");
+    mark_img_obj = rootObject->findChild<QObject*>("mark_img");
+    search_result_wait_obj = rootObject->findChild<QObject*>("wait_image");
+    enable_pkg_img_obj = rootObject->findChild<QObject*>("enable_pkg_img");
+    search_top_bar_obj = rootObject->findChild<QObject*>("search_top_bar");
+    cropView_obj = rootObject->findChild<QObject*>("cropView");
+    search_text_obj = rootObject->findChild<QObject*>("search_text");
+    if(!(result_obj)) qDebug()<<"result_obj not find";
+    if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
+}
+
+void Offline_small_search::init_data()
+{
     data_file_to_offline_pkg_list();
     data_file_to_history_list();
     data_file_to_mark_list();
-    file_dialog.setViewMode(QFileDialog::List);
-    view.append(0);
+}
+
+void Offline_small_search::setCurrentIndex(int index)
+{
+    tabView_obj->setProperty("currentIndex",index);
 }
 
 void Offline_small_search::show_back()
 {
+    if(view.isEmpty()) return;
     view.removeLast();
-    ui->stackedWidget->setCurrentIndex(view.last());
+    setCurrentIndex(view.last());
 }
 
 void Offline_small_search::close_app()
@@ -134,11 +117,15 @@ void Offline_small_search::close_app()
 
 Offline_small_search::~Offline_small_search()
 {
-    delete ui;
-    offline_pkg_list_to_data_file();
-    history_list_to_data_file();
+#ifdef Q_OS_ANDROID
+    clickHome(); //exit is too slow.
+#endif
+    //delete ui;
     custom1.write_custom();
-    //search_thread.quit(); //exit is too slow.
+    offline_pkg_list_to_data_file();
+    mark_list_to_data_file();
+    history_list_to_data_file();
+    search_thread.quit();
     clean_cache();
 }
 
@@ -154,58 +141,65 @@ void Offline_small_search::clean_cache()
     {
         dirNames<<dirName;
     }
-        for(int i=0;i<dirNames.size();++i)
-        {
-            dir.setPath(dirNames[i]);
-            filst=dir.entryInfoList(QDir::Dirs|QDir::Files|QDir::Readable|QDir::Writable|QDir::Hidden|QDir::NoDotAndDotDot,QDir::Name);
-            if(filst.size()>0){
-                curFi=filst.begin();
-                while(curFi!=filst.end()){
-                    if(curFi->isDir()){
-                        dirNames.push_back(curFi->filePath());
-                    }else if(curFi->isFile()){
-                        dir.remove(curFi->fileName());
-                    }
-                    curFi++;
+    for(int i=0;i<dirNames.size();++i)
+    {
+        dir.setPath(dirNames[i]);
+        filst=dir.entryInfoList(QDir::Dirs|QDir::Files|QDir::Readable|QDir::Writable|QDir::Hidden|QDir::NoDotAndDotDot,QDir::Name);
+        if(filst.size()>0){
+            curFi=filst.begin();
+            while(curFi!=filst.end()){
+                if(curFi->isDir()){
+                    dirNames.push_back(curFi->filePath());
+                }else if(curFi->isFile()){
+                    dir.remove(curFi->fileName());
                 }
+                curFi++;
             }
         }
-        for(int i=dirNames.size()-1;i>=0;--i)
-        {
-            dir.setPath(dirNames[i]);
-            dir.rmdir(".");
-        }
+    }
+    for(int i=dirNames.size()-1;i>=0;--i)
+    {
+        dir.setPath(dirNames[i]);
+        dir.rmdir(".");
+    }
     return;
 }
 
 void Offline_small_search::show_main()
 {
-    view.append(0);
-    ui->stackedWidget->setCurrentIndex(0);
+    if(view.last() != 0)
+        view.append(0);
+    setCurrentIndex(0);
 }
 
 void Offline_small_search::show_more()
 {
-    view.append(1);
-    ui->stackedWidget->setCurrentIndex(1);
+    if(view.last() != 1)
+        view.append(1);
+    setCurrentIndex(1);
 }
 
 void Offline_small_search::show_more_search()
 {
-    view.append(2);
-    ui->stackedWidget->setCurrentIndex(2);
+    if(view.last() != 2)
+        view.append(2);
+    setCurrentIndex(2);
 }
 
 void Offline_small_search::show_history()
 {
-    view.append(3);
-    ui->stackedWidget->setCurrentIndex(3);
+    if(view.last() != 3)
+        view.append(3);
+    setCurrentIndex(3);
 }
 
-void Offline_small_search::show_search()
+void Offline_small_search::show_search(QString str)
 {
-    view.append(7);
-    ui->stackedWidget->setCurrentIndex(7);
+    if(view.last() != 7)
+        view.append(7);
+    if(str != " ")
+        search_text_obj->setProperty("text",str);
+    setCurrentIndex(7);
 }
 
 void Offline_small_search::show_search_result(QString str)
@@ -215,33 +209,54 @@ void Offline_small_search::show_search_result(QString str)
         search_str = str;
         search(search_type,search_str);
     }
-    view.append(8);
-    ui->stackedWidget->setCurrentIndex(8);
+    if(view.last() != 8)
+        view.append(8);
+    setCurrentIndex(8);
 }
 
 void Offline_small_search::show_pkg()
 {
     refresh_offline_pkg_list_for_pkg_qml();
-    view.append(4);
-    ui->stackedWidget->setCurrentIndex(4);
+    if(view.last() != 4)
+        view.append(4);
+    setCurrentIndex(4);
 }
 
 void Offline_small_search::show_mark()
 {
-    view.append(10);
-    ui->stackedWidget->setCurrentIndex(10);
+    if(view.last() != 10)
+        view.append(10);
+    setCurrentIndex(10);
 }
 
 void Offline_small_search::show_about()
 {
-    view.append(6);
-    ui->stackedWidget->setCurrentIndex(6);
+    if(view.last() != 6)
+        view.append(6);
+    setCurrentIndex(6);
 }
 
 void Offline_small_search::show_custom()
 {
-    view.append(5);
-    ui->stackedWidget->setCurrentIndex(5);
+    if(view.last() != 5)
+        view.append(5);
+    setCurrentIndex(5);
+}
+
+void Offline_small_search::show_crop()
+{
+    if(view.last() != 11)
+        view.append(11);
+    cropView_obj->setProperty("source"," ");
+    cropView_obj->setProperty("source","");
+    setCurrentIndex(11);
+}
+
+void Offline_small_search::show_online_download()
+{
+    if(view.last() != 12)
+        view.append(12);
+    setCurrentIndex(12);
 }
 
 void Offline_small_search::hide_wait()
@@ -256,15 +271,36 @@ void Offline_small_search::show_wait()
 
 void Offline_small_search::show_result(QString url)
 {
+    if(view.last() != 9)
+        view.append(9);
+    setCurrentIndex(9);
     load_html(url);
-    view.append(9);
-    ui->stackedWidget->setCurrentIndex(9);
 }
 
 void Offline_small_search::load_html(QString url)
 {
-    url.remove("file:///"+get_cache_dir()).remove("file://"+get_cache_dir()).remove(get_cache_dir());
-    search_url = url;
+    qDebug()<<"load_html:"<<url;
+    if(url.isEmpty()||url.isNull()||url.indexOf(QRegExp("[/\\\\]$")) != -1) return;
+    QString search_url2;
+    url.remove("file:///"+get_cache_dir()).remove("file://"+get_cache_dir()).remove(get_cache_dir()).replace(QRegExp("[/\\\\]{2,}"),"/");
+    url_name_code = url;
+    url_name_code.remove(remove_name_reg);
+    if(url_name_code != url)
+        search_url2 = url;
+    else
+    {
+        url_name_code = search_url;
+        url_name_code.remove(remove_name_reg);
+        url = url_name_code+":/"+url;
+        search_url2 = url;
+    }
+    if(search_url2 == search_url && view.last() == 9)
+        return;
+    else
+    {
+        search_url = search_url2;
+        //QMetaObject::invokeMethod(result_obj, "stop");
+    }
     if(is_mark(search_url))
     {
         mark_img_obj->setProperty("source","qrc:/image/icon_mark_on.png");
@@ -273,18 +309,14 @@ void Offline_small_search::load_html(QString url)
     {
         mark_img_obj->setProperty("source","qrc:/image/icon_mark_off.png");
     }
-    QMetaObject::invokeMethod(result_obj, "loadHtml", Q_ARG(QString, get_text_with_other_from_url(get_search_url())),Q_ARG(QUrl, QUrl("file:///"+get_cache_dir())));
-    qDebug()<<"file:///"+get_cache_dir();
-}
-
-QString Offline_small_search::get_dir_file_dialog()
-{
-    file_dialog.setOption(QFileDialog::ReadOnly);
-    file_dialog.setFileMode(QFileDialog::Directory);
-    file_dialog.setDirectory("/mnt/");
-    if (file_dialog.exec())
-        return file_dialog.directory().absolutePath();
-    else return "";
+    url.remove(0,url_name_code.size()+2);
+    QString baseurl = "file:///"+get_cache_dir()+"/"+url;
+    baseurl.replace(QRegExp("[/\\\\]{2,}"),"/").replace("file:/","file:///").remove(QRegExp("[^/]*$"));
+    //result_obj->setProperty("url","");
+    qDebug()<<"load_html2"<<baseurl;
+    QMetaObject::invokeMethod(result_obj, "loadHtml",Qt::QueuedConnection,Q_ARG(QString, get_text_with_other_from_url(search_url)),Q_ARG(QUrl, QUrl(baseurl)));
+    qDebug()<<"load_html3"<<search_url;
+    //qDebug()<<"file:///"+get_cache_dir();
 }
 
 QStringList Offline_small_search::get_search_type()
@@ -299,7 +331,7 @@ QString Offline_small_search::get_search_str()
 
 QString Offline_small_search::get_search_url()
 {
-    qDebug()<< search_url;
+    //qDebug()<< search_url;
     return search_url;
 }
 
@@ -342,19 +374,23 @@ QString Offline_small_search::get_text_from_url(QString url)
     url_name_code.remove(remove_name_reg);
     url.remove(0,url_name_code.size()+2);
     QString text;
-    QRegExp tag;
-    tag.setMinimal(true);
-    tag.setPattern("<.*>");
+    //QRegExp tag;
+    //tag.setMinimal(true);
+    //tag.setPattern("<[^\\x31C0-\\x9FCC]*>");
     for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
         offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
         if(offline_pkg1->enable() && offline_pkg1->name_code() == url_name_code)
         {
             text = offline_pkg1->get_text_from_url(url);
+            //qDebug()<<url<<" "<<text;
             if(!(text == ""||text.isNull()||text.isEmpty()))
             {
-                if(offline_pkg1->type() == "ST")
-                    return text.remove(tag).remove("&nbsp;").remove("&quot;").remove("&amp;").remove("&lt;").remove("&gt;").remove("题文").remove("属性").remove("答案").remove("\n").remove("  ").remove("  ");
+                //if(offline_pkg1->type() == "ST")
+                //    return text.remove(tag).remove("&nbsp;").remove("&quot;").remove("&amp;").remove("&lt;").remove("&gt;").remove("题文").remove("属性").remove("答案").remove("\n").remove("  ").remove("  ");
+                htmlparser.reset();
+                htmlparser.parse_html(text.toStdString(),"utf-8",true);
+                return QString::fromStdString(htmlparser.dump);
             }
         }
     }
@@ -364,11 +400,11 @@ QString Offline_small_search::get_text_from_url(QString url)
 QString Offline_small_search::get_text_with_other_from_url(QString url)
 {
     url_name_code = url;
-    qDebug()<<url;
+    //qDebug()<<url;
     url_name_code.remove(remove_name_reg);
     url.remove(0,url_name_code.size()+2);
     QString text;
-    qDebug()<<url;
+    //qDebug()<<url;
     for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
         offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
@@ -377,9 +413,9 @@ QString Offline_small_search::get_text_with_other_from_url(QString url)
             text = offline_pkg1->get_text_with_other_from_url(url,cache_dir);
             if(!(text == ""||text.isNull()||text.isEmpty()))
             {
-                if(offline_pkg1->type() == "ST")
-                    return text;
-                qDebug()<<text;
+                //if(offline_pkg1->type() == "ST")
+                return text;
+                //qDebug()<<text;
             }
         }
     }
@@ -389,8 +425,7 @@ QString Offline_small_search::get_text_with_other_from_url(QString url)
 void Offline_small_search::search(QStringList type, QString str)
 {
     show_wait();
-    Q_EMIT lucene_search(str,search_batch,type);
-    clean_cache();
+    Q_EMIT xapian_search(str,search_batch,type);
     for(int i = 0; i < search_result_list.size(); ++i)
     {
         search_result_list.at(i)->deleteLater();
@@ -532,11 +567,6 @@ void Offline_small_search::add_offline_pkg(QString path,bool enable)
     }
 
     offline_pkg_list.append(offline_pkg1);
-    //QObject::connect(offline_pkg1,SIGNAL(typeChanged(QString)),this,SLOT(refresh_offline_pkg_list_for_pkg_qml()));
-    //QObject::connect(offline_pkg1,SIGNAL(pathChanged(QString)),this,SLOT(refresh_offline_pkg_list_for_pkg_qml()));
-    //QObject::connect(offline_pkg1,SIGNAL(nameChanged(QString)),this,SLOT(refresh_offline_pkg_list_for_pkg_qml()));
-    //QObject::connect(offline_pkg1,SIGNAL(name_codeChanged(QString)),this,SLOT(refresh_offline_pkg_list_for_pkg_qml()));
-    //QObject::connect(offline_pkg1,SIGNAL(enableChanged(bool)),this,SLOT(refresh_offline_pkg_list_for_pkg_qml()));
     refresh_offline_pkg_list_for_pkg_qml();
 }
 
@@ -645,7 +675,7 @@ void Offline_small_search::offline_pkg_list_to_data_file(QString file_path)
 
 void Offline_small_search::refresh_offline_pkg_list_for_pkg_qml()
 {
-    ui->pkg_qml->rootContext()->setContextProperty("offline_pkg_list", QVariant::fromValue(offline_pkg_list));
+    rootContext->setContextProperty("offline_pkg_list", QVariant::fromValue(offline_pkg_list));
     refresh_more_search_list_for_more_search_qml();
 }
 
@@ -748,12 +778,12 @@ void Offline_small_search::history_list_to_data_file(QString file_path)
 
 void Offline_small_search::refresh_history_list_for_history_qml()
 {
-    ui->history_qml->rootContext()->setContextProperty("history_list", QVariant::fromValue(history_list));
+    rootContext->setContextProperty("history_list", QVariant::fromValue(history_list));
 }
 
 void Offline_small_search::refresh_search_result_for_search_result_qml()
 {
-    ui->search_result_qml->rootContext()->setContextProperty("search_result_obj", QVariant::fromValue(search_result_list));
+    rootContext->setContextProperty("search_result_obj", QVariant::fromValue(search_result_list));
 }
 
 void Offline_small_search::init_search_from_offline_pkg_list()
@@ -800,13 +830,13 @@ void Offline_small_search::on_search_result(QStringList urls, int batch)
     }
 }
 
-void Offline_small_search::on_init_finish(int batch)
+void Offline_small_search::on_search_init_finish(int batch)
 {
     if(batch == init_search_batch)
     {
         init_search_finish = true;
         qDebug()<<"init_search_finish:"<<init_search_finish;
-        hide_wait();
+        //hide_wait();
     }
 }
 
@@ -921,7 +951,7 @@ void Offline_small_search::add_mark(QString str,QString url)
 
 void Offline_small_search::refresh_mark_list_for_mark_qml()
 {
-    ui->mark_qml->rootContext()->setContextProperty("mark_obj", QVariant::fromValue(mark_list));
+    rootContext->setContextProperty("mark_obj", QVariant::fromValue(mark_list));
 }
 
 bool Offline_small_search::is_mark(QString url)
@@ -996,10 +1026,280 @@ void Offline_small_search::refresh_more_search_list_for_more_search_qml()
             more_search_list.append(more_search);
         }
     }
-    ui->more_search_qml->rootContext()->setContextProperty("more_search_list", QVariant::fromValue(more_search_list));
+    rootContext->setContextProperty("more_search_list", QVariant::fromValue(more_search_list));
 }
 
 void Offline_small_search::set_top_bar_height(qreal top_bar_height)
 {
     search_top_bar_obj->setProperty("height",top_bar_height);
+}
+
+void Offline_small_search::startCamera()
+{
+#ifdef Q_OS_ANDROID
+    QAndroidJniObject::callStaticMethod<void>(
+                "qt/oss/OfflineSmallSearchActivity",
+                "captureImage");
+    QAndroidJniEnvironment env;
+    if (env->ExceptionCheck())
+    {
+        qDebug() << "onCaptureImage, got exception";
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
+    show_crop();
+#endif
+}
+
+#ifdef Q_OS_ANDROID
+void Offline_small_search::clickHome()
+{
+    QAndroidJniObject::callStaticMethod<void>(
+                "qt/oss/OfflineSmallSearchActivity",
+                "clickHome");
+    QAndroidJniEnvironment env;
+    if (env->ExceptionCheck())
+    {
+        qDebug() << "onclickHome, got exception";
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
+}
+
+#endif
+
+bool Offline_small_search::event(QEvent *e)
+{
+    if(e->type() == capCustomEvent::eventType())
+    {
+        e->accept();
+        capCustomEvent *sce = (capCustomEvent*)e;
+        cropView_obj->setProperty("source","");
+        if(sce->m_arg1 == 2)
+        {
+            show_crop();
+            cropView_obj->setProperty("source","file://"+sce->m_arg2);
+        }
+        else
+        {
+                    //TODO: show error
+        }
+        return true;
+    }
+    return QObject::event(e);
+}
+
+void Offline_small_search::remove_data(QString url)
+{
+    QString url2 = url;
+    url.remove(only_file_name);
+    if(QFile::exists(get_data_dir()+"/"+url))
+    {
+        QFile::remove(get_data_dir()+"/"+url);
+    }
+    if(QFile::exists(get_data_dir()+"/"+url.remove(".zip")))
+    {
+        QString dirName = get_data_dir()+"/"+url;
+        static QVector<QString> dirNames;
+        QDir dir;
+        QFileInfoList filst;
+        QFileInfoList::iterator curFi;
+        dirNames.clear();
+        if(dir.exists())
+        {
+            dirNames<<dirName;
+        }
+        for(int i=0;i<dirNames.size();++i)
+        {
+            dir.setPath(dirNames[i]);
+            filst=dir.entryInfoList(QDir::Dirs|QDir::Files|QDir::Readable|QDir::Writable|QDir::Hidden|QDir::NoDotAndDotDot,QDir::Name);
+            if(filst.size()>0){
+                curFi=filst.begin();
+                while(curFi!=filst.end()){
+                    if(curFi->isDir()){
+                        dirNames.push_back(curFi->filePath());
+                    }else if(curFi->isFile()){
+                        dir.remove(curFi->fileName());
+                    }
+                    curFi++;
+                }
+            }
+        }
+        for(int i=dirNames.size()-1;i>=0;--i)
+        {
+            dir.setPath(dirNames[i]);
+            dir.rmdir(".");
+            //dir.rmpath(".");
+        }
+        dir.rmpath(get_data_dir()+"/"+url);
+        dir.mkpath(get_data_dir());
+    }
+    qDebug()<<"remove dir finish"<<get_data_dir()+"/"+url;//<<get_url_objname(url2);
+    QObject* wait_img_obj = obj_list.value(url2);//ui->online_download_qml->rootObject()->findChild<QObject*>(get_url_objname(url2),Qt::FindChildrenRecursively);
+    if(wait_img_obj) wait_img_obj->setProperty("visible",false);
+}
+
+QString Offline_small_search::md5(QString str)
+{
+    return QString(QCryptographicHash::hash(str.toLatin1(),QCryptographicHash::Md5).toHex());
+}
+
+void Offline_small_search::download_data(QString url)
+{
+    qDebug()<<"download_data"<<url;
+    QString file = url;
+    file.remove(only_file_name);
+    if(QFile::exists(get_data_dir()+"/"+file))
+    {
+        qDebug()<<"remove";
+        QFile::remove(get_data_dir()+"/"+file);
+    }
+    m_reply = m_down.get(QNetworkRequest(QUrl(url)));
+    if(!QFile::exists(get_data_dir()))
+    {
+        QDir a;
+        a.mkpath(get_data_dir());
+    }
+    connect(m_reply,SIGNAL(finished()),this,SLOT(download_data_finish()));
+    //connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64 ,qint64 )));//download文件时进度
+    connect((QObject *)m_reply, SIGNAL(readyRead()),this, SLOT(onReadyRead()));
+}
+
+void Offline_small_search::download_data_finish()
+{
+    m_reply=dynamic_cast<QNetworkReply*>(sender());
+    if(!m_reply->isFinished())
+    {
+        return;
+    }
+    if(m_reply->error() == QNetworkReply::NoError)
+    {
+        QFile file(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name));
+        file.open(QIODevice::WriteOnly|QIODevice::Append);
+        file.write(m_reply->readAll());
+        file.close();
+        QDir a;
+        a.mkpath(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name).remove(".zip"));
+        ++unzip_batch;
+        unzip_url_map[unzip_batch] = m_reply->url().toString();
+        Q_EMIT unzip(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name), get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name).remove(".zip"),unzip_batch);
+        //file.remove();
+    }
+}
+
+void Offline_small_search::onDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
+{
+  //progressBar->setMaximum(bytesTotal);
+  //progressBar->setValue(bytesSent);
+}
+
+void Offline_small_search::onReadyRead()
+{
+    m_reply=dynamic_cast<QNetworkReply*>(sender());
+    if(m_reply->error() == QNetworkReply::NoError)
+    {
+        QFile file(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name));
+        file.open(QIODevice::WriteOnly|QIODevice::Append);
+        file.write(m_reply->readAll());
+        file.close();
+    }
+}
+
+void Offline_small_search::obj_list_insert(QString key, QObject *obj)
+{
+    obj_list.insert(key,obj);
+}
+
+QString Offline_small_search::get_data_dir()
+{
+    if(data_dir.isNull()||data_dir.isEmpty()||data_dir.indexOf(QRegExp("[/\\\\]")) == -1)
+    {
+        QString sdPath;
+#ifdef Q_OS_ANDROID
+        QAndroidJniObject path =
+            QAndroidJniObject::callStaticObjectMethod(
+                "qt/oss/OfflineSmallSearchActivity",
+                "getSdcardPath", "()Ljava/lang/String;");
+        sdPath = path.toString();
+#else
+        sdPath = QDir::currentPath();
+#endif
+        if(!sdPath.isEmpty())
+        {
+            QDir dir(sdPath);
+            if((dir.exists("oss") || dir.mkdir("oss")) && (dir.exists("oss/data") || dir.mkdir("oss/data")))
+                data_dir = sdPath+"/oss/data";
+            else
+            {
+                QDir dir("/sdcard");
+                if((dir.exists("oss") || dir.mkdir("oss")) && (dir.exists("oss/data") || dir.mkdir("oss/data")))
+                    data_dir = "/sdcard/oss/data";
+                else
+                {
+                    QDir dir(QDir::currentPath());
+                    if((dir.exists("oss") || dir.mkdir("oss")) && (dir.exists("oss/data") || dir.mkdir("oss/data")))
+                        data_dir = QDir::currentPath()+"/oss/data";
+                }
+            }
+        }
+        else
+        {
+            QDir dir("/sdcard");
+            if((dir.exists("oss") || dir.mkdir("oss")) && (dir.exists("oss/data") || dir.mkdir("oss/data")))
+                data_dir = "/sdcard/oss/data";
+            else
+            {
+                QDir dir(QDir::currentPath());
+                if((dir.exists("oss") || dir.mkdir("oss")) && (dir.exists("oss/data") || dir.mkdir("oss/data")))
+                    data_dir = QDir::currentPath()+"/oss/data";
+            }
+        }
+    }
+    return data_dir;
+}
+
+bool Offline_small_search::is_exist(QString file,int type)
+{
+    if(type == 1)
+        return QFile::exists(get_data_dir()+"/"+file.remove(only_file_name).remove(".zip"));
+    return QFile::exists(file);
+}
+
+void Offline_small_search::on_crop_ocr_result(QString text, int batch)
+{
+    if(crop_batch == batch && view.last() == 11)
+    {
+        show_search(text);
+        cropView_obj->setProperty("source"," ");
+        cropView_obj->setProperty("source","");
+    }
+}
+
+void Offline_small_search::on_crop_ocr_rotate_finish(QString imagepath,int batch)
+{
+    if(crop_batch == batch)
+    {
+        cropView_obj->setProperty("source",imagepath);
+    }
+}
+
+void Offline_small_search::on_crop_ocr_init_finish(int batch)
+{
+    qDebug()<<"init crop_ocr finish"<<batch;
+}
+
+void Offline_small_search::on_unzip_finish(int batch)
+{
+    QObject* wait_img_obj = obj_list.value(unzip_url_map[batch]);//ui->online_download_qml->rootObject()->findChild<QObject*>(get_url_objname(m_reply->url().toString()),Qt::FindChildrenRecursively);
+    if(wait_img_obj) wait_img_obj->setProperty("visible",false);
+}
+
+void Offline_small_search::crop_ocr_Q(QString imagepath, QVariant cropPoints)
+{
+    Q_EMIT crop_ocr(imagepath,cropPoints,++crop_batch);
+}
+
+void Offline_small_search::rotate_Q(QString imagepath, int rotate_n)
+{
+    Q_EMIT rotate(imagepath,rotate_n,++crop_batch);
 }

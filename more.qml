@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
@@ -9,13 +9,8 @@ Rectangle {
     width: 720
     height: 1280
     color: "#f6f6f6"
-    focus: true
-    Keys.onBackPressed: {
-        exit_messageDialog.visible = true
-    }
-    Keys.onEscapePressed: {
-        exit_messageDialog.visible = true
-    }
+    property real a_max: Math.max(width,height)
+    property real a_min: Math.min(width,height)
 
     MessageDialog {
         id: exit_messageDialog
@@ -27,21 +22,21 @@ Rectangle {
 
     Rectangle {
         id: rectangle1
-        y: 1175*rectangle2.height/1280
-        width: 720*rectangle2.width/720
-        height: 105*rectangle2.height/1280
+        y: 1175*rectangle2.a_max/1280
+        width: rectangle2.width
+        height: 105*rectangle2.a_max/1280
         color: "#f0f0f0"
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
         Row {
             id: row1
-            width: 720*rectangle2.width/720
-            height: 105*rectangle2.height/1280
+            width: rectangle2.width
+            height: 105*rectangle2.a_max/1280
 
             MouseArea {
                 id: button1
-                anchors.rightMargin: 540*rectangle2.width/720
+                anchors.rightMargin: rectangle2.width/4*3
                 anchors.fill: parent
                 onClicked: main_widget.show_main()
 
@@ -51,14 +46,14 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
                 }
             }
 
             MouseArea {
                 id: button2
-                anchors.leftMargin: 180*rectangle2.width/720
-                anchors.rightMargin: 360*rectangle2.width/720
+                anchors.leftMargin: rectangle2.width/4*1
+                anchors.rightMargin: rectangle2.width/4*2
                 anchors.fill: parent
                 onClicked: main_widget.show_more_search()
 
@@ -68,14 +63,14 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
                 }
             }
 
             MouseArea {
                 id: button3
-                anchors.leftMargin: 360*rectangle2.width/720
-                anchors.rightMargin: 180*rectangle2.width/720
+                anchors.leftMargin: rectangle2.width/4*2
+                anchors.rightMargin: rectangle2.width/4*1
                 anchors.fill: parent
                 onClicked: main_widget.show_history()
 
@@ -85,13 +80,13 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
                 }
             }
 
             MouseArea {
                 id: button4
-                anchors.leftMargin: 540*rectangle2.width/720
+                anchors.leftMargin: rectangle2.width/4*3
                 anchors.fill: parent
                 onClicked: main_widget.show_more()
 
@@ -101,7 +96,7 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.height/1280*rectangle2.width/720)
+                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
                 }
             }
         }
@@ -117,7 +112,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle3
-            height: 120*rectangle2.height/1280
+            height: 100*rectangle2.a_max/1280
             color: "#f0f0f0"
             anchors.right: parent.right
             anchors.rightMargin: 0
@@ -133,13 +128,13 @@ Rectangle {
                 verticalAlignment: Text.AlignVCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 45*rectangle2.height/1280
+                font.pixelSize: 45*rectangle2.a_max/1280
             }
         }
 
         Rectangle {
             id: rectangle4
-            height: 200*rectangle2.height/1280
+            height: rectangle2.height > rectangle2.width ? 200*rectangle2.height/1280 : 0
             color: "#00000000"
             border.width: 1
             border.color: "#00000000"
@@ -153,7 +148,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle5
-            height: 4*rectangle2.height/1280
+            height: 4*rectangle2.a_max/1280
             color: "#bbbbbb"
             border.width: 0
             border.color: "#00000000"
@@ -167,7 +162,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle6
-            height: 90*rectangle2.height/1280
+            height: 90*rectangle2.a_max/1280
             color: "#ffffff"
             border.width: 0
             anchors.right: parent.right
@@ -179,26 +174,26 @@ Rectangle {
 
             Text {
                 id: text5
-                height: 40*rectangle2.height/1280
+                height: 40*rectangle2.a_max/1280
                 text: qsTr("设置")
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.width/720
+                anchors.leftMargin: 100*rectangle2.a_min/720
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.a_max/1280
             }
 
             Image {
                 id: image1
                 anchors.right: text5.left
-                anchors.rightMargin: 10*rectangle2.width/720
+                anchors.rightMargin: 10*rectangle2.a_min/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10*rectangle2.width/720
+                anchors.leftMargin: 10*rectangle2.a_min/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5*rectangle2.height/1280
+                anchors.bottomMargin: 5*rectangle2.a_max/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.height/1280
+                anchors.topMargin: 5*rectangle2.a_max/1280
                 source: "qrc:/image/icon_settings_normal.png"
             }
             
@@ -211,7 +206,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle7
-            height: 4*rectangle2.height/1280
+            height: 4*rectangle2.a_max/1280
             color: "#bbbbbb"
             border.width: 0
             anchors.right: parent.right
@@ -224,7 +219,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle8
-            height: 90*rectangle2.height/1280
+            height: 90*rectangle2.a_max/1280
             color: "#ffffff"
             border.width: 0
             anchors.right: parent.right
@@ -236,26 +231,26 @@ Rectangle {
 
             Text {
                 id: text6
-                height: 40*rectangle2.height/1280
+                height: 40*rectangle2.a_max/1280
                 text: qsTr("离线包管理")
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.width/720
+                anchors.leftMargin: 100*rectangle2.a_min/720
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.a_max/1280
             }
 
             Image {
                 id: image2
                 anchors.right: text6.left
-                anchors.rightMargin: 10*rectangle2.width/720
+                anchors.rightMargin: 10*rectangle2.a_min/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10*rectangle2.width/720
+                anchors.leftMargin: 10*rectangle2.a_min/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5*rectangle2.height/1280
+                anchors.bottomMargin: 5*rectangle2.a_max/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.height/1280
+                anchors.topMargin: 5*rectangle2.a_max/1280
                 source: "qrc:/image/icon_pkg_normal.png"
             }
             
@@ -268,7 +263,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle9
-            height: 4*rectangle2.height/1280
+            height: 4*rectangle2.a_max/1280
             color: "#bbbbbb"
             border.width: 0
             anchors.right: parent.right
@@ -281,7 +276,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle10
-            height: 90*rectangle2.height/1280
+            height: 90*rectangle2.a_max/1280
             color: "#ffffff"
             border.width: 0
             anchors.right: parent.right
@@ -293,26 +288,26 @@ Rectangle {
 
             Text {
                 id: text9
-                height: 40*rectangle2.height/1280
+                height: 40*rectangle2.a_max/1280
                 text: qsTr("收藏夹")
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.width/720
+                anchors.leftMargin: 100*rectangle2.a_min/720
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.a_max/1280
             }
 
             Image {
                 id: image3
                 anchors.right: text9.left
-                anchors.rightMargin: 10*rectangle2.width/720
+                anchors.rightMargin: 10*rectangle2.a_min/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10*rectangle2.width/720
+                anchors.leftMargin: 10*rectangle2.a_min/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5*rectangle2.height/1280
+                anchors.bottomMargin: 5*rectangle2.a_max/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.height/1280
+                anchors.topMargin: 5*rectangle2.a_max/1280
                 source: "qrc:/image/icon_marks.png"
             }
 
@@ -325,7 +320,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle11
-            height: 4*rectangle2.height/1280
+            height: 4*rectangle2.a_max/1280
             color: "#bbbbbb"
             border.width: 0
             anchors.right: parent.right
@@ -338,7 +333,7 @@ Rectangle {
 
         Rectangle {
             id: rectangle12
-            height: 90*rectangle2.height/1280
+            height: 90*rectangle2.a_max/1280
             color: "#ffffff"
             border.width: 0
             anchors.right: parent.right
@@ -349,40 +344,40 @@ Rectangle {
             anchors.topMargin: 0
 
             Text {
-                id: text7
-                height: 40*rectangle2.height/1280
-                text: qsTr("关于")
+                id: text10
+                height: 40*rectangle2.a_max/1280
+                text: qsTr("下载离线包")
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.width/720
+                anchors.leftMargin: 100*rectangle2.a_min/720
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 40*rectangle2.height/1280
+                font.pixelSize: 40*rectangle2.a_max/1280
             }
 
             Image {
-                id: image5
-                anchors.right: text7.left
-                anchors.rightMargin: 10*rectangle2.width/720
+                id: image4
+                anchors.right: text10.left
+                anchors.rightMargin: 10*rectangle2.a_min/720
                 anchors.left: parent.left
-                anchors.leftMargin: 10*rectangle2.width/720
+                anchors.leftMargin: 10*rectangle2.a_min/720
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5*rectangle2.height/1280
+                anchors.bottomMargin: 5*rectangle2.a_max/1280
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.height/1280
-                source: "qrc:/image/icon_info_normal.png"
+                anchors.topMargin: 5*rectangle2.a_max/1280
+                source: "qrc:/image/icon_download.png"
             }
-            
+
             MouseArea {
                 id: mouseArea4
                 anchors.fill: parent
-                onClicked: main_widget.show_about()
+                onClicked: main_widget.show_online_download()
             }
         }
 
         Rectangle {
             id: rectangle13
-            height: 4*rectangle2.height/1280
+            height: 4*rectangle2.a_max/1280
             color: "#bbbbbb"
             border.width: 0
             anchors.right: parent.right
@@ -390,6 +385,63 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.top: rectangle12.bottom
+            anchors.topMargin: 0
+        }
+
+        Rectangle {
+            id: rectangle14
+            height: 90*rectangle2.a_max/1280
+            color: "#ffffff"
+            border.width: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.top: rectangle13.bottom
+            anchors.topMargin: 0
+
+            Text {
+                id: text7
+                height: 40*rectangle2.a_max/1280
+                text: qsTr("关于")
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 40*rectangle2.a_max/1280
+            }
+
+            Image {
+                id: image5
+                anchors.right: text7.left
+                anchors.rightMargin: 10*rectangle2.a_min/720
+                anchors.left: parent.left
+                anchors.leftMargin: 10*rectangle2.a_min/720
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 5*rectangle2.a_max/1280
+                anchors.top: parent.top
+                anchors.topMargin: 5*rectangle2.a_max/1280
+                source: "qrc:/image/icon_info_normal.png"
+            }
+            
+            MouseArea {
+                id: mouseArea5
+                anchors.fill: parent
+                onClicked: main_widget.show_about()
+            }
+        }
+
+        Rectangle {
+            id: rectangle15
+            height: 4*rectangle2.a_max/1280
+            color: "#bbbbbb"
+            border.width: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.top: rectangle14.bottom
             anchors.topMargin: 0
         }
     }

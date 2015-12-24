@@ -9,19 +9,12 @@ Rectangle {
     width: 720
     height: 1280
     color: "#f6f6f6"
-    focus: true
-    Keys.onBackPressed: {
-        main_widget.show_back()
-        custom1.write_custom()
-    }
-    Keys.onEscapePressed: {
-        main_widget.show_back()
-        custom1.write_custom()
-    }
+    property real a_max: Math.max(width,height)
+    property real a_min: Math.min(width,height)
 
     Rectangle {
         id: rectangle3
-        height: 120*rectangle2.height/1280
+        height: 100*rectangle2.a_max/1280
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -37,26 +30,26 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.height/1280
+            font.pixelSize: 45*rectangle2.a_max/1280
         }
 
         Image {
             id: image1
             width: height
             anchors.left: parent.left
-            anchors.leftMargin: 10*rectangle2.width/720
+            anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.height/1280
+            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.height/1280
+            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.height/1280
-                anchors.bottomMargin: -20*rectangle2.height/1280
-                anchors.leftMargin: -10*rectangle2.width/720
-                anchors.rightMargin: -10*rectangle2.width/720
+                anchors.topMargin: -20*rectangle2.a_max/1280
+                anchors.bottomMargin: -20*rectangle2.a_max/1280
+                anchors.leftMargin: -10*rectangle2.a_min/720
+                anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
                     main_widget.show_back()
@@ -86,11 +79,12 @@ Rectangle {
         onAccepted: {
             custom1.bgi = choose_bgi.fileUrl
         }
+        onRejected: rectangle2.focus = true
     }
 
     Rectangle {
         id: rectangle6
-        height: 90*rectangle2.height/1280
+        height: 90*rectangle2.a_max/1280
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -102,14 +96,14 @@ Rectangle {
 
         Text {
             id: text5
-            height: 40*rectangle2.height/1280
+            height: 40*rectangle2.a_max/1280
             text: qsTr("设置背景颜色")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10*rectangle2.width/720
+            anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.height/1280
+            font.pixelSize: 40*rectangle2.a_max/1280
         }
 
         MouseArea {
@@ -121,7 +115,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle7
-        height: 4*rectangle2.height/1280
+        height: 4*rectangle2.a_max/1280
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -134,7 +128,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle8
-        height: 90*rectangle2.height/1280
+        height: 90*rectangle2.a_max/1280
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -146,14 +140,14 @@ Rectangle {
 
         Text {
             id: text6
-            height: 40*rectangle2.height/1280
+            height: 40*rectangle2.a_max/1280
             text: qsTr("设置背景图片")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10*rectangle2.width/720
+            anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.height/1280
+            font.pixelSize: 40*rectangle2.a_max/1280
         }
 
         MouseArea {
@@ -165,7 +159,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle9
-        height: 4*rectangle2.height/1280
+        height: 4*rectangle2.a_max/1280
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -177,7 +171,7 @@ Rectangle {
     }
     Rectangle {
         id: rectangle10
-        height: 90*rectangle2.height/1280
+        height: 90*rectangle2.a_max/1280
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -189,14 +183,14 @@ Rectangle {
 
         Text {
             id: text7
-            height: 40*rectangle2.height/1280
+            height: 40*rectangle2.a_max/1280
             text: qsTr("最多保存历史记录")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10*rectangle2.width/720
+            anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.height/1280
+            font.pixelSize: 40*rectangle2.a_max/1280
         }
 
         SpinBox {
@@ -204,13 +198,13 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: text7.right
-            anchors.leftMargin: 200*rectangle2.width/720
+            anchors.leftMargin: 200*rectangle2.a_min/720
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             value: custom1.max_history
-            suffix: "个"
+            suffix: "条"
             minimumValue: 0
             maximumValue: 1000
             onEditingFinished: custom1.max_history = value
@@ -219,7 +213,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle11
-        height: 4*rectangle2.height/1280
+        height: 4*rectangle2.a_max/1280
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
