@@ -144,6 +144,34 @@ Rectangle {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
+            Text {
+                id: text
+                text: qsTr("离线小搜")
+                visible: (parent.height > 1) && (parent.visible == true)
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.top: parent.top
+                anchors.topMargin: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.left: image.right
+                anchors.leftMargin: 0
+                font.pixelSize: 130*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            }
+            Image {
+                id: image
+                visible: (parent.height > 1) && (parent.visible == true)
+                source: "qrc:/image/logo2.png"
+                width: height
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.top: parent.top
+                anchors.topMargin: 25*rectangle2.height/1280
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 20*rectangle2.height/1280
+            }
         }
 
         Rectangle {

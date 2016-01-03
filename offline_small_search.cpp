@@ -127,6 +127,9 @@ Offline_small_search::~Offline_small_search()
     history_list_to_data_file();
     search_thread.quit();
     clean_cache();
+#ifdef Q_OS_ANDROID
+    terminate();
+#endif
 }
 
 void Offline_small_search::clean_cache()
@@ -424,6 +427,17 @@ QString Offline_small_search::get_text_with_other_from_url(QString url)
 
 void Offline_small_search::search(QStringList type, QString str)
 {
+    if(offline_pkg_list.count() == 0)
+    {
+        qDebug()<<"offline_pkg_list count = 0";
+        search_result_list.clear();
+        search_result = new search_result_obj();
+        search_result->setUrl("");
+        search_result->setStr("请添加离线包再进行搜索");
+        search_result_list.append(search_result);
+        refresh_search_result_for_search_result_qml();
+        return;
+    }
     show_wait();
     Q_EMIT xapian_search(str,search_batch,type);
     for(int i = 0; i < search_result_list.size(); ++i)
@@ -1129,9 +1143,9 @@ void Offline_small_search::remove_data(QString url)
         {
             dir.setPath(dirNames[i]);
             dir.rmdir(".");
-            //dir.rmpath(".");
+            dir.rmpath(".");
         }
-        dir.rmpath(get_data_dir()+"/"+url);
+        //dir.rmpath(get_data_dir()+"/"+url);
         dir.mkpath(get_data_dir());
     }
     qDebug()<<"remove dir finish"<<get_data_dir()+"/"+url;//<<get_url_objname(url2);
@@ -1262,6 +1276,15 @@ bool Offline_small_search::is_exist(QString file,int type)
 {
     if(type == 1)
         return QFile::exists(get_data_dir()+"/"+file.remove(only_file_name).remove(".zip"));
+    if(type == 2)
+    {
+#if defined(_WIN32) || defined(_WIN64)
+    file.replace("file:///", "");
+#else
+    file.replace("file://", "");
+#endif
+    return QFile::exists(file);
+    }
     return QFile::exists(file);
 }
 
@@ -1302,4 +1325,36 @@ void Offline_small_search::crop_ocr_Q(QString imagepath, QVariant cropPoints)
 void Offline_small_search::rotate_Q(QString imagepath, int rotate_n)
 {
     Q_EMIT rotate(imagepath,rotate_n,++crop_batch);
+}
+
+void Offline_small_search::read_data_file(QString file_path)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    file_path.replace("file:///", "");
+#else
+    file_path.replace("file://", "");
+#endif
+    custom1.read_custom(file_path);
+    data_file_to_history_list(file_path);
+    data_file_to_mark_list(file_path);
+    data_file_to_offline_pkg_list(file_path);
+}
+
+void Offline_small_search::write_data_file(QString file_path)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    file_path.replace("file:///", "");
+#else
+    file_path.replace("file://", "");
+#endif
+    QDir d;
+    d.mkpath(file_path);
+    QFile f(file_path+"ossbf");
+    f.open(QFile::ReadWrite);
+    custom1.write_custom(file_path);
+    history_list_to_data_file(file_path);
+    mark_list_to_data_file(file_path);
+    offline_pkg_list_to_data_file(file_path);
+    f.write("This is oss bf");
+    f.close();
 }

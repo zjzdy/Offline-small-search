@@ -38,7 +38,7 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define VERSION_N 18
+#define VERSION_N 19
 
 class Offline_small_search : public QObject
 {
@@ -100,7 +100,6 @@ public Q_SLOTS:
     Q_INVOKABLE void search_type_add(QStringList type);
     Q_INVOKABLE void search_type_clear();
     Q_INVOKABLE QStringList get_search_type();
-    //Q_INVOKABLE QString get_dir_file_dialog();
     Q_INVOKABLE QString get_search_str();
     Q_INVOKABLE QString get_search_url();
     Q_INVOKABLE QString get_cache_dir();
@@ -125,7 +124,8 @@ public Q_SLOTS:
     Q_INVOKABLE void mark_list_to_data_file(QString file_path = "");
     Q_INVOKABLE void add_mark(QString str,QString url);
     Q_INVOKABLE void check_enable_pkg(QString path);
-    //Q_INVOKABLE void remove_history(QString str);
+    Q_INVOKABLE void read_data_file(QString file_path = "");
+    Q_INVOKABLE void write_data_file(QString file_path = "");
     Q_INVOKABLE void set_top_bar_height(qreal top_bar_height);
     Q_INVOKABLE void remove_all_history();
     Q_INVOKABLE void data_file_to_history_list(QString file_path = "");
