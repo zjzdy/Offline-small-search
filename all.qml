@@ -15,7 +15,7 @@ ApplicationWindow {
         title: qsTr("退出")
         text: qsTr("您真的要退出吗?")
         standardButtons: StandardButton.Yes | StandardButton.No
-        onYes:Qt.quit()// main_widget.close_app()
+        onYes: main_widget.close_app()
     }
 
     TabView {

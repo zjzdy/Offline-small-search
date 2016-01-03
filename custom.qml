@@ -12,6 +12,67 @@ Rectangle {
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
 
+    FileDialog {
+        id: choose_bf_dir
+        title: qsTr("选择要保存备份数据的目录")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: true
+        sidebarVisible: false
+        onAccepted: {
+            main_widget.write_data_file(choose_bf_dir.folder+"/oss/")
+            if(main_widget.is_exist(choose_bf_dir.folder+"/oss/ossbf",2)) bf_finish.open()
+            else bf_fail.open()
+        }
+        onRejected: rectangle2.focus = true
+    }
+
+    MessageDialog {
+        id: bf_finish
+        title: qsTr("备份数据完成")
+        text: qsTr("备份数据完成")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: hf_finish
+        title: qsTr("恢复数据完成")
+        text: qsTr("恢复数据完成")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: bf_fail
+        title: qsTr("备份数据失败")
+        text: qsTr("备份数据失败")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: hf_fail
+        title: qsTr("恢复数据失败")
+        text: qsTr("恢复数据失败")
+        standardButtons: StandardButton.Ok
+    }
+
+    FileDialog {
+        id: choose_hf_dir
+        title: qsTr("选择要保存备份数据的目录")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: true
+        sidebarVisible: false
+        onAccepted: {
+            if(main_widget.is_exist(choose_hf_dir.folder+"/oss/ossbf",2))
+            {
+                main_widget.read_data_file(choose_hf_dir.folder+"/oss/")
+                hf_finish.open()
+            }
+            else hf_fail.open()
+        }
+        onRejected: rectangle2.focus = true
+    }
+
     Rectangle {
         id: rectangle3
         height: 100*rectangle2.a_max/1280
@@ -221,6 +282,96 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.top: rectangle10.bottom
+        anchors.topMargin: 0
+    }
+
+    Rectangle {
+        id: rectangle12
+        height: 90*rectangle2.a_max/1280
+        color: "#ffffff"
+        border.width: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: rectangle11.bottom
+        anchors.topMargin: 0
+
+        Text {
+            id: text9
+            height: 40*rectangle2.a_max/1280
+            text: qsTr("备份设置以及程序数据")
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10*rectangle2.a_min/720
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 40*rectangle2.a_max/1280
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                choose_bf_dir.open()
+            }
+        }
+    }
+
+    Rectangle {
+        id: rectangle13
+        height: 4*rectangle2.a_max/1280
+        color: "#bbbbbb"
+        border.width: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: rectangle12.bottom
+        anchors.topMargin: 0
+    }
+
+    Rectangle {
+        id: rectangle14
+        height: 90*rectangle2.a_max/1280
+        color: "#ffffff"
+        border.width: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: rectangle13.bottom
+        anchors.topMargin: 0
+
+        Text {
+            id: text10
+            height: 40*rectangle2.a_max/1280
+            text: qsTr("恢复设置以及程序数据")
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10*rectangle2.a_min/720
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 40*rectangle2.a_max/1280
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                choose_hf_dir.open()
+            }
+        }
+    }
+
+    Rectangle {
+        id: rectangle15
+        height: 4*rectangle2.a_max/1280
+        color: "#bbbbbb"
+        border.width: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: rectangle14.bottom
         anchors.topMargin: 0
     }
 }

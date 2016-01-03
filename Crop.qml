@@ -181,10 +181,16 @@ Rectangle {
             onXChanged: {
                 addCorner(topLeft);
                 canvas.requestPaint();
+                if(image7.lock && bottomLeft.x != x) {
+                    bottomLeft.x = x
+                }
             }
             onYChanged: {
                 addCorner(topLeft);
                 canvas.requestPaint();
+                if(image7.lock && topRight.y != y) {
+                    topRight.y = y
+                }
             }
 
         }
@@ -199,10 +205,16 @@ Rectangle {
             onXChanged: {
                 addCorner(topRight);
                 canvas.requestPaint();
+                if(image7.lock && bottomRight.x != x) {
+                    bottomRight.x = x
+                }
             }
             onYChanged: {
                 addCorner(topRight);
                 canvas.requestPaint();
+                if(image7.lock && topLeft.y != y) {
+                    topLeft.y = y
+                }
             }
 
         }
@@ -217,10 +229,16 @@ Rectangle {
             onXChanged: {
                 addCorner(bottomLeft);
                 canvas.requestPaint();
+                if(image7.lock && topLeft.x != x) {
+                    topLeft.x = x
+                }
             }
             onYChanged: {
                 addCorner(bottomLeft);
                 canvas.requestPaint();
+                if(image7.lock && bottomRight.y != y) {
+                    bottomRight.y = y
+                }
             }
 
         }
@@ -235,10 +253,16 @@ Rectangle {
             onXChanged: {
                 addCorner(bottomRight);
                 canvas.requestPaint();
+                if(image7.lock && topRight.x != x) {
+                    topRight.x = x
+                }
             }
             onYChanged: {
                 addCorner(bottomRight);
                 canvas.requestPaint();
+                if(image7.lock && bottomLeft.y != y) {
+                    bottomLeft.y = y
+                }
             }
 
         }
@@ -255,7 +279,7 @@ Rectangle {
 
                 context.reset()
                 context.beginPath();
-                context.lineWidth = 2;
+                context.lineWidth = 5;
                 context.moveTo(topLeft.x + offset, topLeft.y + offset);
                 context.strokeStyle = "#87CEFA"
 
@@ -301,16 +325,12 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
-                        //var source_tmp = ""
-                        //source_tmp = cropView.source
                         main_widget.search_type_clear()
                         main_widget.search_type_add("ALL")
                         main_widget.set_top_bar_height(100*rectangle2.a_max/1280)
                         main_widget.crop_ocr_Q(cropView.source,cropPoints)
                         cropView.source = ""
                         msg_text.text = qsTr("正在处理图片并OCR")
-                        //main_widget.show_search(crop_obj.crop_ocr(source_tmp, cropPoints));
-                        //main_widget.show_back()
                     }
                 }
             }
@@ -336,13 +356,9 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
-                        //var source_tmp = ""
-                        //source_tmp = cropView.source
                         main_widget.rotate_Q(cropView.source,-90)
-                        //crop_obj.rotate(cropView.source,90)
                         cropView.source = ""
                         msg_text.text = qsTr("正在旋转图片")
-                        //cropView.source = source_tmp
                     }
                 }
             }
@@ -368,14 +384,35 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
-                        //var source_tmp = ""
-                        //source_tmp = cropView.source
                         main_widget.rotate_Q(cropView.source,-90)
-                        //crop_obj.rotate(cropView.source,-90)
                         cropView.source = ""
                         msg_text.text = qsTr("正在旋转图片")
-                        //cropView.source = source_tmp
                     }
+                }
+            }
+        }
+        Image {
+            id: image7
+            width: height
+            anchors.right: image6.left
+            anchors.rightMargin: 20*rectangle2.a_min/720
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20*rectangle2.a_max/1280
+            anchors.top: parent.top
+            anchors.topMargin: 20*rectangle2.a_max/1280
+            source: "qrc:/image/icon_locked.png"
+            property bool lock: true
+            onLockChanged: lock ? source = "qrc:/image/icon_locked.png" : source = "qrc:/image/icon_unlocked.png"
+
+            MouseArea {
+                id: mouseArea7
+                anchors.rightMargin: -10*rectangle2.a_min/720
+                anchors.leftMargin: -10*rectangle2.a_min/720
+                anchors.bottomMargin: -20*rectangle2.a_max/1280
+                anchors.topMargin: -20*rectangle2.a_max/1280
+                anchors.fill: parent
+                onClicked: {
+                    image7.lock = !image7.lock
                 }
             }
         }

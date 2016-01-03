@@ -141,7 +141,7 @@ Rectangle {
             model: more_search_list
             z: -1
             cellWidth: 240*rectangle2.a_min/720
-            cellHeight: 240*rectangle2.a_max/1280
+            cellHeight: 250*rectangle2.a_max/1280
 
             delegate: Item {
                 width: 240*rectangle2.a_min/720
@@ -152,9 +152,9 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 20
                         height: 200*rectangle2.a_max/1280
-                        width: 200*rectangle2.a_min/720
+                        width: height
                         border.width: 0
-                        radius: 100*rectangle2.a_max/1280
+                        radius: height/2
                         Text {
                             text: model.modelData.type
                             anchors.centerIn: parent
@@ -163,9 +163,12 @@ Rectangle {
                     }
                     Text {
                         text: model.modelData.name
-                        width: 200*rectangle2.a_min/720
+                        width: 200*rectangle2.a_max/1280
                         height: 40*rectangle2.a_max/1280
                         font.pixelSize: 40*rectangle2.a_max/1280
+                        //elide: Text.ElideRight
+                        maximumLineCount: 1
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     }
                 }
                 MouseArea {

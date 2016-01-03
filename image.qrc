@@ -29,5 +29,6 @@
         <file>image/icon_next.png</file>
         <file>image/icon_download.png</file>
         <file>image/icon_wait2.gif</file>
+        <file>image/logo2.png</file>
     </qresource>
 </RCC>

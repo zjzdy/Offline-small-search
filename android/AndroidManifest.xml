@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.8.1.15.12" android:versionCode="18" android:installLocation="auto">
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
+<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.9.0" android:versionCode="19" android:installLocation="auto">
+    <application android:largeHeap="true" android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
     <!--android:largeHeap="true" android:hardwareAccelerated="true"-->
         <!-- <application android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon"> -->
         <!-- <activity android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop"> -->
