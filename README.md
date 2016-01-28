@@ -30,6 +30,7 @@
 * Qt: [http://www.qt.io/](http://www.qt.io/)
 * Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://git.wikimedia.org/summary/openzim](https://git.wikimedia.org/summary/openzim)
 * Xpian: [http://xapian.org](http://xapian.org)
+* libuuid: [http://sourceforge.net/projects/libuuid](http://sourceforge.net/projects/libuuid)
 * OpenCV: [http://www.opencv.org](http://www.opencv.org)
 * Tesseract: [https://github.com/tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)
 
