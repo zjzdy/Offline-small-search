@@ -16,7 +16,7 @@ CONFIG += no_keywords
 }
 
 QMAKE_CFLAGS += -std=gnu11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
-QMAKE_CXXFLAGS += -std=gnu++11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack   -include ctype.h -include unistd.h
+QMAKE_CXXFLAGS += -std=gnu++11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
 QMAKE_LFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
 
 SOURCES += main.cpp \
