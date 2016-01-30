@@ -4,16 +4,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets qml quick quickwidgets network multimedia
+QT       += core gui widgets qml quick quickwidgets network multimedia
 
 TARGET = Offline_small_search
 TEMPLATE = app
 CONFIG += no_keywords
 
-QMAKE_CFLAGS += -std=gnu11 -mfpu=neon -fdata-sections -DNDEBUG -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
-QMAKE_CXXFLAGS += -mfpu=neon -fdata-sections -DNDEBUG -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack  -std=gnu++11 -include ctype.h -include unistd.h
+!osx:qtHaveModule(webengine) {
+        QT += webengine
+        DEFINES += QT_WEBVIEW_WEBENGINE_BACKEND
+}
+
+QMAKE_CFLAGS += -std=gnu11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
+QMAKE_CXXFLAGS += -std=gnu++11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack   -include ctype.h -include unistd.h
 QMAKE_LFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
 
 SOURCES += main.cpp \
@@ -56,15 +59,6 @@ HEADERS  += \
     parse/stringutils.h \
     parse/utf8convert.h
 
-#FORMS    += \
-#    offline_small_search.ui
-
-#DEPENDPATH += H:/msys2/soft/x86_build/usr/include
-#INCLUDEPATH += H:/msys2/soft/x86_build/usr/include
-#LIBS+=-LH:/msys2/soft/x86_build/usr/lib -LH:/msys2/msys32/mingw32/lib -llucene+
-#CONFIG += mobility#+.dll -lzim -llzma -lws2_32 -lboost_system-mt
-
-
 RESOURCES += \
     qml.qrc \
     image.qrc
@@ -74,21 +68,15 @@ include($$PWD/quazip/quazip.pri)
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     QT += androidextras
-    DEPENDPATH += G:/build/arm/include/
-    INCLUDEPATH += G:/build/arm/include/
-    LIBS+=-LG:/build/arm/lib/ \#-LI:/crystax/build/usr/lib \
-        G:/build/arm/lib/libopencv_java3.so \
-        G:/build/arm/lib/libopencv_*.a \
-        -Wl,-Bstatic,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-lboost_system,-ltesseract,-llept,-llucene++
+    DEPENDPATH += $$PWD/build-bin/include/
+    INCLUDEPATH += $$PWD/build-bin/include/
+    LIBS+=-L$$PWD/build-bin/lib/ \
+        $$PWD/build-bin/lib/libopencv_java3.so \
+        $$PWD/build-bin/lib/libopencv_*.a \
+        -Wl,-Bstatic,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
     ANDROID_EXTRA_LIBS = \
-        #G:/msys2/msys32/arm/lib/liblzma.so \
-        #G:/msys2/msys32/arm/lib/libzim.so \
-        G:/build/arm/lib/libopencv_java3.so# \
-        #I:/crystax/build/usr/lib/libcrystax.so \
-        #I:/crystax/build/usr/lib/libboost_system.so \
-        #H:/crystax/build/usr/lib/libz.so \
-        #J:/msys2/msys32/home/zjzdy/LucenePlusPlus/arm_build/src/core/liblucene++.so
+        $$PWD/build-bin/lib/libopencv_java3.so
 }
 
 DISTFILES += \
