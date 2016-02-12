@@ -1,13 +1,14 @@
 #Offline-small-search  (离线小搜)
-离线搜索软件,现支持离线搜题
+离线搜索软件,现支持离线搜题,搜古诗文,搜开发文档,等待.可自行打包离线包.
 ------------
 声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.
 ------------
 本软件采用GPL协议发布,希望所有人都能一起来改进本软件.
 
-项目地址: [http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
-
-当前版本: v1.9.0 
+###项目地址: 
+Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
+GitHub Mirror:[https://github.com/zjzengdongyang/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
+当前版本: v2.0.0 
 
 ##下载
 * Android: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin)
@@ -24,7 +25,197 @@
 * zjzdy(zjzengdongyang@163.com)
 
 ##编译
-待补充
+------
+##Windows版本编译
+本过程基于Qt 5.5.1 for Windows(msys2 mingw32), OpenCV 3.1.0, Xapian 1.2.22, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
+所有代码均在msys2的mingw32_shell中运行.
+###0.准备项目
+安装必须的软件,下载或克隆项目.
+```
+pacman -Syu
+pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5 mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget
+git clone http://git.oschina.net/zjzdy/Offline-small-search
+cd Offline-small-search/
+export ossbuild=$PWD
+```
+###1.编译 Xapian
+到Xapian的官网去下载最新版本的Xapian core
+下载地址:[http://xapian.org/download](http://xapian.org/download)
+以下使用xapian-core-1.2.22.tar.xz
+```
+wget http://oligarchy.co.uk/xapian/1.2.22/xapian-core-1.2.22.tar.xz
+tar -xf xapian-core-1.2.22.tar.xz
+cd xapian-core-1.2.22/
+./configure --prefix="${ossbuild}/build-bin/" --enable-backend-inmemory=no
+make
+make install
+```
+###2.编译 zimlib
+```
+cd zimlib/
+./autogen.sh
+./configure --prefix="${ossbuild}/build-bin/"
+make
+make install
+```
+###3.编译 离线小搜
+1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
+2.打开Qt Creator
+3.打开Offline_small_search.pro
+4.选择配置Android for armeabi-v7a (GCC 4.9)
+5.选择Release
+6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-18
+7.点击构建
+```
+```
+```
+------
+##Android版本编译
+以下内容可以根据最新版本自行修改
+本过程基于Qt 5.5.1 for Android, OpenCV 3.1.0, Xapian 1.2.22, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
+所有代码均在msys2中运行.
+msys2下载地址:[http://msys2.github.io/](http://msys2.github.io/)
+###0.准备项目
+安装必须的软件,下载或克隆项目.
+Qt下载地址:[http://www.qt.io/download-open-source/#section-2](http://www.qt.io/download-open-source/#section-2)
+下载并安装Qt for Android以及Qt Creator
+```
+pacman -S --noconfirm --needed base-devel git unzip p7zip xz tar wget
+git clone http://git.oschina.net/zjzdy/Offline-small-search
+cd Offline-small-search/
+export ossbuild=$PWD
+```
+###1.Android NDK
+到Android NDK的官网去下载对应系统版本的Android NDK到本目录($PWD)下并运行 (注意把windows改成对应的系统)
+下载地址:[http://developer.android.com/intl/zh-cn/ndk/downloads/index.html](http://developer.android.com/intl/zh-cn/ndk/downloads/index.html)
+以下使用android-ndk-r10e-windows-x86.exe
+```
+./android-ndk-r10e-windows-x86.exe
+cd android-ndk-r10e/
+export NDK_ROOT=$PWD
+export PATH=$PWD:$PATH
+./build/tools/make-standalone-toolchain.sh --toolchain=arm-linux-androideabi-4.9 --stl=gnustl --system=windows --platform=android-9 --install-dir=../arm-linux-androideabi-4.9
+cd ../
+mkdir build-bin
+mkdir build-bin/lib
+mkdir build-bin/include
+unzip img_include.zip -d build-bin/include/
+```
+###2.安装 OpenCV
+到OpenCV的官网去下载最新版本的OpenCV android sdk
+下载地址:[http://opencv.org/downloads.html](http://opencv.org/downloads.html)
+以下使用OpenCV-3.1.0-android-sdk.zip
+```
+unzip OpenCV-3.1.0-android-sdk.zip OpenCV-android-sdk/sdk/native/libs/armeabi-v7a/* OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/* -d ./build-bin/lib
+cp build-bin/lib/OpenCV-android-sdk/sdk/native/libs/armeabi-v7a/* build-bin/lib/OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/*  ./build-bin/lib
+rm -rf build-bin/lib/OpenCV-android-sdk
+mv ./build-bin/lib/liblibjasper.a ./build-bin/lib/libjasper.a
+mv ./build-bin/lib/liblibjpeg.a ./build-bin/lib/libjpeg.a
+mv ./build-bin/lib/liblibpng.a ./build-bin/lib/libpng.a
+mv ./build-bin/lib/liblibtiff.a ./build-bin/lib/libtiff.a
+mv ./build-bin/lib/liblibwebp.a ./build-bin/lib/libwebp.a
+unzip OpenCV-3.1.0-android-sdk.zip OpenCV-android-sdk/sdk/native/jni/include/** -d ./build-bin/include/
+cp -rf ./build-bin/include/OpenCV-android-sdk/sdk/native/jni/include/* ./build-bin/include/
+rm -rf build-bin/include/OpenCV-android-sdk
+```
+###3.编译 liblzma
+到XZ Utils的官网去下载最新版本的XZ Utils
+下载地址:[http://tukaani.org/xz/](http://tukaani.org/xz/)
+以下使用xz-5.2.2.tar.xz
+```
+wget http://tukaani.org/xz/xz-5.2.2.tar.xz
+tar -xf xz-5.2.2.tar.xz
+cd xz-5.2.2/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc 
+make
+make install
+cd ../
+```
+###4.编译 libuuid
+```
+cd libuuid
+autoreconf -ivf
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID"
+make
+make install
+cd ../
+```
+###5.编译 Xapian
+到Xapian的官网去下载最新版本的Xapian core
+下载地址:[http://xapian.org/download](http://xapian.org/download)
+以下使用xapian-core-1.2.22.tar.xz
+```
+wget http://oligarchy.co.uk/xapian/1.2.22/xapian-core-1.2.22.tar.xz
+tar -xf xapian-core-1.2.22.tar.xz
+cd xapian-core-1.2.22/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --enable-backend-inmemory=no
+sed -i 's/HAVE_DECL_SYS_ERRLIST 1/HAVE_DECL_SYS_ERRLIST 0/g' config.h
+sed -i 's/HAVE_DECL_SYS_NERR 1/HAVE_DECL_SYS_NERR 0/g' config.h
+make
+make install
+cd ../
+```
+###6.编译 Leptonica
+到Leptonica的官网去下载最新版本的Leptonica
+下载地址:[http://www.leptonica.com/download.html](http://www.leptonica.com/download.html)
+以下使用leptonica-1.73.tar.gz
+```
+wget http://www.leptonica.com/source/leptonica-1.73.tar.gz
+tar -xf leptonica-1.73.tar.gz
+cd leptonica-1.73/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
+make
+make install
+```
+###7.编译 tess-two
+到tess-two的releases去下载最新版本的tess-two
+下载地址:[https://github.com/rmtheis/tess-two/releases](https://github.com/rmtheis/tess-two/releases)
+```
+wget https://github.com/rmtheis/tess-two/archive/5.4.1.tar.gz
+tar -xf 5.4.1.tar.gz
+cd tess-two-5.4.1/
+sed -i 's/android-8/android-9/g' tess-two/project.properties
+sed -i 's/android:minSdkVersion="8"/android:minSdkVersion="9"/g' tess-two/AndroidManifest.xml
+sed -i 's/android:targetSdkVersion="22"/android:targetSdkVersion="18"/g' tess-two/AndroidManifest.xml
+sed -i 's/LOCAL_SHARED_LIBRARIES/LOCAL_STATIC_LIBRARIES/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
+sed -i 's/BUILD_SHARED_LIBRARY/BUILD_STATIC_LIBRARY/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
+sed -i 's/LEPTONICA_PATH/#LEPTONICA_PATH/g' tess-two/jni/Android.mk
+sed -i 's/LIBPNG_PATH/#LIBPNG_PATH/g' tess-two/jni/Android.mk
+sed -i 's/NDK_TOOLCHAIN_VERSION := 4.8/NDK_TOOLCHAIN_VERSION := 4.9/g' tess-two/jni/Application.mk
+sed -i 's/APP_ABI/APP_ABI := armeabi-v7a #/g' tess-two/jni/Application.mk
+sed -i 's/APP_PLATFORM/APP_PLATFORM := android-9 #/g' tess-two/jni/Application.mk
+echo "APP_CPPFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -fPIC  -I${ossbuild}/build-bin/include -I${ossbuild}/build-bin/include/leptonica -L${ossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+echo "APP_CFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -fPIC  -I${ossbuild}/build-bin/include -I${ossbuild}/build-bin/include/leptonica -L${ossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+echo "APP_LFLAGS += -Wl,--fix-cortex-a8 -fPIC -L${ossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+echo "APP_LDFLAGS += -Wl,--fix-cortex-a8 -fPIC -L${ossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+rm -rf tess-two/jni/com_googlecode_leptonica_android
+rm -rf tess-two/jni/libpng
+cd tess-two/
+ndk-build
+cp obj/local/armeabi-v7a/libtess.a ../../build-bin/lib/
+mkdir ../../build-bin/include/tesseract
+find . -name "*.h" -exec cp {} ../../build-bin/include/tesseract \;
+cd ../../
+sed -i 's/template <class T> struct remove_reference;//g' build-bin/include/tesseract/tesscallback.h
+sed -i 's/template<typename T> struct remove_reference { typedef T type; };//g' build-bin/include/tesseract/tesscallback.h
+sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };//g' build-bin/include/tesseract/tesscallback.h
+```
+###8.编译 zimlib
+```
+cd zimlib/
+./autogen.sh
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
+make
+make install
+```
+###9.编译 离线小搜
+1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
+2.打开Qt Creator
+3.打开Offline_small_search.pro
+4.选择配置Android for armeabi-v7a (GCC 4.9)
+5.选择Release
+6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-18
+7.点击构建
 
 ##感谢以下的项目,排名不分先后:
 * Qt: [http://www.qt.io/](http://www.qt.io/)
@@ -41,13 +232,10 @@
 3. 部分js或css及嵌套html会加载失败(将在3.0版修复)
 
 ##TODO
-1. 拍照搜索加速(OCR过慢)
-2. 让启动界面消失的白屏
-3. 在线更新功能
-4. 完成所有预期功能,春节发布2.0版
-* 5. 进行3.0版的重构(此项将于2017年高考完成后进行)
-* 5.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
-* 5.2 整理界面代码和业务逻辑
-* 5.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
-* 5.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
-* 5.4 自由浏览模式,类似Zeal但可以自定义网址
+1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能
+2. 在线更新功能
++ 3. 进行3.0版的重构(此项将于2017年高考完成后进行)
+	+ 3.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
+	+ 3.2 整理界面代码和业务逻辑
+		+ 3.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
+	+ 3.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
