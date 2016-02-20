@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Offline small search
+Name[zh_CN]=离线小搜
+GenericName=Documentation Full Text Search
+Comment=Offline full-text search for documentation,questions,etc.
+Comment[zh_CN]=离线全文搜索文档,资料,试题,古诗文等等.
+Exec=Offline_small_search
+Icon=oss
+Terminal=false
+Type=Application
+Categories=Development;Office;Education;

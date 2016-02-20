@@ -208,16 +208,24 @@ Rectangle {
                 AnimatedImage {
                     id: image2
                     z: 1
-                    //onObjectNameChanged: console.log("objname:"+objectName)
                     anchors.fill: parent
                     anchors.horizontalCenter: parent.horizontalCenter
-                    //anchors.verticalCenter: parent.verticalCenter
                     source: "qrc:/image/icon_wait2.gif"
                     visible: false
                     fillMode: Image.PreserveAspectFit
                     onVisibleChanged: {
                         xz_text.text = main_widget.is_exist(download,1) ? qsTr("删除") : qsTr("下载")
+						progress = ""
                     }
+					property string progress: ""
+					
+					Text {
+						visible: image2.visible
+						text: image2.progress
+						anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+					}
                 }
 
                 Rectangle {

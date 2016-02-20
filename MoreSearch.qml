@@ -160,6 +160,7 @@ Rectangle {
                             anchors.centerIn: parent
                             font.pixelSize: 100*rectangle2.a_max/1280
                         }
+                        //color: oppositeColor(model.modelData.name)
                     }
                     Text {
                         text: model.modelData.name
@@ -177,7 +178,8 @@ Rectangle {
                         main_widget.search_type_clear()
                         main_widget.search_type_add(model.modelData.name_code)
                         main_widget.set_top_bar_height(100*rectangle2.a_max/1280)
-                        main_widget.show_search();
+                        console.log("have home ",main_widget.have_home())
+                        main_widget.have_home() ? main_widget.show_pkg_home() : main_widget.show_search();
                     }
                 }
             }
@@ -192,6 +194,7 @@ Rectangle {
             c10=parseInt(max16-c16,10);
             b.push(c10.toString(16));
         }
+        console.log('#'+b.join(''))
         return '#'+b.join('');
     }
 }

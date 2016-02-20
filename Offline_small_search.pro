@@ -4,6 +4,10 @@
 #
 #-------------------------------------------------
 
+lessThan(QT_VERSION, "5.5.0") {
+    error("Qt 5.5.0 or above is required to build Offline_small_search.")
+}
+
 QT       += core gui widgets qml quick quickwidgets network multimedia
 
 TARGET = Offline_small_search
@@ -13,11 +17,11 @@ CONFIG += no_keywords
 !osx:qtHaveModule(webengine) {
         QT += webengine
         DEFINES += QT_WEBVIEW_WEBENGINE_BACKEND
+        DEFINES += USE_WEBENGINE
 }
 
-QMAKE_CFLAGS += -std=gnu11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
-QMAKE_CXXFLAGS += -std=gnu++11 -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
-QMAKE_LFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
+QMAKE_CFLAGS += -std=gnu11
+QMAKE_CXXFLAGS += -std=gnu++11
 
 SOURCES += main.cpp \
     offline_small_search.cpp \
@@ -66,34 +70,80 @@ RESOURCES += \
 DEPENDPATH+=$$PWD/quazip
 include($$PWD/quazip/quazip.pri)
 
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+win32 {
+    RC_ICONS = image/logo.ico
+    DEPENDPATH += $$PWD/build-bin/include/
+    INCLUDEPATH += $$PWD/build-bin/include/
+    LIBS +=-L$$PWD/build-bin/lib/
+}
+
+macx {
+    ICON = image/logo.icns
+}
+
+unix:!macx:!android {
+    isEmpty(PREFIX): PREFIX = /usr
+    target.path = $$PREFIX/bin
+    INSTALLS = target
+
+    appicons16.files=image/appicons/16/*
+    appicons24.files=image/appicons/24/*
+    appicons32.files=image/appicons/32/*
+    appicons48.files=image/appicons/48/*
+    appicons64.files=image/appicons/64/*
+    appicons96.files=image/appicons/96/*
+    appicons128.files=image/appicons/128/*
+    appicons256.files=image/appicons/256/*
+    appicons512.files=image/appicons/512/*
+
+    appicons16.path=$$PREFIX/share/icons/hicolor/16x16/apps
+    appicons24.path=$$PREFIX/share/icons/hicolor/24x24/apps
+    appicons32.path=$$PREFIX/share/icons/hicolor/32x32/apps
+    appicons48.path=$$PREFIX/share/icons/hicolor/48x48/apps
+    appicons64.path=$$PREFIX/share/icons/hicolor/64x64/apps
+    appicons96.path=$$PREFIX/share/icons/hicolor/96x96/apps
+    appicons128.path=$$PREFIX/share/icons/hicolor/128x128/apps
+    appicons256.path=$$PREFIX/share/icons/hicolor/256x256/apps
+    appicons512.path=$$PREFIX/share/icons/hicolor/512x512/apps
+
+    desktop.files=Offline_small_search.desktop
+    desktop.path=$$PREFIX/share/applications
+
+    INSTALLS += appicons16 appicons24 appicons32 appicons48 appicons64 appicons96 appicons128 appicons256 appicons512 desktop
+}
+
+
+android {
+    QMAKE_CFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
+    QMAKE_CXXFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
+    QMAKE_LFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
     QT += androidextras
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
-    LIBS+=-L$$PWD/build-bin/lib/ \
+    LIBS +=-L$$PWD/build-bin/lib/ \
         $$PWD/build-bin/lib/libopencv_java3.so \
-        $$PWD/build-bin/lib/libopencv_*.a \
+        #$$PWD/build-bin/lib/libopencv_*.a \
         -Wl,-Bstatic,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
     ANDROID_EXTRA_LIBS = \
         $$PWD/build-bin/lib/libopencv_java3.so
+
+    DISTFILES += \
+        android/AndroidManifest.xml \
+        android/gradle/wrapper/gradle-wrapper.jar \
+        android/gradlew \
+        android/res/values/libs.xml \
+        android/build.gradle \
+        android/gradle/wrapper/gradle-wrapper.properties \
+        android/gradlew.bat \
+        android/res/layout/splash.xml \
+        android/res/drawable-hdpi/splash.png \
+        android/res/drawable-ldpi/splash.png \
+        android/res/drawable-mdpi/splash.png \
+        android/res/drawable/splash.png \
+        image/logo.png \
+        android/src/qt/oss/OfflineSmallSearchActivity.java \
+        android/src/qt/oss/OfflineSmallSearchNative.java
+
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
-
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradlew \
-    android/res/values/libs.xml \
-    android/build.gradle \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat \
-    android/res/layout/splash.xml \
-    android/res/drawable-hdpi/splash.png \
-    android/res/drawable-ldpi/splash.png \
-    android/res/drawable-mdpi/splash.png \
-    android/res/drawable/splash.png \
-    image/logo.png \
-    android/src/qt/oss/OfflineSmallSearchActivity.java \
-    android/src/qt/oss/OfflineSmallSearchNative.java
-
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

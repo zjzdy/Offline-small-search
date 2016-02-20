@@ -76,7 +76,7 @@ Rectangle {
                 id: mouseArea2
                 anchors.topMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
                 anchors.bottomMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
-                anchors.leftMargin: -10*rectangle2.a_min/720
+                anchors.leftMargin: -15*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
@@ -84,6 +84,33 @@ Rectangle {
                     main_widget.show_search_result(textEdit1.text)
                     main_widget.add_history(textEdit1.text,false,Qt.formatDateTime(new Date(), "yyyy/MM/dd MMM dddd hh:mm:ss"),main_widget.get_search_type())
                     main_widget.history_list_to_data_file()
+                }
+            }
+        }
+
+        Image {
+            id: image3
+            objectName: "home_img"
+            width: height
+            anchors.right: image2.left
+            anchors.rightMargin: 30*rectangle2.a_min/720
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
+            anchors.top: parent.top
+            anchors.topMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
+            source: "qrc:/image/icon_home.png"
+            visible: main_widget.have_home()
+
+            MouseArea {
+                id: mouseArea3
+                anchors.topMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
+                anchors.bottomMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
+                anchors.leftMargin: -15*rectangle2.a_min/720
+                anchors.rightMargin: -15*rectangle2.a_min/720
+                anchors.fill: parent
+                onClicked: {
+                    rectangle2.focus = true
+                    main_widget.show_pkg_home()
                 }
             }
         }
