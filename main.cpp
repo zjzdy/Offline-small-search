@@ -1,14 +1,20 @@
 #include "offline_small_search.h"
 #include <QApplication>
 //#include <QSplashScreen>
-//#include <QScreen>
+#include <QStyleHints>
+#include <QScreen>
 #include <QQmlApplicationEngine>
+#include <QtQml/QQmlContext>
 #include "capcustomevent.h"
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <jni.h>
 #endif
+
+#ifdef QT_WEBVIEW_WEBENGINE_BACKEND
+#include <QtWebEngine>
+#endif // QT_WEBVIEW_WEBENGINE_BACKEND
 
 #ifdef Q_OS_ANDROID
 QObject *g_listener = 0;
@@ -66,7 +72,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName(QObject::tr("离线小搜"));
-    a.setApplicationVersion("1.8.15.12");
+    a.setApplicationVersion("2.0.0");
     a.setOrganizationName("zjzdy");
     a.setOrganizationDomain("zjzdy.offline.small.search");
     /*QScreen *screen = a.primaryScreen();
@@ -99,14 +105,32 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     g_listener = (QObject*)&w;
 #endif
+
+#ifdef QT_WEBVIEW_WEBENGINE_BACKEND
+    QtWebEngine::initialize();
+#endif // QT_WEBVIEW_WEBENGINE_BACKEND
+
     QQmlApplicationEngine engine;
+    QQmlContext *context = engine.rootContext();
+    //qDebug()<<"Count obj:"<<engine.rootObjects().count();
+    QRect geometry = QGuiApplication::primaryScreen()->availableGeometry();
+    if (!QGuiApplication::styleHints()->showIsFullScreen()) {
+        const QSize size = geometry.size() * 4 / 5;
+        const QSize offset = (geometry.size() - size) / 2;
+        const QPoint pos = geometry.topLeft() + QPoint(offset.width(), offset.height());
+        geometry = QRect(pos, size);
+    }
+    context->setContextProperty(QStringLiteral("initialX"), geometry.x());
+    context->setContextProperty(QStringLiteral("initialY"), geometry.y());
+    context->setContextProperty(QStringLiteral("initialWidth"), geometry.width());
+    context->setContextProperty(QStringLiteral("initialHeight"), geometry.height());
+    context->setContextProperty("main_widget", &w);
+    w.init_con(context);
     engine.load(QUrl(QStringLiteral("qrc:/all.qml")));
     //qDebug()<<"Count obj:"<<engine.rootObjects().count();
-    engine.rootContext()->setContextProperty("main_widget", &w);
-    //qDebug()<<"Count obj:"<<engine.rootObjects().count();
     w.init_obj(engine.rootObjects().first());
-    w.init_con(engine.rootContext());
     w.init_data();
+    engine.rootObjects().first()->findChild<QObject*>("splash")->setProperty("visible",false);
     //w.rootContext = engine.rootContext();
     return a.exec();
 }

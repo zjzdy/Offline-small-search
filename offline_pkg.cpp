@@ -98,6 +98,39 @@ void offline_pkg::setEnable(const bool & enable)
     Q_EMIT enableChanged(m_enable);
 }
 
+QString offline_pkg::home_url() const
+{
+    return m_home_url;
+}
+
+void offline_pkg::setHome_url(const QString & home_url)
+{
+    m_home_url = home_url;
+    Q_EMIT home_urlChanged(m_home_url);
+}
+
+bool offline_pkg::home_def() const
+{
+    return m_home_def;
+}
+
+void offline_pkg::setHome_def(const bool & home_def)
+{
+    m_home_def = home_def;
+    Q_EMIT home_defChanged(m_home_def);
+}
+
+bool offline_pkg::home_enable() const
+{
+    return m_home_enable;
+}
+
+void offline_pkg::setHome_enable(const bool & home_enable)
+{
+    m_home_enable = home_enable;
+    Q_EMIT home_enableChanged(m_home_enable);
+}
+
 QString offline_pkg::get_text_from_url(QString & url)
 {
     if(!zim_exist) return "";

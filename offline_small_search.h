@@ -38,7 +38,7 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define VERSION_N 19
+#define VERSION_N 20
 
 class Offline_small_search : public QObject
 {
@@ -88,6 +88,7 @@ public Q_SLOTS:
     Q_INVOKABLE void show_about();
     Q_INVOKABLE void show_custom();
     Q_INVOKABLE void show_crop();
+    Q_INVOKABLE void show_pkg_home();
     Q_INVOKABLE void show_online_download();
     Q_INVOKABLE void show_back();
     Q_INVOKABLE void show_wait();
@@ -115,6 +116,7 @@ public Q_SLOTS:
     Q_INVOKABLE void offline_pkg_list_to_data_file(QString file_path = "");
     Q_INVOKABLE void add_history(QString str, bool img, QString time, QStringList type);
     Q_INVOKABLE bool is_exist(QString file,int type = 0);
+    Q_INVOKABLE bool have_home(QString pkg = "");
     //mark
     Q_INVOKABLE void check_mark();
     Q_INVOKABLE bool is_mark(QString url);
@@ -137,7 +139,7 @@ public Q_SLOTS:
     Q_INVOKABLE void refresh_mark_list_for_mark_qml();
     Q_INVOKABLE void init_search_from_offline_pkg_list();
     Q_INVOKABLE void setCurrentIndex(int index);
-
+    Q_INVOKABLE void webview_goback();
 private:
 #ifdef Q_OS_ANDROID
     void clickHome();
@@ -175,6 +177,7 @@ private:
     QNetworkAccessManager m_down;
     QNetworkReply *m_reply;
     QNetworkRequest *m_request;
+    QStringList webview_history;
 
 public:
     QObject* result_obj;
@@ -185,6 +188,8 @@ public:
     QObject* cropView_obj;
     QObject* tabView_obj;
     QObject* search_text_obj;
+    QObject* home_img_obj;
+    QObject* result_search_img_obj;
     custom_obj custom1;
     //crop crop_obj;
     crop_thread crop_thread_obj;

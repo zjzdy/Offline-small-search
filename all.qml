@@ -6,8 +6,12 @@ import QtQuick.Window 2.2
 
 ApplicationWindow {
     visible: true
-    width: Screen.desktopAvailableWidth
-    height: Screen.desktopAvailableHeight
+    //width: Screen.desktopAvailableWidth
+    //height: Screen.desktopAvailableHeight
+    x: initialX
+    y: initialY
+    width: initialWidth
+    height: initialHeight
     title: qsTr("离线小搜")
 
     MessageDialog {
@@ -16,6 +20,13 @@ ApplicationWindow {
         text: qsTr("您真的要退出吗?")
         standardButtons: StandardButton.Yes | StandardButton.No
         onYes: main_widget.close_app()
+    }
+
+    Image {
+        objectName: "splash"
+        source: "qrc:/image/splash.png"
+        z: 2
+        anchors.fill: parent
     }
 
     TabView {

@@ -11,5 +11,4 @@ SUBDIRS = \
 	src \
 	src/tools \
 	include \
-	$(UNITTEST_DIR) \
-	examples
+	$(UNITTEST_DIR)

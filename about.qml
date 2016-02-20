@@ -74,7 +74,7 @@ Rectangle {
 
     Text {
         id: text2
-        text: qsTr("版本号: v1.9.0")
+        text: qsTr("版本号: v2.0.0")
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: text1.bottom

@@ -71,6 +71,8 @@ void Offline_small_search::init_obj(QObject *rootobj)
     search_top_bar_obj = rootobj->findChild<QObject*>("search_top_bar");
     cropView_obj = rootobj->findChild<QObject*>("cropView");
     search_text_obj = rootobj->findChild<QObject*>("search_text");
+    home_img_obj = rootobj->findChild<QObject*>("home_img");
+    result_search_img_obj = rootobj->findChild<QObject*>("result_search_img");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(tabView_obj)) qDebug()<<"tabView_obj not find";
     if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
@@ -86,6 +88,8 @@ void Offline_small_search::init_obj()
     search_top_bar_obj = rootObject->findChild<QObject*>("search_top_bar");
     cropView_obj = rootObject->findChild<QObject*>("cropView");
     search_text_obj = rootObject->findChild<QObject*>("search_text");
+    home_img_obj = rootObject->findChild<QObject*>("home_img");
+    result_search_img_obj = rootObject->findChild<QObject*>("result_search_img");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
 }
@@ -111,15 +115,16 @@ void Offline_small_search::show_back()
 
 void Offline_small_search::close_app()
 {
+#ifdef Q_OS_ANDROID
+    clickHome(); //exit is too slow.
+#endif
+    show_result("Bye");
     QCoreApplication::exit();
     //QCoreApplication::quit();
 }
 
 Offline_small_search::~Offline_small_search()
 {
-#ifdef Q_OS_ANDROID
-    clickHome(); //exit is too slow.
-#endif
     //delete ui;
     custom1.write_custom();
     offline_pkg_list_to_data_file();
@@ -127,9 +132,6 @@ Offline_small_search::~Offline_small_search()
     history_list_to_data_file();
     search_thread.quit();
     clean_cache();
-#ifdef Q_OS_ANDROID
-    terminate();
-#endif
 }
 
 void Offline_small_search::clean_cache()
@@ -198,10 +200,19 @@ void Offline_small_search::show_history()
 
 void Offline_small_search::show_search(QString str)
 {
+    if(view.last() == 9)
+    {
+        view.removeLast();
+        if(view.last() == 8)
+        {
+            view.removeLast();
+        }
+    }
     if(view.last() != 7)
         view.append(7);
     if(str != " ")
         search_text_obj->setProperty("text",str);
+    home_img_obj->setProperty("visible",have_home());
     setCurrentIndex(7);
 }
 
@@ -272,17 +283,61 @@ void Offline_small_search::show_wait()
     search_result_wait_obj->setProperty("visible",true);
 }
 
+void Offline_small_search::show_pkg_home()
+{
+    if(search_type.count() != 1) return;
+    QString pkg = search_type.first();
+    for(int i = 0; i < offline_pkg_list.size(); ++i)
+    {
+        offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+        if(offline_pkg1->name_code() == pkg)
+        {
+            show_result(pkg+":/"+offline_pkg1->home_url());
+        }
+    }
+}
+
+bool Offline_small_search::have_home(QString pkg)
+{
+    if(pkg == "")
+    {
+        if(search_type.count() == 1)
+            pkg = search_type.first();
+        else return false;
+    }
+
+    for(int i = 0; i < offline_pkg_list.size(); ++i)
+    {
+        offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+        if(offline_pkg1->name_code() == pkg)
+        {
+            return offline_pkg1->home_enable();
+        }
+    }
+    return false;
+}
+
 void Offline_small_search::show_result(QString url)
 {
+    result_search_img_obj->setProperty("visible",((view.last() != 10)&&(search_type.count() > 0)));
     if(view.last() != 9)
         view.append(9);
+    load_html("");
+    webview_history.clear();
     setCurrentIndex(9);
     load_html(url);
 }
 
 void Offline_small_search::load_html(QString url)
 {
+    if(url == "Bye")
+    {
+        mark_img_obj->setProperty("source","");
+        QMetaObject::invokeMethod(result_obj, "loadHtml",Qt::QueuedConnection,Q_ARG(QString, "<center><h1>Bye<h1></center>"),Q_ARG(QUrl, QUrl("")));
+        return;
+    }
     qDebug()<<"load_html:"<<url;
+    if((url.indexOf("http://") == 0)||(url.indexOf("https://") == 0)) return;
     if(url.isEmpty()||url.isNull()||url.indexOf(QRegExp("[/\\\\]$")) != -1) return;
     QString search_url2;
     url.remove("file:///"+get_cache_dir()).remove("file://"+get_cache_dir()).remove(get_cache_dir()).replace(QRegExp("[/\\\\]{2,}"),"/");
@@ -316,10 +371,25 @@ void Offline_small_search::load_html(QString url)
     QString baseurl = "file:///"+get_cache_dir()+"/"+url;
     baseurl.replace(QRegExp("[/\\\\]{2,}"),"/").replace("file:/","file:///").remove(QRegExp("[^/]*$"));
     //result_obj->setProperty("url","");
-    qDebug()<<"load_html2"<<baseurl;
+    //qDebug()<<"load_html2"<<baseurl;
+    if(webview_history.empty()||webview_history.count() < 1)
+        webview_history.append(search_url);
+    else if(webview_history.last() != search_url)
+        webview_history.append(search_url);
+    result_obj->setProperty("docurl",search_url);
     QMetaObject::invokeMethod(result_obj, "loadHtml",Qt::QueuedConnection,Q_ARG(QString, get_text_with_other_from_url(search_url)),Q_ARG(QUrl, QUrl(baseurl)));
-    qDebug()<<"load_html3"<<search_url;
+    result_obj->setProperty("count",webview_history.count());
+    //qDebug()<<"load_html3"<<search_url;
     //qDebug()<<"file:///"+get_cache_dir();
+}
+
+void Offline_small_search::webview_goback()
+{
+    if(webview_history.count() > 1)
+    {
+        webview_history.removeLast();
+        load_html(webview_history.last());
+    }
 }
 
 QStringList Offline_small_search::get_search_type()
@@ -349,16 +419,15 @@ void Offline_small_search::search_type_add(QString type)
                 search_type.append(offline_pkg1->name_code());
         }
     }
-    if(type == "ST")
+    for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
-        for(int i = 0; i < offline_pkg_list.size(); ++i)
-        {
-            offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
-            if(offline_pkg1->enable() && offline_pkg1->type() == "ST")
-                search_type.append(offline_pkg1->name_code());
-        }
+        offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+        if(offline_pkg1->enable() && offline_pkg1->type() == type)
+            search_type.append(offline_pkg1->name_code());
     }
     search_type.append(type);
+    std::stable_sort(search_type.begin(),search_type.end());
+    search_type.erase(std::unique(search_type.begin(),search_type.end()),search_type.end());
 }
 
 void Offline_small_search::search_type_add(QStringList type)
@@ -479,6 +548,8 @@ void Offline_small_search::add_offline_pkg(QString path,bool enable)
     QDataStream pkg_info;
     QFile pkg;
     bool good = enable;
+    QString home_url;
+    bool home_def = false;
     //name
     pkg.setFileName(path+"/name");
     if(pkg.exists() && pkg.open(QFile::ReadOnly))
@@ -568,6 +639,43 @@ void Offline_small_search::add_offline_pkg(QString path,bool enable)
         offline_pkg1->setCount("NULL");
         good = false;
     }
+    //home
+    pkg.setFileName(path+"/home");
+    if(pkg.exists() && pkg.open(QFile::ReadOnly))
+    {
+        pkg_info.resetStatus();
+        pkg_info.setDevice(&pkg);
+        home_url.clear();
+        if(!pkg_info.atEnd())
+        {
+            pkg_info >> home_url >> home_def;
+            if(home_url.isEmpty()||home_url.isNull())
+            {
+                offline_pkg1->setHome_url("NULL");
+                offline_pkg1->setHome_def(false);
+                offline_pkg1->setHome_enable(false);
+            }
+            else
+            {
+                offline_pkg1->setHome_url(home_url);
+                offline_pkg1->setHome_def(home_def);
+                offline_pkg1->setHome_enable(true);
+            }
+        }
+        else
+        {
+            offline_pkg1->setHome_url("NULL");
+            offline_pkg1->setHome_def(false);
+            offline_pkg1->setHome_enable(false);
+        }
+        pkg.close();
+    }
+    else
+    {
+        offline_pkg1->setHome_url("NULL");
+        offline_pkg1->setHome_def(false);
+        offline_pkg1->setHome_enable(false);
+    }
     //enable
     pkg.setFileName(path+"/data.zim");
     if(pkg.exists() && pkg.open(QFile::ReadOnly) && good)
@@ -600,6 +708,7 @@ void Offline_small_search::remove_offline_pkg(QString path)
         if(path.indexOf(QRegExp("^[/\\\\]")) == -1 && path.indexOf(QRegExp("^[^:/\\\\]*:[/\\\\]")) == -1)
             path.prepend(QDir::currentPath()+"/");
     }
+    if(path == "/") path = "file://";
     for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
         offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
@@ -1175,7 +1284,7 @@ void Offline_small_search::download_data(QString url)
         a.mkpath(get_data_dir());
     }
     connect(m_reply,SIGNAL(finished()),this,SLOT(download_data_finish()));
-    //connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64 ,qint64 )));//download文件时进度
+    connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64 ,qint64 )));
     connect((QObject *)m_reply, SIGNAL(readyRead()),this, SLOT(onReadyRead()));
 }
 
@@ -1196,6 +1305,8 @@ void Offline_small_search::download_data_finish()
         a.mkpath(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name).remove(".zip"));
         ++unzip_batch;
         unzip_url_map[unzip_batch] = m_reply->url().toString();
+		QObject* wait_img_obj = obj_list.value(m_reply->url().toString());
+        if(wait_img_obj) wait_img_obj->setProperty("progress",QObject::tr("解压中"));
         Q_EMIT unzip(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name), get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name).remove(".zip"),unzip_batch);
         //file.remove();
     }
@@ -1203,8 +1314,12 @@ void Offline_small_search::download_data_finish()
 
 void Offline_small_search::onDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 {
-  //progressBar->setMaximum(bytesTotal);
-  //progressBar->setValue(bytesSent);
+	m_reply=dynamic_cast<QNetworkReply*>(sender());
+    QObject* wait_img_obj = obj_list.value(m_reply->url().toString());
+    //qDebug()<<bool(wait_img_obj)<<double(bytesSent)/double(bytesTotal)*100.0;
+    if(wait_img_obj) wait_img_obj->setProperty("progress",QString::number(int(double(bytesSent)/double(bytesTotal)*100.0))+"%");
+	//progressBar->setMaximum(bytesTotal);
+    //progressBar->setValue(bytesSent);
 }
 
 void Offline_small_search::onReadyRead()
