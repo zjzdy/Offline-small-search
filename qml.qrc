@@ -15,5 +15,6 @@
         <file>CornerPoint.qml</file>
         <file>OnlineDownload.qml</file>
         <file>all.qml</file>
+        <file>Camera.qml</file>
     </qresource>
 </RCC>

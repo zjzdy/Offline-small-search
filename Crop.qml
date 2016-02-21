@@ -1,6 +1,5 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Dialogs 1.2
 
@@ -12,6 +11,8 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
     z: 0
 
     FileDialog {
@@ -20,16 +21,15 @@ Rectangle {
         selectMultiple: false
         selectFolder: false
         title: "请选择一张图片"
-        nameFilters: [ "支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)" ]
+        nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
             cropView.source = file.fileUrl
-            console.log(file.fileUrl)
         }
     }
 
     Rectangle {
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -46,7 +46,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -55,15 +55,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -79,15 +75,11 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_camera.png"
 
             MouseArea {
                 id: mouseArea2
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -103,17 +95,13 @@ Rectangle {
             anchors.right: image2.left
             anchors.rightMargin: 20*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_folder.png"
 
             MouseArea {
                 id: mouseArea3
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.leftMargin: -10*rectangle2.a_min/720
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
-                anchors.topMargin: -20*rectangle2.a_max/1280
                 anchors.fill: parent
                 onClicked: {
                     file.open()
@@ -127,7 +115,7 @@ Rectangle {
         id: msg_text
         text: qsTr("请选择拍照或选择一张图片")
         anchors.fill: cropView
-        font.pixelSize: 40*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+        font.pixelSize: 40*rectangle2.a_sqrt
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
     }
@@ -327,7 +315,7 @@ Rectangle {
                     if (cropView.status == Image.Ready) {
                         main_widget.search_type_clear()
                         main_widget.search_type_add("ALL")
-                        main_widget.set_top_bar_height(100*rectangle2.a_max/1280)
+                        main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
                         main_widget.crop_ocr_Q(cropView.source,cropPoints)
                         cropView.source = ""
                         msg_text.text = qsTr("正在处理图片并OCR")
@@ -423,7 +411,7 @@ Rectangle {
         var offsety = corner.height / 2;
         var xScale = cropView.sourceSize.width / cropView.paintedWidth;
         var yScale = cropView.sourceSize.height / cropView.paintedHeight;
-        cropPoints[corner.objectName] = Qt.point(xScale * (corner.x - (cropView.width - cropView.paintedWidth) / 2 + offsetx),
-                                                 yScale * (corner.y - (cropView.height - cropView.paintedHeight) / 2 + offsety));
+        if(isNaN(offsetx)||offsetx == null||isNaN(offsety)||offsety == null||isNaN(xScale)||xScale == null||isNaN(yScale)||yScale == null) return;
+        cropPoints[corner.objectName] = Qt.point(xScale * (corner.x - (cropView.width - cropView.paintedWidth) / 2 + offsetx),yScale * (corner.y - (cropView.height - cropView.paintedHeight) / 2 + offsety));
     }
 }

@@ -1,10 +1,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-//import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 
 ApplicationWindow {
+    id: app
     visible: true
     //width: Screen.desktopAvailableWidth
     //height: Screen.desktopAvailableHeight
@@ -13,6 +13,9 @@ ApplicationWindow {
     width: initialWidth
     height: initialHeight
     title: qsTr("离线小搜")
+    property real pd: Screen.pixelDensity
+    onWidthChanged: if(splash.visible) splash.source = choose_splash()
+    onHeightChanged: if(splash.visible) splash.source = choose_splash()
 
     MessageDialog {
         id: exit_messageDialog
@@ -22,9 +25,18 @@ ApplicationWindow {
         onYes: main_widget.close_app()
     }
 
+    function choose_splash() {
+        if(app.width*1.3 < app.height)
+            return "qrc:/image/splash.png";
+        if(app.width > app.height*1.3)
+            return "qrc:/image/splash2.png";
+        return "qrc:/image/splash3.png";
+    }
+
     Image {
+        id: splash
         objectName: "splash"
-        source: "qrc:/image/splash.png"
+        source: choose_splash()
         z: 2
         anchors.fill: parent
     }
@@ -63,54 +75,63 @@ ApplicationWindow {
         Tab {
             title: "Main"
             Main {
+                a_pd: app.pd
                 id: main
             }
         }
         Tab {
             title: "More"
             More {
+                a_pd: app.pd
                 id: more
             }
         }
         Tab {
             title: "More_search"
             MoreSearch {
+                a_pd: app.pd
                 id: moreSearch
             }
         }
         Tab {
             title: "History"
             History {
+                a_pd: app.pd
                 id: history
             }
         }
         Tab {
             title: "Pkg"
             Pkg {
+                a_pd: app.pd
                 id: pkg
             }
         }
         Tab {
             title: "Custom"
             Custom {
+                a_pd: app.pd
                 id: cstom
             }
         }
         Tab {
             title: "About"
             About {
+                a_pd: app.pd
                 id:about
             }
         }
         Tab {
             title: "Search"
             Search {
+                a_pd: app.pd
                 id: search
             }
         }
         Tab {
             title: "Search_result"
             SearchResult {
+                a_pd: app.pd
                 id: searchResult
             }
         }
@@ -118,25 +139,36 @@ ApplicationWindow {
             id: result_tab
             title: "Result"
             Result {
+                a_pd: app.pd
                 id: result
             }
         }
         Tab {
             title: "Mark"
             Mark {
+                a_pd: app.pd
                 id:mark
             }
         }
         Tab {
             title: "Crop"
             Crop {
+                a_pd: app.pd
                 id: crop
             }
         }
         Tab {
             title: "Online_download"
             OnlineDownload {
+                a_pd: app.pd
                 id: onlineDownload
+            }
+        }
+        Tab {
+            title: "Camera"
+            Camera {
+                a_pd: app.pd
+                id: camera
             }
         }
         frameVisible: false

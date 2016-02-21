@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Dialogs 1.2
 
@@ -11,6 +10,8 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
     FileDialog {
         id: choose_bf_dir
@@ -75,7 +76,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -91,7 +92,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -100,15 +101,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -145,7 +142,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle6
-        height: 90*rectangle2.a_max/1280
+        height: 90*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -157,14 +154,14 @@ Rectangle {
 
         Text {
             id: text5
-            height: 40*rectangle2.a_max/1280
+            height: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             text: qsTr("设置背景颜色")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.a_max/1280
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         MouseArea {
@@ -176,7 +173,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle7
-        height: 4*rectangle2.a_max/1280
+        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -189,7 +186,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle8
-        height: 90*rectangle2.a_max/1280
+        height: 90*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -201,14 +198,14 @@ Rectangle {
 
         Text {
             id: text6
-            height: 40*rectangle2.a_max/1280
+            height: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             text: qsTr("设置背景图片")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.a_max/1280
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         MouseArea {
@@ -220,7 +217,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle9
-        height: 4*rectangle2.a_max/1280
+        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -232,7 +229,7 @@ Rectangle {
     }
     Rectangle {
         id: rectangle10
-        height: 90*rectangle2.a_max/1280
+        height: 90*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -244,14 +241,14 @@ Rectangle {
 
         Text {
             id: text7
-            height: 40*rectangle2.a_max/1280
+            height: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             text: qsTr("最多保存历史记录")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.a_max/1280
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         SpinBox {
@@ -265,7 +262,8 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             value: custom1.max_history
-            suffix: "条"
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
+            suffix: qsTr("条")
             minimumValue: 0
             maximumValue: 1000
             onEditingFinished: custom1.max_history = value
@@ -274,7 +272,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle11
-        height: 4*rectangle2.a_max/1280
+        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -287,7 +285,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle12
-        height: 90*rectangle2.a_max/1280
+        height: 90*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -299,14 +297,14 @@ Rectangle {
 
         Text {
             id: text9
-            height: 40*rectangle2.a_max/1280
+            height: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             text: qsTr("备份设置以及程序数据")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.a_max/1280
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         MouseArea {
@@ -319,7 +317,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle13
-        height: 4*rectangle2.a_max/1280
+        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -332,7 +330,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle14
-        height: 90*rectangle2.a_max/1280
+        height: 90*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         border.width: 0
         anchors.right: parent.right
@@ -344,14 +342,14 @@ Rectangle {
 
         Text {
             id: text10
-            height: 40*rectangle2.a_max/1280
+            height: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             text: qsTr("恢复设置以及程序数据")
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 40*rectangle2.a_max/1280
+            font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         MouseArea {
@@ -364,7 +362,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle15
-        height: 4*rectangle2.a_max/1280
+        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
