@@ -7,8 +7,11 @@
 
 ###项目地址:
 Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
+
 GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
+
 主页: [http://zjzdy.github.io/oss/](http://zjzdy.github.io/oss/)
+
 当前版本: v2.0.0
 
 ##功能及特点
@@ -48,6 +51,11 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 ##软件主要开发者:
 * zjzdy(zjzengdongyang@163.com)
+
+##截图
+![Main](Screenshots/main.png)
+
+![More_search](Screenshots/more_search.png)
 
 ##编译
 ##Windows版本编译
