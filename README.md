@@ -29,6 +29,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 ####GitHub
 * Android: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android)
 * Windows: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
+* All: [https://github.com/zjzdy/Offline-small-search/releases](https://github.com/zjzdy/Offline-small-search/releases)
 
 ####网盘
 * 百度网盘: [http://pan.baidu.com/s/1mhnmlEK](http://pan.baidu.com/s/1mhnmlEK) 密码: 396f
