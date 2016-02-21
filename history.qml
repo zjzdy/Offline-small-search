@@ -1,6 +1,5 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Dialogs 1.2
 
@@ -11,6 +10,8 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
     MessageDialog {
         id: exit_messageDialog
@@ -22,91 +23,85 @@ Rectangle {
 
     Rectangle {
         id: rectangle1
-        y: 1175*rectangle2.a_max/1280
+        //y: 1175*rectangle2.a_max/1280
         width: rectangle2.width
-        height: 105*rectangle2.a_max/1280
+        height: 105*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         z: 1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
 
-        Row {
-            id: row1
-            width: rectangle2.width
-            height: 105*rectangle2.a_max/1280
+        MouseArea {
+            id: button1
+            anchors.rightMargin: rectangle2.width/4*3
+            anchors.fill: parent
+            onClicked: main_widget.show_main()
 
-            MouseArea {
-                id: button1
-                anchors.rightMargin: rectangle2.width/4*3
-                anchors.fill: parent
-                onClicked: main_widget.show_main()
-
-                Text {
-                    id: text1
-                    text: qsTr("一键搜索")
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
-                }
+            Text {
+                id: text1
+                text: qsTr("一键搜索")
+                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 30*rectangle2.a_sqrt
             }
+        }
 
-            MouseArea {
-                id: button2
-                anchors.leftMargin: rectangle2.width/4*1
-                anchors.rightMargin: rectangle2.width/4*2
-                anchors.fill: parent
-                onClicked: main_widget.show_more_search()
+        MouseArea {
+            id: button2
+            anchors.leftMargin: rectangle2.width/4*1
+            anchors.rightMargin: rectangle2.width/4*2
+            anchors.fill: parent
+            onClicked: main_widget.show_more_search()
 
-                Text {
-                    id: text2
-                    text: qsTr("更多搜索")
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
-                }
+            Text {
+                id: text2
+                text: qsTr("更多搜索")
+                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 30*rectangle2.a_sqrt
             }
+        }
 
-            MouseArea {
-                id: button3
-                anchors.leftMargin: rectangle2.width/4*2
-                anchors.rightMargin: rectangle2.width/4*1
-                anchors.fill: parent
-                onClicked: main_widget.show_history()
+        MouseArea {
+            id: button3
+            anchors.leftMargin: rectangle2.width/4*2
+            anchors.rightMargin: rectangle2.width/4*1
+            anchors.fill: parent
+            onClicked: main_widget.show_history()
 
-                Text {
-                    id: text3
-                    text: qsTr("历史记录")
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
-                }
+            Text {
+                id: text3
+                text: qsTr("历史记录")
+                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 30*rectangle2.a_sqrt
             }
+        }
 
-            MouseArea {
-                id: button4
-                anchors.leftMargin: rectangle2.width/4*3
-                anchors.fill: parent
-                onClicked: main_widget.show_more()
+        MouseArea {
+            id: button4
+            anchors.leftMargin: rectangle2.width/4*3
+            anchors.fill: parent
+            onClicked: main_widget.show_more()
 
-                Text {
-                    id: text4
-                    text: qsTr("更多")
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 30*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
-                }
+            Text {
+                id: text4
+                text: qsTr("更多")
+                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 30*rectangle2.a_sqrt
             }
         }
     }
 
     Rectangle {
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         z: 1
         anchors.right: parent.right
@@ -124,7 +119,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -133,17 +128,13 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 20*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_remove_normal.png"
 
             MouseArea {
                 id: mouseArea2
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.leftMargin: -10*rectangle2.a_min/720
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
-                anchors.topMargin: -20*rectangle2.a_max/1280
                 anchors.fill: parent
                 onClicked: remove_all.open()
             }
@@ -169,37 +160,42 @@ Rectangle {
 
         delegate: Item {
             width: rectangle2.width
-            height: 220*rectangle2.a_max/1280
+            height: 220*Math.min(rectangle2.a_max/1280,a_pd/12)
             Rectangle{
                 anchors.fill: parent
-                anchors.bottomMargin: 3*rectangle2.a_max/1280
+                anchors.bottomMargin: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
                 Text {
                     text: model.modelData.str
                     anchors.fill: parent
-                    anchors.bottomMargin: 30*rectangle2.a_max/1280
-                    anchors.leftMargin: 20*rectangle2.a_min/720
-                    anchors.rightMargin: 20*rectangle2.a_min/720
+                    anchors.bottomMargin: parent.height - 185*Math.min(rectangle2.a_max/1280,a_pd/12)
+                    anchors.leftMargin: 15*rectangle2.a_sqrt
+                    anchors.rightMargin: 15*rectangle2.a_sqrt
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
-                    anchors.verticalCenter: parent.verticalCenter
-                    maximumLineCount: 4
+                    maximumLineCount: (height-font.pixelSize)/(linespaceCheck.contentHeight-font.pixelSize)+1
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
-                    font.pixelSize: 35*rectangle2.a_max/1280
+                    font.pixelSize: 35*rectangle2.a_sqrt
+                    Text {
+                        visible: false
+                        text: "\n"
+                        id: linespaceCheck
+                        font.pixelSize: 35*rectangle2.a_sqrt
+                    }
                 }
 
                 Text {
-                    text: model.modelData.time
+                    text: model.modelData.search_type[0]+" : "+model.modelData.time
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
                     anchors.fill: parent
-                    anchors.topMargin: 180*rectangle2.a_max/1280
+                    anchors.topMargin: 180*Math.min(rectangle2.a_max/1280,a_pd/12)
                     anchors.leftMargin: 0
                     anchors.bottomMargin: 0
                     maximumLineCount: 1
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
-                    font.pixelSize: 30*rectangle2.a_max/1280
+                    font.pixelSize: 30*rectangle2.a_sqrt
                 }
 
                 MouseArea {
@@ -207,13 +203,13 @@ Rectangle {
                     onClicked: {
                         main_widget.search_type_clear()
                         main_widget.search_type_add(model.modelData.search_type)
-                        main_widget.set_top_bar_height(100*rectangle2.a_max/1280)
+                        main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
                         main_widget.show_search_result(model.modelData.str)
                     }
                 }
             }
             Rectangle {
-                height: 3*rectangle2.a_max/1280
+                height: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
                 color: "#bbbbbb"
                 border.width: 0
                 anchors.right: parent.right

@@ -87,7 +87,7 @@ public Q_SLOTS:
     Q_INVOKABLE void show_mark();
     Q_INVOKABLE void show_about();
     Q_INVOKABLE void show_custom();
-    Q_INVOKABLE void show_crop();
+    Q_INVOKABLE void show_crop(QString source = "");
     Q_INVOKABLE void show_pkg_home();
     Q_INVOKABLE void show_online_download();
     Q_INVOKABLE void show_back();
@@ -140,13 +140,13 @@ public Q_SLOTS:
     Q_INVOKABLE void init_search_from_offline_pkg_list();
     Q_INVOKABLE void setCurrentIndex(int index);
     Q_INVOKABLE void webview_goback();
+    Q_INVOKABLE QColor rand_lightcolor(QString str = "");
 private:
 #ifdef Q_OS_ANDROID
     void clickHome();
 #endif
 
 private:
-    //Ui::Offline_small_search *ui;
     QStringList search_type;
     QString search_str;
     QString search_url;
@@ -168,11 +168,9 @@ private:
     bool init_search_finish;
     bool search_finish;
     QRegExp remove_name_reg;
-    QRegExp first_body_reg;
     QRegExp only_file_name;
     QString url_name_code;
     QString cache_dir;
-    //QFileDialog file_dialog;
     QList<int> view;
     QNetworkAccessManager m_down;
     QNetworkReply *m_reply;

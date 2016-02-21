@@ -12,10 +12,12 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
     Rectangle {
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -32,7 +34,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
         */
         TextField {
@@ -81,15 +83,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -105,15 +103,15 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
+            anchors.topMargin: 10*rectangle2.a_max/1280
+            anchors.bottomMargin: 10*rectangle2.a_max/1280
             source: "qrc:/image/icon_search.png"
 
             MouseArea {
                 id: mouseArea2
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
+                anchors.topMargin: -10*rectangle2.a_max/1280
+                anchors.bottomMargin: -10*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -171,7 +169,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle4
-        height: 80*rectangle2.a_max/1280
+        height: 80*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0

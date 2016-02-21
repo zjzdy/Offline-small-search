@@ -33,5 +33,9 @@
         <file>image/icon_home.png</file>
         <file>image/icon_refresh.png</file>
         <file>image/icon_tran.png</file>
+        <file>image/splash2.png</file>
+        <file>image/splash3.png</file>
+        <file>image/icon_flash.png</file>
+        <file>image/icon_flash_off.png</file>
     </qresource>
 </RCC>

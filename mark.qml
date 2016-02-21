@@ -1,6 +1,5 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 
 Rectangle {
@@ -10,12 +9,14 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
     z: 0
 
     Rectangle {
         z: 1
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -32,7 +33,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -41,15 +42,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -73,22 +70,22 @@ Rectangle {
         delegate: Item {
             z: -1
             width: rectangle2.width
-            height: 200*rectangle2.a_max/1280
+            height: 200*Math.min(rectangle2.a_max/1280,a_pd/12)
             Rectangle{
                 anchors.fill: parent
-                anchors.bottomMargin: 3*rectangle2.a_max/1280
+                anchors.bottomMargin: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
                 Text {
                     text: model.modelData.str
                     anchors.fill: parent
                     anchors.leftMargin: 30*rectangle2.a_min/720
                     anchors.rightMargin: 15*rectangle2.a_min/720
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignTop
                     anchors.verticalCenter: parent.verticalCenter
                     maximumLineCount: 4
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
-                    font.pixelSize: 35*rectangle2.a_max/1280
+                    font.pixelSize: 35*Math.min(rectangle2.a_max/1280,a_pd/12)
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -96,7 +93,7 @@ Rectangle {
                 }
             }
             Rectangle {
-                height: 3*rectangle2.a_max/1280
+                height: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
                 color: "#bbbbbb"
                 border.width: 0
                 anchors.right: parent.right

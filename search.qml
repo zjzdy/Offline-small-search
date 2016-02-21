@@ -10,14 +10,16 @@ Rectangle {
     height: Screen.desktopAvailableHeight//1280
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
     Rectangle {
         id: rectangle3
         objectName: "search_top_bar"
-        implicitHeight: 100*rectangle2.a_max/1280
+        implicitHeight: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         property real a_max: Math.max(width,height)
         property real a_min: Math.min(width,height)
-        //height: 120*rectangle2.a_max/1280
+        //height: 120*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -33,7 +35,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle3.height/100//rectangle2.a_max/1280
+            font.pixelSize: 45*rectangle3.height/100//Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -42,15 +44,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -67,15 +65,15 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
+            anchors.topMargin: 10*rectangle3.height/100
+            anchors.bottomMargin: 10*rectangle3.height/100
             source: "qrc:/image/icon_search.png"
 
             MouseArea {
                 id: mouseArea2
-                anchors.topMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
+                anchors.topMargin: -10*rectangle3.height/100
+                anchors.bottomMargin: -10*rectangle3.height/100
                 anchors.leftMargin: -15*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -95,16 +93,12 @@ Rectangle {
             anchors.right: image2.left
             anchors.rightMargin: 30*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle3.height/100//rectangle2.a_max/1280
             source: "qrc:/image/icon_home.png"
             visible: main_widget.have_home()
 
             MouseArea {
                 id: mouseArea3
-                anchors.topMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle3.height/100//rectangle2.a_max/1280
                 anchors.leftMargin: -15*rectangle2.a_min/720
                 anchors.rightMargin: -15*rectangle2.a_min/720
                 anchors.fill: parent
@@ -135,14 +129,14 @@ Rectangle {
                 selectedTextColor: "white"
                 backgroundColor: "white"
             }
-        font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*rectangle2.a_max/1280*/*rectangle2.a_min/720)
+        font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*Math.min(rectangle2.a_max/1280,a_pd/12)*/*rectangle2.a_min/720)
     }
 
     Rectangle {
         id: rectangle5
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0//555*rectangle2.a_max/1280
-        height: 80*rectangle3.height/100//rectangle2.a_max/1280
+        anchors.bottomMargin: 0//555*Math.min(rectangle2.a_max/1280,a_pd/12)
+        height: 80*rectangle3.height/100//Math.min(rectangle2.a_max/1280,a_pd/12)
         width: rectangle2.width
         Row {
             Text {

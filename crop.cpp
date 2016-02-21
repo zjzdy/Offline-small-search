@@ -43,11 +43,14 @@ void crop::init(QString tessdata_path)
 
 QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
 {
-#if defined(_WIN32) || defined(_WIN64)
-    imagepath.replace("file:///", "");
-#else
-    imagepath.replace("file://", "");
+    if(imagepath.indexOf(QRegExp("^file:/")) >= 0)
+    {
+        imagepath.replace(QRegExp("file:/*"), "");
+#ifndef _WIN32
+        imagepath = "/"+imagepath;
 #endif
+    }
+    qDebug()<<imagepath;
     QImage img(imagepath);
     QMap<QString, QPointF> points;
     Mat image;
@@ -73,7 +76,8 @@ QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
             height = rightLine.length();
         }
 
-        Mat img = imread(imagepath.toStdString());
+        Mat img = imread(imagepath.toLocal8Bit().data());
+        if(img.total() < 1) return "";
         int img_height = height;
         int img_width = width;
         //qDebug()<< img_height<<img_width;
@@ -102,45 +106,24 @@ QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
         //img.save("tmp/trans.jpg", "jpg", 100);
     }
 
-    //Mat image = cv::imread("tmp/trans.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    medianBlur(image,image,3);
+    //medianBlur(image,image,3);
     Mat local;
     adaptiveThreshold(image, local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 25, 11);
 
-    imwrite("tmp/local.jpg", local);
+    //imwrite("local.jpg", local);
 
     if(!tess_init)
     {
         qDebug()<<"tesseract isn't init";
         return tr("对不起:OCR失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.");
     }
-    //char *outText;
-    //tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
-
-    // Initialize tesseract-ocr with English, without specifying tessdata path
-
     //api->InitLangMod(".", "chi_sim");
-
-    // Open input image with leptonica library
     IplImage iplimg(local);
     //iplimg = cvLoadImage("tmp/local.jpg");
     //api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
     api.Clear();
     api.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
-    //Pix *image = pixRead("local.jpg");
-    //api->SetImage(image);
-    // Get OCR result
-    /*
-    outText = api.GetUTF8Text();
-    char *oo = outText;
-    int *gg = api.AllWordConfidences();
-    while (*gg != '\0')
-    {
-        qDebug()<<*oo<<*gg;
-        gg++;
-        oo++;
-    }
-    */
+
     QString outText = "";
     qDebug()<<"Ocr start time: "<<QDateTime::currentDateTime().toString();
     if(api.Recognize(NULL) >=0)
@@ -157,12 +140,6 @@ QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
         qDebug()<<"ALL Confidence: "<<api.MeanTextConf();
     }
     qDebug()<<"Ocr end time: "<<QDateTime::currentDateTime().toString();
-    //qDebug()<< QString(outText) <<api.MeanTextConf();
-    //printf("OCR output:\n%s", outText);
-    // Destroy used object and release memory
-    //api->End();
-    //delete [] outText;
-    //pixDestroy(&image);
     api.Clear();
     return outText.remove(QRegExp("[ \n\t]*"));
 }

@@ -11,11 +11,13 @@ Rectangle {
     color: "#f6f6f6"
     property real a_max: Math.max(width,height)
     property real a_min: Math.min(width,height)
+    property real a_pd: 0
+    property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
     z: 0
 
     Rectangle {
         id: rectangle3
-        height: 100*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -32,7 +34,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 45*rectangle2.a_max/1280
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
         Image {
@@ -41,15 +43,11 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_back.png"
 
             MouseArea {
                 id: mouseArea1
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
@@ -67,22 +65,16 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_add_normal.png"
 
             MouseArea {
                 id: mouseArea2
-                anchors.topMargin: -20*rectangle2.a_max/1280
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
-                    choose_dir.folder = "/mnt"
                     choose_dir.open()
-                    //main_widget.add_offline_pkg(main_widget.get_dir_file_dialog(),true)
                 }
             }
         }
@@ -93,17 +85,13 @@ Rectangle {
             anchors.right: image2.left
             anchors.rightMargin: 20*rectangle2.a_min/720
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20*rectangle2.a_max/1280
             anchors.top: parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
             source: "qrc:/image/icon_remove_normal.png"
 
             MouseArea {
                 id: mouseArea3
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.leftMargin: -10*rectangle2.a_min/720
-                anchors.bottomMargin: -20*rectangle2.a_max/1280
-                anchors.topMargin: -20*rectangle2.a_max/1280
                 anchors.fill: parent
                 onClicked: remove_all.open()
             }
@@ -146,7 +134,7 @@ Rectangle {
         z: 1
         id: rectangle1
         width: rectangle2.width
-        height: 60*rectangle2.a_max/1280
+        height: 60*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#ffffff"
         anchors.top: rectangle3.bottom
         anchors.topMargin: 0
@@ -157,7 +145,7 @@ Rectangle {
             Text {
                 text: qsTr("离线包名称")
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.a_max/1280
+                anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 horizontalAlignment: Text.AlignLeft
                 width: 450*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
@@ -167,7 +155,7 @@ Rectangle {
             Text {
                 text: qsTr("启用")
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.a_max/1280
+                anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 width: 70*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 40*rectangle2.a_min/720
@@ -176,7 +164,7 @@ Rectangle {
             Text {
                 text: qsTr(" 更多信息")
                 anchors.top: parent.top
-                anchors.topMargin: 5*rectangle2.a_max/1280
+                anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 width: 180*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 40*rectangle2.a_min/720
@@ -197,7 +185,7 @@ Rectangle {
         delegate: Item {
             z: -1
             width: rectangle2.width
-            height: 60*rectangle2.a_max/1280
+            height: 60*Math.min(rectangle2.a_max/1280,a_pd/12)
                 Row {
                     id: row1
                     spacing: 10*rectangle2.width/720
@@ -206,13 +194,13 @@ Rectangle {
                         width: 450*rectangle2.width/720
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
-                        font.pixelSize: 40*rectangle2.a_max/1280
+                        font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
                     }
 
                     Image {
                         source: model.modelData.enable ? "qrc:/image/icon_switch_on.png" : "qrc:/image/icon_switch_off.png"
-                        width: 70*rectangle2.width/720
-                        height: 40*rectangle2.a_max/1280
+                        width: height*2
+                        height: 35*Math.min(rectangle2.a_max/1280,a_pd/12)
                         anchors.verticalCenter: parent.verticalCenter
                         MouseArea {
                             anchors.fill: parent
@@ -258,9 +246,9 @@ Rectangle {
         implicitWidth: 540*rectangle2.width/720
         implicitHeight: 1100*rectangle2.height/1280
         color: "#f6f6f6"
-        radius: 10*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+        radius: 10*rectangle2.a_sqrt
         border.color: "#c1c1be"
-        border.width: 5*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+        border.width: 5*rectangle2.a_sqrt
         Keys.onBackPressed: {
             more_info.visible = false
             rectangle2.focus = true
@@ -272,7 +260,7 @@ Rectangle {
         Button {
             id: button1
             width: 270*rectangle2.width/720
-            height: 70*rectangle2.a_max/1280
+            height: 70*Math.min(rectangle2.a_max/1280,a_pd/12)
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.bottom: parent.bottom
@@ -284,7 +272,7 @@ Rectangle {
                 text: qsTr("确定")
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 55*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+                font.pixelSize: 55*rectangle2.a_sqrt
             }
             onClicked: {
                 more_info.visible = false
@@ -295,7 +283,7 @@ Rectangle {
         Button {
             id: button2
             width: 270*rectangle2.width/720
-            height: 70*rectangle2.a_max/1280
+            height: 70*Math.min(rectangle2.a_max/1280,a_pd/12)
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: parent.right
@@ -307,7 +295,7 @@ Rectangle {
                 text: qsTr("删除")
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 55*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+                font.pixelSize: 55*rectangle2.a_sqrt
             }
             onClicked: {
                 remove_this.open()
@@ -322,7 +310,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.topMargin: 20*rectangle2.a_min/720
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Text {
@@ -332,7 +320,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: name.bottom
             anchors.topMargin: 0
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
 
@@ -343,15 +331,15 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.top: name_only.bottom
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Image {
             objectName: "enable_pkg_img"
             id: switch2
-            width: 130*rectangle2.a_min/720
-            height: 70*rectangle2.a_max/1280
+            width: height*2
+            height: 70*Math.min(rectangle2.a_max/1280,a_pd/12)
             anchors.verticalCenter: enable.verticalCenter
             anchors.left: enable.right
             anchors.leftMargin: 30*rectangle2.a_min/720
@@ -371,8 +359,8 @@ Rectangle {
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.right: parent.right
             anchors.top: enable.bottom
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Text {
@@ -382,7 +370,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: type.bottom
             anchors.topMargin: 0
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
 
@@ -393,8 +381,8 @@ Rectangle {
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.right: parent.right
             anchors.top: type_only.bottom
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Text {
@@ -404,7 +392,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: count.bottom
             anchors.topMargin: 0
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
 
@@ -415,8 +403,8 @@ Rectangle {
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.right: parent.right
             anchors.top: count_only.bottom
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Text {
@@ -426,7 +414,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: name_code.bottom
             anchors.topMargin: 0
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
 
@@ -438,8 +426,8 @@ Rectangle {
             anchors.leftMargin: 5*rectangle2.a_min/720+(rectangle2.height > rectangle2.width ? 0 : 270*rectangle2.width/720)
             anchors.right: parent.right
             anchors.top: rectangle2.height > rectangle2.width ? name_code_only.bottom : parent.top
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
         }
 
         Text {
@@ -449,7 +437,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: path.bottom
             anchors.topMargin: 0
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
 
@@ -461,8 +449,8 @@ Rectangle {
             anchors.right: parent.right
             anchors.leftMargin: 5*rectangle2.a_min/720+(rectangle2.height > rectangle2.width ? 0 : 270*rectangle2.width/720)
             anchors.top: path_only.bottom
-            anchors.topMargin: 20*rectangle2.a_max/1280
-            font.pixelSize: 35*Math.sqrt(rectangle2.a_max/1280*rectangle2.a_min/720)
+            anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
+            font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
         }
     }

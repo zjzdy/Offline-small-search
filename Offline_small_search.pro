@@ -20,6 +20,10 @@ CONFIG += no_keywords
         DEFINES += USE_WEBENGINE
 }
 
+win32:!qtHaveModule(webengine):qtHaveModule(webkit) {
+        QT += webkit
+}
+
 QMAKE_CFLAGS += -std=gnu11
 QMAKE_CXXFLAGS += -std=gnu++11
 
@@ -74,7 +78,13 @@ win32 {
     RC_ICONS = image/logo.ico
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
-    LIBS +=-L$$PWD/build-bin/lib/
+    LIBS +=-L$$PWD/build-bin/lib/ \
+           -Wl,-Bstatic \
+           -ltesseract -llept -lgif -lxapian -lzim -llzma \
+           -lcrypt32 -luuid -lws2_32 -lrpcrt4 \
+           -Wl,-Bdynamic \
+           -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -ltiff -ljasper -lpng -ljpeg -lwebp -lz
+    DEFINES += QUAZIP_STATIC
 }
 
 macx {

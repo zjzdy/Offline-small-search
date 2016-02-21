@@ -1,6 +1,10 @@
 #include "offline_small_search.h"
 #include <QApplication>
-//#include <QSplashScreen>
+/*
+#ifndef Q_OS_ANDROID
+#include <QSplashScreen>
+#endif
+*/
 #include <QStyleHints>
 #include <QScreen>
 #include <QQmlApplicationEngine>
@@ -75,28 +79,32 @@ int main(int argc, char *argv[])
     a.setApplicationVersion("2.0.0");
     a.setOrganizationName("zjzdy");
     a.setOrganizationDomain("zjzdy.offline.small.search");
-    /*QScreen *screen = a.primaryScreen();
-
-#ifdef Q_OS_ANDROID
-    registerNativeMethods();
-#endif
-
-#ifdef Q_OS_ANDROID
-    QSplashScreen splash(QPixmap(":/image/splash.png"));
-    splash.resize(screen->size());
-#else
-    QSplashScreen splash(QPixmap(":/image/splash.png"));
-    splash.resize(screen->size());
-#endif
-    splash.setDisabled(true);
+    QRect geometry = QGuiApplication::primaryScreen()->availableGeometry();
+    if (!QGuiApplication::styleHints()->showIsFullScreen()) {
+        const QSize size = geometry.size() * 4 / 5;
+        const QSize offset = (geometry.size() - size) / 2;
+        const QPoint pos = geometry.topLeft() + QPoint(offset.width(), offset.height());
+        geometry = QRect(pos, size);
+    }
+    /*
+#ifndef Q_OS_ANDROID
+    QString splash_path;
+    if(geometry.width()*1.3 < geometry.height())
+        splash_path = ":/image/splash.png";
+    else
+    {
+        if(geometry.width() > geometry.height()*1.3)
+            splash_path = ":/image/splash2.png";
+        else splash_path = ":/image/splash3.png";
+    }
+    QPixmap pixmap(splash_path);
+    QSplashScreen splash(pixmap);
+    splash.setGeometry(geometry);
+    //splash.resize(geometry.size());
+    //splash.setDisabled(true);
     splash.show();
-    Offline_small_search w;
-#ifdef Q_OS_ANDROID
-    g_listener = (QObject*)&w;
 #endif
-    w.show();
-    splash.finish(&w);
-    */
+*/
 
 #ifdef Q_OS_ANDROID
     registerNativeMethods();
@@ -112,24 +120,20 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     QQmlContext *context = engine.rootContext();
-    //qDebug()<<"Count obj:"<<engine.rootObjects().count();
-    QRect geometry = QGuiApplication::primaryScreen()->availableGeometry();
-    if (!QGuiApplication::styleHints()->showIsFullScreen()) {
-        const QSize size = geometry.size() * 4 / 5;
-        const QSize offset = (geometry.size() - size) / 2;
-        const QPoint pos = geometry.topLeft() + QPoint(offset.width(), offset.height());
-        geometry = QRect(pos, size);
-    }
     context->setContextProperty(QStringLiteral("initialX"), geometry.x());
     context->setContextProperty(QStringLiteral("initialY"), geometry.y());
     context->setContextProperty(QStringLiteral("initialWidth"), geometry.width());
     context->setContextProperty(QStringLiteral("initialHeight"), geometry.height());
     context->setContextProperty("main_widget", &w);
     w.init_con(context);
-    engine.load(QUrl(QStringLiteral("qrc:/all.qml")));
-    //qDebug()<<"Count obj:"<<engine.rootObjects().count();
-    w.init_obj(engine.rootObjects().first());
     w.init_data();
+    /*
+#ifndef Q_OS_ANDROID
+    splash.close();
+#endif
+*/
+    engine.load(QUrl(QStringLiteral("qrc:/all.qml")));
+    w.init_obj(engine.rootObjects().first());
     engine.rootObjects().first()->findChild<QObject*>("splash")->setProperty("visible",false);
     //w.rootContext = engine.rootContext();
     return a.exec();

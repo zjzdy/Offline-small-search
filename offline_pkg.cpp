@@ -146,6 +146,30 @@ QString offline_pkg::get_text_from_url(QString & url)
                 if (!it.first)
                 {
                     it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
+					if (!it.first)
+					{
+						it = zim_file->findx("A/"+url.toStdString()+"/index.html");
+						if (!it.first)
+						{
+							it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
+							if (!it.first)
+							{
+								it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
+								if (!it.first)
+								{
+									it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
+									if (!it.first)
+									{
+										it = zim_file->findx("A/"+url.toStdString()+"/index");
+										if (!it.first)
+										{
+											it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
+										}
+									}
+								}
+							}
+						}
+					}
                 }
             }
         }
@@ -176,6 +200,30 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
                 if (!it.first)
                 {
                     it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
+					if (!it.first)
+					{
+						it = zim_file->findx("A/"+url.toStdString()+"/index.html");
+						if (!it.first)
+						{
+							it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
+							if (!it.first)
+							{
+								it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
+								if (!it.first)
+								{
+									it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
+									if (!it.first)
+									{
+										it = zim_file->findx("A/"+url.toStdString()+"/index");
+										if (!it.first)
+										{
+											it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
+										}
+									}
+								}
+							}
+						}
+					}
                 }
             }
         }

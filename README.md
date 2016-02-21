@@ -2,20 +2,44 @@
 离线搜索软件,现支持离线搜题,搜古诗文,搜开发文档,等待.可自行打包离线包.
 ------------
 声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.
-------------
+
 本软件采用GPL协议发布,希望所有人都能一起来改进本软件.
 
-###项目地址: 
+###项目地址:
 Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
-GitHub Mirror:[https://github.com/zjzengdongyang/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
-当前版本: v2.0.0 
+GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
+主页: [http://zjzdy.github.io/oss/](http://zjzdy.github.io/oss/)
+当前版本: v2.0.0
+
+##功能及特点
+* 离线全文检索,采用高度压缩打包的ZIM文件存储数据
+* 主页模式
+* 网址自定义,支持外部链接
+* 收藏夹,历史纪录
+* 搜索单一离线包,一键搜索所有离线包
+* 拍照搜索(需下载相关模块)
+* 在线翻译(使用有道翻译)
+* 更多功能等待发现
 
 ##下载
-* Android: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin)
+####Git@OSC
+* Android: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android)
+* Windows: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows)
+
+####GitHub
+* Android: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android)
+* Windows: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
+
+####网盘
+* 百度网盘: [http://pan.baidu.com/s/1mhnmlEK](http://pan.baidu.com/s/1mhnmlEK) 密码: 396f
+* 360云盘: [https://yunpan.cn/cx8yUeFyJypM5](https://yunpan.cn/cx8yUeFyJypM5) 密码: 0205
 
 ##共享的离线包地址
 注意：离线包版本请用最新版,程序不保证兼容旧版本的离线包.
-* 高中试题离线包 [http://pan.baidu.com/s/1nt5WpaL](http://pan.baidu.com/s/1nt5WpaL) 密码: gyx9
+* 高中试题离线包 [http://pan.baidu.com/s/1qXmynFm](http://pan.baidu.com/s/1qXmynFm) 密码: 6w8i
+* 初中试题离线包 [http://pan.baidu.com/s/1jHi6Ham](http://pan.baidu.com/s/1jHi6Ham) 密码: b3k9
+* 小学试题离线包 [http://pan.baidu.com/s/1nuyFCKD](http://pan.baidu.com/s/1nuyFCKD) 密码: 1sqi
+* 古诗文离线包 [http://pan.baidu.com/s/1nu4LqdF](http://pan.baidu.com/s/1nu4LqdF) 密码: xq5b
 * 离线包打包器 [http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build](http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build)
 * 如果需要分享离线包,可联系我在此页面添加下载链接
 * 因服务器资源有限,程序内的在线下载模块暂不开放离线包的下载,请自行下载添加
@@ -25,7 +49,6 @@ GitHub Mirror:[https://github.com/zjzengdongyang/Offline-small-search](https://g
 * zjzdy(zjzengdongyang@163.com)
 
 ##编译
-------
 ##Windows版本编译
 本过程基于Qt 5.5.1 for Windows(msys2 mingw32), OpenCV 3.1.0, Xapian 1.2.22, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
 所有代码均在msys2的mingw32_shell中运行.
@@ -33,7 +56,7 @@ GitHub Mirror:[https://github.com/zjzengdongyang/Offline-small-search](https://g
 安装必须的软件,下载或克隆项目.
 ```
 pacman -Syu
-pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5 mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget
+pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5-static mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget zip
 git clone http://git.oschina.net/zjzdy/Offline-small-search
 cd Offline-small-search/
 export ossbuild=$PWD
@@ -49,6 +72,7 @@ cd xapian-core-1.2.22/
 ./configure --prefix="${ossbuild}/build-bin/" --enable-backend-inmemory=no
 make
 make install
+cd ../
 ```
 ###2.编译 zimlib
 ```
@@ -57,18 +81,99 @@ cd zimlib/
 ./configure --prefix="${ossbuild}/build-bin/"
 make
 make install
+cd ../
 ```
 ###3.编译 离线小搜
-1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
-2.打开Qt Creator
-3.打开Offline_small_search.pro
-4.选择配置Android for armeabi-v7a (GCC 4.9)
-5.选择Release
-6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-18
-7.点击构建
+0.对部分头文件进行处理
 ```
+cp /mingw32/include/tesseract/tesscallback.h /mingw32/include/tesseract/tesscallback.h.bak
+sed -i 's/template <class T> struct remove_reference;//g' /mingw32/include/tesseract/tesscallback.h
+sed -i 's/template<typename T> struct remove_reference { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
+sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
+qtcreator Offline_small_search.pro
 ```
+如果Qt库没有带webengine,则改用QtWebKit,且"有道翻译"这个功能无效.
 ```
+sed -i 's/QtWebView 1.0/QtWebKit 3.0/g' Result.qml
+```
+1.打开Qt Creator
+2.打开Offline_small_search.pro
+3.选择配置Desktop Qt (static) MinGW-w64 32bit (MSYS2)
+4.选择Release
+5.点击构建
+
+###4.安装 离线小搜
+```
+rm /mingw32/include/tesseract/tesscallback.h
+mv /mingw32/include/tesseract/tesscallback.h.bak /mingw32/include/tesseract/tesscallback.h
+mkdir oss_bin
+cp ../build-Offline_small_search-Desktop_Qt_MinGW_w64_32bit_MSYS2-Release/release/Offline_small_search.exe oss_bin/
+cp -r /mingw32/share/qt5/plugins/bearer oss_bin/
+cp -r /mingw32/share/qt5/plugins/imageformats oss_bin/
+cp -r /mingw32/share/qt5/plugins/mediaservice oss_bin/
+cp -r /mingw32/share/qt5/plugins/platforms oss_bin/
+cp -r /mingw32/share/qt5/qml/QtMultimedia oss_bin/
+cp -r /mingw32/share/qt5/qml/QtQuick oss_bin/
+cp -r /mingw32/share/qt5/qml/QtQuick.2 oss_bin/
+cp -r /mingw32/share/qt5/qml/QtWebKit oss_bin/
+cp -r /mingw32/share/qt5/qml/Qt oss_bin/
+cp /mingw32/bin/libbz2-1.dll oss_bin/
+cp /mingw32/bin/libeay32.dll oss_bin/
+cp /mingw32/bin/libfreetype-6.dll oss_bin/
+cp /mingw32/bin/libgcc_s_dw2-1.dll oss_bin/
+cp /mingw32/bin/libglib-2.0-0.dll oss_bin/
+cp /mingw32/bin/libHalf-2_2.dll oss_bin/
+cp /mingw32/bin/libharfbuzz-0.dll oss_bin/
+cp /mingw32/bin/libiconv-2.dll oss_bin/
+cp /mingw32/bin/libicudt56.dll oss_bin/
+cp /mingw32/bin/libicuin56.dll oss_bin/
+cp /mingw32/bin/libicuuc56.dll oss_bin/
+cp /mingw32/bin/libIex-2_2.dll oss_bin/
+cp /mingw32/bin/libIlmImf-2_2.dll oss_bin/
+cp /mingw32/bin/libIlmThread-2_2.dll oss_bin/
+cp /mingw32/bin/libImath-2_2.dll oss_bin/
+cp /mingw32/bin/libintl-8.dll oss_bin/
+cp /mingw32/bin/libjasper-1.dll oss_bin/
+cp /mingw32/bin/libjpeg-8.dll oss_bin/
+cp /mingw32/bin/liblzma-5.dll oss_bin/
+cp /mingw32/bin/libopencv_core310.dll oss_bin/
+cp /mingw32/bin/libopencv_imgcodecs310.dll oss_bin/
+cp /mingw32/bin/libopencv_imgproc310.dll oss_bin/
+cp /mingw32/bin/libopencv_videoio310.dll oss_bin/
+cp /mingw32/bin/libpcre16-0.dll oss_bin/
+cp /mingw32/bin/libpng16-16.dll oss_bin/
+cp /mingw32/bin/libsqlite3-0.dll oss_bin/
+cp /mingw32/bin/libstdc++-6.dll oss_bin/
+cp /mingw32/bin/libtiff-5.dll oss_bin/
+cp /mingw32/bin/libwebp-6.dll oss_bin/
+cp /mingw32/bin/libwinpthread-1.dll oss_bin/
+cp /mingw32/bin/libxml2-2.dll oss_bin/
+cp /mingw32/bin/libxslt-1.dll oss_bin/
+cp /mingw32/bin/Qt5Core.dll oss_bin/
+cp /mingw32/bin/Qt5Gui.dll oss_bin/
+cp /mingw32/bin/Qt5Multimedia.dll oss_bin/
+cp /mingw32/bin/Qt5MultimediaQuick_p.dll oss_bin/
+cp /mingw32/bin/Qt5MultimediaWidgets.dll oss_bin/
+cp /mingw32/bin/Qt5Network.dll oss_bin/
+cp /mingw32/bin/Qt5OpenGL.dll oss_bin/
+cp /mingw32/bin/Qt5Positioning.dll oss_bin/
+cp /mingw32/bin/Qt5PrintSupport.dll oss_bin/
+cp /mingw32/bin/Qt5Qml.dll oss_bin/
+cp /mingw32/bin/Qt5Quick.dll oss_bin/
+cp /mingw32/bin/Qt5Sensors.dll oss_bin/
+cp /mingw32/bin/Qt5Sql.dll oss_bin/
+cp /mingw32/bin/Qt5Svg.dll oss_bin/
+cp /mingw32/bin/Qt5WebChannel.dll oss_bin/
+cp /mingw32/bin/Qt5WebKit.dll oss_bin/
+cp /mingw32/bin/Qt5WebKitWidgets.dll oss_bin/
+cp /mingw32/bin/Qt5Widgets.dll oss_bin/
+cp /mingw32/bin/Qt5XmlPatterns.dll oss_bin/
+cp /mingw32/bin/ssleay32.dll oss_bin/
+cp /mingw32/bin/tbb.dll oss_bin/
+cp /mingw32/bin/tbbmalloc.dll oss_bin/
+cp /mingw32/bin/zlib1.dll oss_bin/
+```
+已经安装离线小搜在oss_bin/
 ------
 ##Android版本编译
 以下内容可以根据最新版本自行修改
@@ -166,6 +271,7 @@ cd leptonica-1.73/
 ./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
 make
 make install
+cd ../
 ```
 ###7.编译 tess-two
 到tess-two的releases去下载最新版本的tess-two
@@ -207,6 +313,7 @@ cd zimlib/
 ./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
 make
 make install
+cd ../
 ```
 ###9.编译 离线小搜
 1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
@@ -230,10 +337,11 @@ make install
 1. 离线包目录不可以包含中文.
 2. 打开文件对话框后返回键失效
 3. 部分js或css及嵌套html会加载失败(将在3.0版修复)
+4. 用QtWebKit替换QtWebView会造成runJavaScript函数不存在,导致翻译功能失效
 
 ##TODO
-1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能
-2. 在线更新功能
+1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能(3.1)
+2. 在线更新功能(3.0)
 + 3. 进行3.0版的重构(此项将于2017年高考完成后进行)
 	+ 3.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
 	+ 3.2 整理界面代码和业务逻辑
