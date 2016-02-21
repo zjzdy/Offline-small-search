@@ -44,6 +44,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 * 初中试题离线包 [http://pan.baidu.com/s/1jHi6Ham](http://pan.baidu.com/s/1jHi6Ham) 密码: b3k9
 * 小学试题离线包 [http://pan.baidu.com/s/1nuyFCKD](http://pan.baidu.com/s/1nuyFCKD) 密码: 1sqi
 * 古诗文离线包 [http://pan.baidu.com/s/1nu4LqdF](http://pan.baidu.com/s/1nu4LqdF) 密码: xq5b
+* 开发文档离线包 [http://pan.baidu.com/s/1bn7an8](http://pan.baidu.com/s/1bn7an8) 密码: 52v5
 * 离线包打包器 [http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build](http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build)
 * 如果需要分享离线包,可联系我在此页面添加下载链接
 * 因服务器资源有限,程序内的在线下载模块暂不开放离线包的下载,请自行下载添加
