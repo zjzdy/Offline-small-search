@@ -341,6 +341,8 @@ cd ../
 * libuuid: [http://sourceforge.net/projects/libuuid](http://sourceforge.net/projects/libuuid)
 * OpenCV: [http://www.opencv.org](http://www.opencv.org)
 * Tesseract: [https://github.com/tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)
+* Zeal: [https://zealdocs.org](https://zealdocs.org)
+* Dash: [https://kapeli.com](https://kapeli.com)
 
 
 ##已知问题
