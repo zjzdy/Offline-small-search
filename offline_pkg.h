@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
+#include <QUrl>
 #include <zim/zim.h>
 #include <zim/file.h>
 #include <zim/fileiterator.h>

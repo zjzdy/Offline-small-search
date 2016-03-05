@@ -237,14 +237,20 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
         else return tr("对不起，没找到内容");
 
         int pos = 0;
+        QString url2 = url;
+        url2.remove(QRegExp("[^/\\\\]*$"));
+        QUrl url3(url2);
+        QString url4;
+        dir.mkpath(cache_dir+url2);
         while ((pos = img.indexIn(str, pos)) != -1)
         {
             pos += img.matchedLength();
-            if(QFile::exists(cache_dir+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1))) continue;
-            it = zim_file->findx(QString("A/"+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toStdString());
+            url4 = url3.resolved(img.cap(1)).toString();
+            if(QFile::exists(cache_dir+url4)) continue;
+            it = zim_file->findx(QString("A/"+url4).toStdString());
             if (it.first)
             {
-                img_file.setFileName(cache_dir+url.remove(QRegExp("[^/\\\\]*$"))+img.cap(1));
+                img_file.setFileName(cache_dir+url2+img.cap(1));
                 fileinfo.setFile(img_file);
                 dir.mkpath(fileinfo.absolutePath());
                 if (it.second->isRedirect())

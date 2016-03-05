@@ -182,7 +182,7 @@ Rectangle {
             color: "#f0f0f0"
             anchors.left: parent.left
             anchors.leftMargin: 0
-            width: (text.count > 1) ? rectangle2.a_min/3 : 0
+            width: (text.count > 1) ? rectangle2.width/3 : 0
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.top: parent.top
@@ -218,7 +218,7 @@ Rectangle {
             color: "#f0f0f0"
             anchors.left: back.right
             anchors.leftMargin: 0
-            width: (text.count > 1) ? rectangle2.a_min/3 : rectangle2.a_min/2
+            width: (text.count > 1) ? rectangle2.width/3 : rectangle2.width/2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.top: parent.top
@@ -253,7 +253,7 @@ Rectangle {
             color: "#f0f0f0"
             anchors.left: tran.right
             anchors.leftMargin: 0
-            width: (text.count > 1) ? rectangle2.a_min/3 : rectangle2.a_min/2
+            width: (text.count > 1) ? rectangle2.width/3 : rectangle2.width/2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.top: parent.top
