@@ -1,11 +1,9 @@
 #ifndef OFFLINE_SMALL_SEARCH_H
 #define OFFLINE_SMALL_SEARCH_H
 
-//#include <QWidget>
 #include <QtGlobal>
 #include "Xapian_search_thread.h"
 #include <QtNetwork>
-//#include <QFileDialog>
 #include <QFile>
 #include <QDir>
 #include <QCoreApplication>
@@ -38,7 +36,7 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define VERSION_N 20
+#define VERSION_N 21
 
 class Offline_small_search : public QObject
 {

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName(QObject::tr("离线小搜"));
-    a.setApplicationVersion("2.0.0");
+    a.setApplicationVersion("2.0.1");
     a.setOrganizationName("zjzdy");
     a.setOrganizationDomain("zjzdy.offline.small.search");
     QRect geometry = QGuiApplication::primaryScreen()->availableGeometry();
