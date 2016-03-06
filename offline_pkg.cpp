@@ -46,7 +46,7 @@ void offline_pkg::setPath(const QString & path)
     if(QFile::exists(QString(path+"/data.zim")))
     {
         try{
-            zim_file = new zim::File(QString(path+"/data.zim").toStdString());
+            zim_file = new zim::File(QString(path+"/data.zim").toLocal8Bit().toStdString());
             qDebug()<<"open zim"<<path+"/data.zim";
             zim_exist = true;
         }
@@ -134,7 +134,9 @@ void offline_pkg::setHome_enable(const bool & home_enable)
 QString offline_pkg::get_text_from_url(QString & url)
 {
     if(!zim_exist) return "";
-    url.remove(QRegExp("^/"));
+	QRegExp parse("[\\?#].*$");
+    parse.setMinimal(false);
+    url.replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
         if (!it.first)
@@ -188,7 +190,9 @@ QString offline_pkg::get_text_from_url(QString & url)
 QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_dir)
 {
     if(!zim_exist) return "";
-    url.remove(QRegExp("^/"));
+	QRegExp parse("[\\?#].*$");
+    parse.setMinimal(false);
+    url.replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
         if (!it.first)
@@ -247,7 +251,8 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
             pos += img.matchedLength();
             url4 = url3.resolved(img.cap(1)).toString();
             if(QFile::exists(cache_dir+url4)) continue;
-            it = zim_file->findx(QString("A/"+url4).toStdString());
+            it = zim_file->findx(QString("A/"+url4).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url2+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toStdString());
             if (it.first)
             {
                 img_file.setFileName(cache_dir+url2+img.cap(1));

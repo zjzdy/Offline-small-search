@@ -11,6 +11,8 @@ Xapian_search::Xapian_search(QObject *parent) : QObject(parent)
 #else
     putenv(const_cast<char*>("XAPIAN_CJK_NGRAM=1"));
 #endif
+    termgen.set_flags(Xapian::TermGenerator::FLAG_CJK_NGRAM);
+    termgen.set_stemmer(Xapian::Stem("en"));
 }
 
 void Xapian_search::on_init(QStringList dir, int batch)
