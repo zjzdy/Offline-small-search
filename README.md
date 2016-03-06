@@ -360,3 +360,10 @@ cd ../
 	+ 3.2 整理界面代码和业务逻辑
 		+ 3.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
 	+ 3.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
+4. 索引改用Xapian的glassify格式,使用单一文件"data.idx"(Xapian 1.3.4及以上)
+```
+Xapian::WritableDatabase db_out(dest, Xapian::DB_CREATE|Xapian::DB_BACKEND_GLASS);
+db_out.compact("data.idx",Xapian::DBCOMPACT_SINGLE_FILE)
+```
+转换到glassify格式的单一文件的参考代码:[glassify.cc](https://github.com/kiwix/kiwix/blob/master/android/glassify.cc)
+5. 终极目标:对Kiwix及Zeal的功能进行整合,能做为一个帮助服务器使用,支持自定义插件(包括在线检索,语音搜索,对显示的内容的操作:如翻译)
