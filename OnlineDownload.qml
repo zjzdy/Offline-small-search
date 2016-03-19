@@ -145,6 +145,34 @@ Rectangle {
         }
     }
 
+    Item {
+        visible: listView1.count < 1
+        anchors.top: rectangle3.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        z: 1
+        AnimatedImage {
+            id: wait_img2
+            anchors.centerIn: parent
+            height: rectangle2.a_min/2
+            width: rectangle2.a_min/2
+            source: "qrc:/image/icon_wait2.gif"
+            visible: parent.visible
+            fillMode: Image.PreserveAspectFit
+        }
+
+        Text {
+            visible: parent.visible
+            text: qsTr("正在获取离线包列表")
+            anchors.top: wait_img2.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
+        }
+    }
+
     ListView {
         id: listView1
         anchors.top: rectangle1.bottom
@@ -158,15 +186,16 @@ Rectangle {
         delegate: Item {
             z: -1
             width: rectangle2.width
-            height: 80*Math.min(rectangle2.a_max/1280,a_pd/12)
+            height: Math.max(name_t.height,zip_size_t.height)+25*Math.min(rectangle2.a_max/1280,a_pd/12)
             Text {
                 id: name_t
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                //anchors.bottom: parent.bottom
                 text: name
                 width: 450*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
                 //anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -175,10 +204,11 @@ Rectangle {
                 id: zip_size_t
                 anchors.left: name_t.right
                 anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                //anchors.bottom: parent.bottom
                 text: zip_size
                 width: 150*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
                 //anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -199,8 +229,8 @@ Rectangle {
             Item {
                 anchors.left: zip_size_t.right
                 anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                height: 80*Math.min(rectangle2.a_max/1280,a_pd/12)
+                anchors.verticalCenter: parent.verticalCenter
 
                 AnimatedImage {
                     id: image2
@@ -210,7 +240,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.topMargin: 15*Math.min(rectangle2.a_max/1280,a_pd/12)
                     anchors.bottomMargin: 15*Math.min(rectangle2.a_max/1280,a_pd/12)
-                    width: height
+                    width: (text2.contentWidth > parent.width-height) ? 0: height
                     source: "qrc:/image/icon_wait2.gif"
                     visible: false
                     fillMode: Image.PreserveAspectFit
@@ -223,6 +253,7 @@ Rectangle {
                 }
 
                 Text {
+                    id: text2
                     visible: image2.visible
                     text: image2.progress
                     anchors.top: parent.top
@@ -239,6 +270,7 @@ Rectangle {
                     visible: !image2.visible
                     enabled: visible
                     anchors.fill: parent
+                    anchors.margins: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                     radius: 15*Math.min(rectangle2.a_max/1280,a_pd/12)
                     color: "white"
                     border.color: "black"
@@ -271,7 +303,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        text: qsTr("更多离线试题包请访问主页: http://zjzdy.github.io/oss")
+        text: qsTr("更多离线请访问主页: http://zjzdy.github.io/oss")
         font.pixelSize: 30*rectangle2.a_sqrt
         elide: Text.ElideLeft
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere

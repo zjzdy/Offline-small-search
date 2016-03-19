@@ -30,7 +30,7 @@ Offline_small_search::Offline_small_search(QObject *parent) :
     //QObject::connect(&crop_thread_obj,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
     crop_thread_obj.start();
 
-    QObject::connect(&unzip_thread_obj,SIGNAL(unzip_finish(int)),this,SLOT(on_unzip_finish(int)));
+    QObject::connect(&unzip_thread_obj,SIGNAL(unzip_finish(int,QString)),this,SLOT(on_unzip_finish(int,QString)));
     QObject::connect(this,SIGNAL(unzip(QString,QString,int)),&unzip_thread_obj,SIGNAL(unzip(QString,QString,int)));
     unzip_thread_obj.start();
     //search_thread.wait();
@@ -70,6 +70,7 @@ void Offline_small_search::init_obj(QObject *rootobj)
     search_text_obj = rootobj->findChild<QObject*>("search_text");
     home_img_obj = rootobj->findChild<QObject*>("home_img");
     result_search_img_obj = rootobj->findChild<QObject*>("result_search_img");
+    update_dialog_obj = rootObject->findChild<QObject*>("update_dialog");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(tabView_obj)) qDebug()<<"tabView_obj not find";
 }
@@ -85,6 +86,7 @@ void Offline_small_search::init_obj()
     search_text_obj = rootObject->findChild<QObject*>("search_text");
     home_img_obj = rootObject->findChild<QObject*>("home_img");
     result_search_img_obj = rootObject->findChild<QObject*>("result_search_img");
+    update_dialog_obj = rootObject->findChild<QObject*>("update_dialog");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
 }
@@ -511,7 +513,6 @@ void Offline_small_search::search(QStringList type, QString str)
 void Offline_small_search::add_offline_pkg(QString path,bool enable)
 {
     if(path.isEmpty()||path.isNull()) return;
-    offline_pkg1 = new offline_pkg(this);
     //path
     path.remove(QRegExp("[/\\\\]$"));
     if(path.indexOf(QRegExp("^file:/")) >= 0)
@@ -526,6 +527,15 @@ void Offline_small_search::add_offline_pkg(QString path,bool enable)
         if(path.indexOf(QRegExp("^[/\\\\]")) == -1 && path.indexOf(QRegExp("^[^:/\\\\]*:[/\\\\]")) == -1)
             path.prepend(QDir::currentPath()+"/");
     }
+    for(int i = 0; i < offline_pkg_list.size(); ++i)
+    {
+        offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+        if(offline_pkg1->path() == path)
+        {
+            return;
+        }
+    }
+    offline_pkg1 = new offline_pkg(this);
     offline_pkg1->setPath(path);
     //name_code
     QRegExp name_code_reg("^.*[/\\\\]");
@@ -697,7 +707,6 @@ void Offline_small_search::remove_offline_pkg(QString path)
         if(path.indexOf(QRegExp("^[/\\\\]")) == -1 && path.indexOf(QRegExp("^[^:/\\\\]*:[/\\\\]")) == -1)
             path.prepend(QDir::currentPath()+"/");
     }
-    if(path == "/") path = "file://";
     for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
         offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
@@ -1211,6 +1220,13 @@ void Offline_small_search::remove_data(QString url)
     if(QFile::exists(get_data_dir()+"/"+url.remove(".zip")))
     {
         QString dirName = get_data_dir()+"/"+url;
+        QDirIterator dir_it(dirName,QDir::Dirs|QDir::NoDotAndDotDot,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+        while (dir_it.hasNext())
+        {
+            dir_it.next();
+            if(QFile::exists(dir_it.filePath()+"/name")&&QFile::exists(dir_it.filePath()+"/data.zim"))
+                remove_offline_pkg(dir_it.filePath());
+        }
         qDebug()<<"remove "<<dirName;
         static QVector<QString> dirNames;
         QDir dir;
@@ -1306,8 +1322,6 @@ void Offline_small_search::onDownloadProgress(qint64 bytesSent, qint64 bytesTota
     QObject* wait_img_obj = obj_list.value(m_reply->url().toString());
     //qDebug()<<bool(wait_img_obj)<<double(bytesSent)/double(bytesTotal)*100.0;
     if(wait_img_obj) wait_img_obj->setProperty("progress",QString::number(int(double(bytesSent)/double(bytesTotal)*100.0))+"%");
-	//progressBar->setMaximum(bytesTotal);
-    //progressBar->setValue(bytesSent);
 }
 
 void Offline_small_search::onReadyRead()
@@ -1416,9 +1430,16 @@ void Offline_small_search::on_crop_ocr_init_finish(int batch)
     qDebug()<<"init crop_ocr finish"<<batch;
 }
 
-void Offline_small_search::on_unzip_finish(int batch)
+void Offline_small_search::on_unzip_finish(int batch,QString dir)
 {
-    QObject* wait_img_obj = obj_list.value(unzip_url_map[batch]);//ui->online_download_qml->rootObject()->findChild<QObject*>(get_url_objname(m_reply->url().toString()),Qt::FindChildrenRecursively);
+    QDirIterator dir_it(dir,QDir::Dirs|QDir::NoDotAndDotDot,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+    while (dir_it.hasNext())
+    {
+        dir_it.next();
+        if(QFile::exists(dir_it.filePath()+"/name")&&QFile::exists(dir_it.filePath()+"/data.zim"))
+            add_offline_pkg(dir_it.filePath());
+    }
+    QObject* wait_img_obj = obj_list.value(unzip_url_map[batch]);
     if(wait_img_obj) wait_img_obj->setProperty("visible",false);
 }
 
@@ -1482,4 +1503,51 @@ QColor Offline_small_search::rand_lightcolor(QString str)
     //qsrand(a.mid(24,8).toUInt(0,16));
     //int a = qrand()%256;
     return QColor::fromHsl(h,s,l);
+}
+
+void Offline_small_search::check_update()
+{
+    qDebug()<<"check update start";
+    m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.github.io/oss/Version")));
+    connect(m_reply,SIGNAL(finished()),this,SLOT(download_version_finish()));
+}
+
+void Offline_small_search::download_version_finish()
+{
+    m_reply=dynamic_cast<QNetworkReply*>(sender());
+    if(!m_reply->isFinished())
+    {
+        return;
+    }
+    if(m_reply->error() == QNetworkReply::NoError)
+    {
+        int master_ver = QString(m_reply->readAll()).toInt();
+        if(master_ver > VERSION_N)
+        {
+            qDebug()<<"download changelog";
+            m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.github.io/oss/Change")));
+            connect(m_reply,SIGNAL(finished()),this,SLOT(download_changelog_finish()));
+        }
+        else
+        {
+            update_dialog_obj->setProperty("text",tr("已是最新版本"));
+            QMetaObject::invokeMethod(update_dialog_obj, "open");
+        }
+        qDebug()<<"master version"<<master_ver;
+    }
+}
+
+void Offline_small_search::download_changelog_finish()
+{
+    m_reply=dynamic_cast<QNetworkReply*>(sender());
+    if(!m_reply->isFinished())
+    {
+        return;
+    }
+    if(m_reply->error() == QNetworkReply::NoError)
+    {
+        QString changelog = QString::fromUtf8(m_reply->readAll());
+        update_dialog_obj->setProperty("text",changelog+tr("\n请到官网http://zjzdy.github.io/oss/自行下载最新版本"));
+        QMetaObject::invokeMethod(update_dialog_obj, "open");
+    }
 }

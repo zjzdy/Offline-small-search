@@ -71,7 +71,7 @@ Rectangle {
 
     Text {
         id: text2
-        text: qsTr("版本号: v2.0.1")
+        text: qsTr("版本号: v2.0.2")
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: text1.bottom
@@ -81,6 +81,15 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 0
         font.pixelSize: 40*rectangle2.a_sqrt
+    }
+
+    Button {
+        id: check_update
+        anchors.top: text2.bottom
+        anchors.topMargin: 30*rectangle2.height/1280
+        text: qsTr("检查更新")
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: main_widget.check_update()
     }
 
     TextArea {
@@ -94,7 +103,7 @@ Rectangle {
         anchors.bottomMargin: 0
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignLeft
-        anchors.top: text2.bottom
+        anchors.top: check_update.bottom
         anchors.topMargin: 85*Math.min(rectangle2.a_max/1280,a_pd/12)
         anchors.right: parent.right
         anchors.rightMargin: 0
