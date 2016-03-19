@@ -131,12 +131,8 @@ android {
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
     LIBS +=-L$$PWD/build-bin/lib/ \
-        $$PWD/build-bin/lib/libopencv_java3.so \
-        #$$PWD/build-bin/lib/libopencv_*.a \
-        -Wl,-Bstatic,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
+        -Wl,-Bstatic,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
-    ANDROID_EXTRA_LIBS = \
-        $$PWD/build-bin/lib/libopencv_java3.so
 
     DISTFILES += \
         android/AndroidManifest.xml \

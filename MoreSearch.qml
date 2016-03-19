@@ -125,6 +125,21 @@ Rectangle {
                 font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
         }
+        Text {
+            id: get_tip
+            visible: gridView1.count < 1
+            anchors.top: rectangle3.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            text: qsTr("您还没添加离线包呢! 下载离线请访问主页: http://zjzdy.github.io/oss")
+            font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
+            elide: Text.ElideLeft
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            z: 3
+        }
         GridView {
             id: gridView1
             anchors.top: rectangle3.bottom

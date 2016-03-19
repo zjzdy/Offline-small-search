@@ -17,7 +17,7 @@ public Q_SLOTS:
     void on_unzip(QString zipfile, QString dir, int batch);
 
 Q_SIGNALS:
-    void unzip_finish(int batch);
+    void unzip_finish(int batch,QString dir);
 
 };
 
@@ -31,7 +31,7 @@ public:
 
 Q_SIGNALS:
     void unzip(QString zipfile, QString dir, int batch);
-    void unzip_finish(int batch);
+    void unzip_finish(int batch,QString dir);
 };
 
 #endif // UNZIP_THREAD_H

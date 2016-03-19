@@ -12,7 +12,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 主页: [http://zjzdy.github.io/oss/](http://zjzdy.github.io/oss/)
 
-当前版本: v2.0.0
+当前版本: v2.0.2
 
 ##功能及特点
 * 离线全文检索,采用高度压缩打包的ZIM文件存储数据
@@ -293,7 +293,6 @@ tar -xf 5.4.1.tar.gz
 cd tess-two-5.4.1/
 sed -i 's/android-8/android-9/g' tess-two/project.properties
 sed -i 's/android:minSdkVersion="8"/android:minSdkVersion="9"/g' tess-two/AndroidManifest.xml
-sed -i 's/android:targetSdkVersion="22"/android:targetSdkVersion="18"/g' tess-two/AndroidManifest.xml
 sed -i 's/LOCAL_SHARED_LIBRARIES/LOCAL_STATIC_LIBRARIES/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
 sed -i 's/BUILD_SHARED_LIBRARY/BUILD_STATIC_LIBRARY/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
 sed -i 's/LEPTONICA_PATH/#LEPTONICA_PATH/g' tess-two/jni/Android.mk
@@ -332,7 +331,7 @@ cd ../
 3.打开Offline_small_search.pro
 4.选择配置Android for armeabi-v7a (GCC 4.9)
 5.选择Release
-6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-18
+6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-22
 7.点击构建
 
 ##感谢以下的项目,排名不分先后:
@@ -354,7 +353,7 @@ cd ../
 
 ##TODO
 1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能(3.1)
-2. 在线更新功能(3.0)
+2. 改进搜索结果页面,添加标题,对匹配的关键词高亮并显示关键词所在的文本(包括匹配文本附近的未匹配的几个字)而非开头,其余未匹配的长段文本显示为...
 3. 进行3.0版的重构(此项将于2017年高考完成后进行)
 	+ 3.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
 	+ 3.2 整理界面代码和业务逻辑
@@ -363,6 +362,7 @@ cd ../
 4. 索引改用Xapian的glassify格式,使用单一文件"data.idx"(Xapian 1.3.4及以上)
 ```
 Xapian::WritableDatabase db_out(dest, Xapian::DB_CREATE|Xapian::DB_BACKEND_GLASS);
+
 db_out.compact("data.idx",Xapian::DBCOMPACT_SINGLE_FILE)
 ```
 转换到glassify格式的单一文件的参考代码:[glassify.cc](https://github.com/kiwix/kiwix/blob/master/android/glassify.cc)

@@ -25,6 +25,13 @@ ApplicationWindow {
         onYes: main_widget.close_app()
     }
 
+    MessageDialog {
+        id: update_messageDialog
+        objectName: "update_dialog"
+        title: qsTr("检查更新")
+        standardButtons: StandardButton.Ok
+    }
+
     function choose_splash() {
         if(app.width*1.3 < app.height)
             return "qrc:/image/splash.png";

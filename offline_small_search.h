@@ -36,7 +36,7 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define VERSION_N 21
+#define VERSION_N 22
 
 class Offline_small_search : public QObject
 {
@@ -67,12 +67,14 @@ public Q_SLOTS:
     void download_data_finish();
     void onReadyRead();
     void onDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void download_version_finish();
+    void download_changelog_finish();
     void on_search_result(QStringList urls, int batch);
     void on_search_init_finish(int batch);
     void on_crop_ocr_result(QString text, int batch);
     void on_crop_ocr_rotate_finish(QString imagepath,int batch);
     void on_crop_ocr_init_finish(int batch);
-    void on_unzip_finish(int batch);
+    void on_unzip_finish(int batch, QString dir);
     Q_INVOKABLE void obj_list_insert(QString key, QObject *obj);
     Q_INVOKABLE void clean_cache();
     Q_INVOKABLE void show_more();
@@ -138,6 +140,7 @@ public Q_SLOTS:
     Q_INVOKABLE void init_search_from_offline_pkg_list();
     Q_INVOKABLE void setCurrentIndex(int index);
     Q_INVOKABLE void webview_goback();
+    Q_INVOKABLE void check_update();
     Q_INVOKABLE QColor rand_lightcolor(QString str = "");
 private:
 #ifdef Q_OS_ANDROID
@@ -186,6 +189,7 @@ public:
     QObject* search_text_obj;
     QObject* home_img_obj;
     QObject* result_search_img_obj;
+    QObject* update_dialog_obj;
     custom_obj custom1;
     //crop crop_obj;
     crop_thread crop_thread_obj;
