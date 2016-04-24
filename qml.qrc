@@ -16,5 +16,10 @@
         <file>OnlineDownload.qml</file>
         <file>all.qml</file>
         <file>Camera.qml</file>
+        <file>DefaultFileDialog.qml</file>
+        <file>qml/IconButtonStyle.qml</file>
+        <file>qml/IconGlyph.qml</file>
+        <file>qml/icons.ttf</file>
+        <file>qml/qmldir</file>
     </qresource>
 </RCC>

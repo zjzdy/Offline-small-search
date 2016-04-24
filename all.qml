@@ -21,7 +21,7 @@ ApplicationWindow {
         id: exit_messageDialog
         title: qsTr("退出")
         text: qsTr("您真的要退出吗?")
-        standardButtons: StandardButton.Yes | StandardButton.No
+        standardButtons: StandardButton.No | StandardButton.Yes
         onYes: main_widget.close_app()
     }
 
@@ -29,7 +29,10 @@ ApplicationWindow {
         id: update_messageDialog
         objectName: "update_dialog"
         title: qsTr("检查更新")
-        standardButtons: StandardButton.Ok
+        standardButtons: (text == qsTr("已是最新版本")) ? StandardButton.Ok : (StandardButton.No | StandardButton.Yes)
+        onYes: {
+            main_widget.openUrl("http://git.oschina.net/zjzdy/Offline-small-search/releases/")
+        }
     }
 
     function choose_splash() {

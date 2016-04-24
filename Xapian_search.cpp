@@ -43,12 +43,12 @@ void Xapian_search::on_init(QStringList dir, int batch)
 void Xapian_search::on_search(QString str, int batch, QStringList type)
 {
     QStringList urls;
+    QStringList key_words;
     QString runing = "";
     runing = "Strat try!";
 
     try{
-		Xapian::Document doc;
-        //Xapian::Query query;
+        Xapian::Document doc;
         Xapian::Enquire enquire(db);
 		termgen.set_document(doc);
 		termgen.index_text_without_positions(str.toStdString(),1,"C");
@@ -58,18 +58,20 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
 		for (it = doc.termlist_begin(); it != doc.termlist_end(); ++it)
 		{
             querys.append(Xapian::Query(*it,it.get_wdf()));
-            /*
-			if (query.empty())
-				query = Xapian::Query(*it,it.get_wdf());
-			else
-				query = Xapian::Query(Xapian::Query::OP_OR,query,Xapian::Query(*it,it.get_wdf()));
-            */
 		}
+        Xapian::Document doc2;
+        termgen.set_document(doc2);
+        termgen.index_text_without_positions(str.toStdString(),1);
+        Xapian::TermIterator it2;
+        for (it2 = doc2.termlist_begin(); it2 != doc2.termlist_end(); ++it2)
+        {
+            key_words.append(QString::fromStdString(*it2));
+        }
         Xapian::Query query(Xapian::Query::OP_ELITE_SET, querys.begin(), querys.end(), 20);
         if (query.empty() || querys.empty())
         {
             qDebug()<<"query is empty"<<str<<batch<<type;
-            Q_EMIT search_result(urls,batch);
+            Q_EMIT search_result(urls,QStringList(),batch);
         }
         Xapian::Query name_query;
 		for(int i1 = 0; i1 < type.size(); ++i1)
@@ -88,7 +90,7 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
 			urls.append(QString::fromStdString(i.get_document().get_value(1)+":/"+i.get_document().get_data()));
         }
         //qDebug()<<"search result(url):"<<urls<<batch;
-        Q_EMIT search_result(urls,batch);
+        Q_EMIT search_result(urls,key_words,batch);
     }
     catch(exception& e)
     {
@@ -96,13 +98,13 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
         e2<<e.what();
         urls.append(QString::fromStdString(e2.str()));
         urls.append("Happen Error:"+runing);
-        Q_EMIT search_result(urls,-1);
+        Q_EMIT search_result(urls,QStringList(),-1);
         qDebug()<<"search3"<<batch<<str<<type<<urls<<runing;
     }
     catch(...)
     {
         urls.append("Unknow Error");
-        Q_EMIT search_result(urls,-2);
+        Q_EMIT search_result(urls,QStringList(),-2);
         qDebug()<<"search4"<<batch<<str<<type;
     }
 }

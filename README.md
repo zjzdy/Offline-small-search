@@ -12,7 +12,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 主页: [http://zjzdy.github.io/oss/](http://zjzdy.github.io/oss/)
 
-当前版本: v2.0.2
+当前版本: v2.1.0
 
 ##功能及特点
 * 离线全文检索,采用高度压缩打包的ZIM文件存储数据
@@ -28,6 +28,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 ####Git@OSC
 * Android: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android)
 * Windows: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows)
+* All: [http://git.oschina.net/zjzdy/Offline-small-search/releases/](http://git.oschina.net/zjzdy/Offline-small-search/releases/)
 
 ####GitHub
 * Android: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android)
@@ -61,13 +62,13 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 ##编译
 ##Windows版本编译
-本过程基于Qt 5.5.1 for Windows(msys2 mingw32), OpenCV 3.1.0, Xapian 1.2.22, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
+本过程基于Qt 5.6.0 for Windows(msys2 mingw32), OpenCV 3.1.0, Xapian 1.3.5, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
 所有代码均在msys2的mingw32_shell中运行.
 ###0.准备项目
 安装必须的软件,下载或克隆项目.
 ```
 pacman -Syu
-pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5-static mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget zip
+pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5-static mingw-w64-i686-qt5 mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget zip
 git clone http://git.oschina.net/zjzdy/Offline-small-search
 cd Offline-small-search/
 export ossbuild=$PWD
@@ -75,11 +76,11 @@ export ossbuild=$PWD
 ###1.编译 Xapian
 到Xapian的官网去下载最新版本的Xapian core
 下载地址:[http://xapian.org/download](http://xapian.org/download)
-以下使用xapian-core-1.2.22.tar.xz
+以下使用xapian-core-1.3.5.tar.xz
 ```
-wget http://oligarchy.co.uk/xapian/1.2.22/xapian-core-1.2.22.tar.xz
-tar -xf xapian-core-1.2.22.tar.xz
-cd xapian-core-1.2.22/
+wget http://oligarchy.co.uk/xapian/1.3.5/xapian-core-1.3.5.tar.xz
+tar -xf xapian-core-1.3.5.tar.xz
+cd xapian-core-1.3.5/
 ./configure --prefix="${ossbuild}/build-bin/" --enable-backend-inmemory=no
 make
 make install
@@ -101,14 +102,18 @@ cp /mingw32/include/tesseract/tesscallback.h /mingw32/include/tesseract/tesscall
 sed -i 's/template <class T> struct remove_reference;//g' /mingw32/include/tesseract/tesscallback.h
 sed -i 's/template<typename T> struct remove_reference { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
 sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
-qtcreator Offline_small_search.pro
 ```
-如果Qt库没有带webengine,则改用QtWebKit,且"有道翻译"这个功能无效.
+如果Qt库没有带webengine,则改用QtWebKit.
 ```
-sed -i 's/QtWebView 1.0/QtWebKit 3.0/g' Result.qml
+sed -i 's/QtWebView 1.0/QtWebKit 3.0\nimport QtWebKit.experimental 1.0/g' Result.qml
+sed -i 's/text.runJavaScript/text.experimental.evaluateJavaScript/g' Result.qml
+sed -i 's/,function() { console.log("runjs"); }//g' Result.qml
 ```
 1.打开Qt Creator
 2.打开Offline_small_search.pro
+```
+qtcreator Offline_small_search.pro
+```
 3.选择配置Desktop Qt (static) MinGW-w64 32bit (MSYS2)
 4.选择Release
 5.点击构建
@@ -188,7 +193,7 @@ cp /mingw32/bin/zlib1.dll oss_bin/
 ------
 ##Android版本编译
 以下内容可以根据最新版本自行修改
-本过程基于Qt 5.5.1 for Android, OpenCV 3.1.0, Xapian 1.2.22, xz 5.2.2, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
+本过程基于Qt 5.6.0 for Android, OpenCV 3.1.0, Xapian 1.3.5, xz 5.2.2, e2fsprogs 1.42.13, Leptonica 1.73, tess-two 5.4.1编写,Windows x86(win7及以上)环境运行.
 所有代码均在msys2中运行.
 msys2下载地址:[http://msys2.github.io/](http://msys2.github.io/)
 ###0.准备项目
@@ -248,22 +253,26 @@ make install
 cd ../
 ```
 ###4.编译 libuuid
+到e2fsprogs的官网去下载最新版本的e2fsprogs
+下载地址:[http://e2fsprogs.sourceforge.net](http://e2fsprogs.sourceforge.net/)
+以下使用e2fsprogs-1.42.13.tar.xz
 ```
-cd libuuid
-autoreconf -ivf
-./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID"
-make
-make install
+wget https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.42.13/e2fsprogs-1.42.13.tar.xz
+tar -xf e2fsprogs-1.42.13.tar.xz
+cd e2fsprogs-1.42.13/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --enable-libuuid
+make libs
+make install-libs
 cd ../
 ```
 ###5.编译 Xapian
 到Xapian的官网去下载最新版本的Xapian core
 下载地址:[http://xapian.org/download](http://xapian.org/download)
-以下使用xapian-core-1.2.22.tar.xz
+以下使用xapian-core-1.3.5.tar.xz
 ```
-wget http://oligarchy.co.uk/xapian/1.2.22/xapian-core-1.2.22.tar.xz
-tar -xf xapian-core-1.2.22.tar.xz
-cd xapian-core-1.2.22/
+wget http://oligarchy.co.uk/xapian/1.3.5/xapian-core-1.3.5.tar.xz
+tar -xf xapian-core-1.3.5.tar.xz
+cd xapian-core-1.3.5/
 ./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib  -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3  -Wl,--fix-cortex-a8 -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC  -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS="  -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -fomit-frame-pointer -fno-strict-aliasing -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --enable-backend-inmemory=no
 sed -i 's/HAVE_DECL_SYS_ERRLIST 1/HAVE_DECL_SYS_ERRLIST 0/g' config.h
 sed -i 's/HAVE_DECL_SYS_NERR 1/HAVE_DECL_SYS_NERR 0/g' config.h

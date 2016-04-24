@@ -106,7 +106,7 @@ QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
         //img.save("tmp/trans.jpg", "jpg", 100);
     }
 
-    //medianBlur(image,image,3);
+    medianBlur(image,image,3);
     Mat local;
     adaptiveThreshold(image, local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 25, 11);
 

@@ -7,9 +7,9 @@
 #include <QFileInfoList>
 #include <QFileInfo>
 #include <QDir>
-#include <QFileDialog>
 #include <QRegExp>
 #include <QString>
+#include <QStringList>
 #include <QByteArray>
 #include <QDirIterator>
 #include <QDataStream>
@@ -47,7 +47,7 @@ public:
     explicit Xapian_search(QObject *parent = 0);
 
 Q_SIGNALS:
-    void search_result(QStringList urls, int batch);
+    void search_result(QStringList urls, QStringList key_words, int batch);
     void init_finish(int batch);
 
 public Q_SLOTS:
@@ -57,8 +57,6 @@ public Q_SLOTS:
 private:
 	//xapian
     Xapian::Database db;
-    //shared_ptr<Xapian::Enquire> enquire;
-    //Xapian::Enquire *enquire;
     Xapian::TermGenerator termgen;
 };
 

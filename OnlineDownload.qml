@@ -2,6 +2,7 @@ import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.XmlListModel 2.0
+import QtQuick.Dialogs 1.2
 
 Rectangle {
     id: rectangle2
@@ -13,6 +14,36 @@ Rectangle {
     property real a_pd: 0
     property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
     z: 0
+
+    MessageDialog {
+        id: remove_sure
+        property string name: ""
+        property string url: ""
+        property var image2: null
+        text: qsTr("您确定要删除:")+name+qsTr(" 吗?\n在这里删除将会彻底删除离线包的所有文件!")
+        standardButtons: StandardButton.No | StandardButton.Yes
+        onYes: {
+            image2.visible = true
+            main_widget.obj_list_insert(url,image2)
+            main_widget.remove_data(url);
+        }
+    }
+
+    MessageDialog {
+        id: download_readme_dialog
+        property string name: ""
+        property string url: ""
+        property string readme: ""
+        property bool open_url: false
+        property var image2: null
+        text: qsTr("您将要下载:")+name+qsTr(" \n下载说明:\n")+readme
+        standardButtons: StandardButton.No | StandardButton.Yes
+        onYes: {
+            if(!open_url) image2.visible = true
+            main_widget.obj_list_insert(url,image2)
+            open_url ? main_widget.openUrl(url) : main_widget.download_data(url);
+        }
+    }
 
     Rectangle {
         id: rectangle3
@@ -92,12 +123,20 @@ Rectangle {
 
     XmlListModel {
         id: online_xml
-        source: "http://zjzdy.github.io/oss/online.xml"
+        source: "http://zjzdy.github.io/oss/online2.xml"
         query: "//pkg[@type='pkg']"
 
         XmlRole {
+            name: "open_url"
+            query: "open_url/string()='true'"
+        }
+        XmlRole {
             name: "download"
             query: "download/string()"
+        }
+        XmlRole {
+            name: "download_readme"
+            query: "download_readme/string()"
         }
         XmlRole {
             name: "category"
@@ -114,6 +153,14 @@ Rectangle {
         XmlRole {
             name: "name_code"
             query: "name_code/string()"
+        }
+        XmlRole {
+            name: "update_code"
+            query: "update_code/string()"
+        }
+        XmlRole {
+            name: "version"
+            query: "version/number()"
         }
         XmlRole {
             name: "zip_size"
@@ -246,7 +293,7 @@ Rectangle {
                     fillMode: Image.PreserveAspectFit
                     onVisibleChanged: {
                         xz_text.text = ""
-                        xz_text.text = main_widget.is_exist(download,1) ? qsTr("删除") : qsTr("下载")
+                        xz_text.text = (main_widget.is_exist(download,1)||main_widget.is_exist(name_code,1)) ? qsTr("删除") : qsTr("下载")
 						progress = ""
                     }
                     property string progress: ""
@@ -283,14 +330,37 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizontalCenter
                         font.pixelSize: 45*rectangle2.a_sqrt
-                        text: main_widget.is_exist(download,1) ? qsTr("删除") : qsTr("下载")
+                        text: (main_widget.is_exist(download,1)||main_widget.is_exist(name_code,1)) ? qsTr("删除") : qsTr("下载")
                     }
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            image2.visible = true
-                            main_widget.obj_list_insert(download,image2)
-                            main_widget.is_exist(download,1) ? main_widget.remove_data(download) : main_widget.download_data(download)
+                            if(main_widget.is_exist(download,1)||main_widget.is_exist(name_code,1))
+                            {
+                                remove_sure.url = download
+                                remove_sure.name = name
+                                remove_sure.image2 = image2
+                                remove_sure.open()
+                            }
+                            else
+                            {
+                                if(download_readme == null||download_readme == "")
+                                {
+                                    if(!open_url) image2.visible = true
+                                    main_widget.obj_list_insert(download,image2)
+                                    open_url ? main_widget.openUrl(download) : main_widget.download_data(download)
+                                }
+                                else
+                                {
+                                    //console.log(url_type,download_readme)
+                                    download_readme_dialog.url = download
+                                    download_readme_dialog.name = name
+                                    download_readme_dialog.readme = download_readme
+                                    download_readme_dialog.open_url = open_url
+                                    download_readme_dialog.image2 = image2
+                                    download_readme_dialog.open()
+                                }
+                            }
                         }
                     }
                 }
@@ -364,7 +434,7 @@ Rectangle {
         }
 
         Text {
-            id: name
+            id: name2
             text: qsTr("离线包名称:")
             anchors.left: parent.left
             anchors.leftMargin: 5*rectangle2.a_min/720
@@ -379,7 +449,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.right: parent.right
-            anchors.top: name.bottom
+            anchors.top: name2.bottom
             anchors.topMargin: 0
             font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
@@ -408,7 +478,7 @@ Rectangle {
         }
 
         Text {
-            id: name_code
+            id: name_code_t
             text: qsTr("离线包标识码:")
             anchors.left: parent.left
             anchors.leftMargin: 5*rectangle2.a_min/720
@@ -423,7 +493,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 5*rectangle2.a_min/720
             anchors.right: parent.right
-            anchors.top: name_code.bottom
+            anchors.top: name_code_t.bottom
             anchors.topMargin: 0
             font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
