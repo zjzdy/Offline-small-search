@@ -11,7 +11,9 @@
 #include <QObject>
 #include <QMetaObject>
 #include <QList>
+#include <QVector>
 #include <QHash>
+#include <QMap>
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
@@ -19,6 +21,7 @@
 #include <QQuickItem>
 #include <QCryptographicHash>
 #include <QNetworkReply>
+#include <QDesktopServices>
 #include "capcustomevent.h"
 #include "quazip/JlCompress.h"
 #ifdef Q_OS_ANDROID
@@ -36,7 +39,8 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define VERSION_N 22
+#define OSS_VERSION_N 23
+#define OSS_VERSION "V2.1.0"
 
 class Offline_small_search : public QObject
 {
@@ -69,7 +73,7 @@ public Q_SLOTS:
     void onDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
     void download_version_finish();
     void download_changelog_finish();
-    void on_search_result(QStringList urls, int batch);
+    void on_search_result(QStringList urls, QStringList key_words, int batch);
     void on_search_init_finish(int batch);
     void on_crop_ocr_result(QString text, int batch);
     void on_crop_ocr_rotate_finish(QString imagepath,int batch);
@@ -82,7 +86,7 @@ public Q_SLOTS:
     Q_INVOKABLE void show_more_search();
     Q_INVOKABLE void show_history();
     Q_INVOKABLE void show_search(QString str = " ");
-    Q_INVOKABLE void show_search_result(QString str);
+    Q_INVOKABLE void show_search_result(QString str, bool highter = true);
     Q_INVOKABLE void show_pkg();
     Q_INVOKABLE void show_mark();
     Q_INVOKABLE void show_about();
@@ -108,7 +112,7 @@ public Q_SLOTS:
     Q_INVOKABLE QString get_text_with_other_from_url(QString url);
     Q_INVOKABLE QString get_data_dir();
     Q_INVOKABLE QString md5(QString str);
-    Q_INVOKABLE void search(QStringList type, QString str);
+    Q_INVOKABLE void search(QStringList type, QString str, bool highter = true);
     Q_INVOKABLE void add_offline_pkg(QString path, bool enable = true);
     Q_INVOKABLE void remove_offline_pkg(QString path);
     Q_INVOKABLE void remove_all_offline_pkg();
@@ -141,7 +145,10 @@ public Q_SLOTS:
     Q_INVOKABLE void setCurrentIndex(int index);
     Q_INVOKABLE void webview_goback();
     Q_INVOKABLE void check_update();
+    Q_INVOKABLE bool openUrl(QString url);
+    Q_INVOKABLE QString highlight_str(QString str, QStringList &key_words, int max_char = 0);
     Q_INVOKABLE QColor rand_lightcolor(QString str = "");
+    Q_INVOKABLE QString get_version();
 private:
 #ifdef Q_OS_ANDROID
     void clickHome();
@@ -152,6 +159,7 @@ private:
     QString search_str;
     QString search_url;
     QString data_dir;
+    QMap<int,bool> search_batch_highter;
     QList<QObject*> more_search_list;
     QList<QObject*> offline_pkg_list;
     QList<QObject*> history_list;

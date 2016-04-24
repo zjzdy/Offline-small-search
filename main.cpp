@@ -45,7 +45,7 @@ static void onImageCaptured(JNIEnv *env, jobject thiz,int result, jstring imageF
 static bool registerNativeMethods()
 {
     JNINativeMethod methods[] {
-        {"OnImageCaptured", "(ILjava/lang/String;)V", (void*)onImageCaptured}
+        {"onImageCaptured", "(ILjava/lang/String;)V", (void*)onImageCaptured}
     };
 
     const char *classname = "qt/oss/OfflineSmallSearchNative";
@@ -76,7 +76,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName(QObject::tr("离线小搜"));
-    a.setApplicationVersion("2.0.1");
     a.setOrganizationName("zjzdy");
     a.setOrganizationDomain("zjzdy.offline.small.search");
     QRect geometry = QGuiApplication::primaryScreen()->availableGeometry();
@@ -110,6 +109,7 @@ int main(int argc, char *argv[])
     registerNativeMethods();
 #endif
     Offline_small_search w;
+    a.setApplicationVersion(w.get_version());
 #ifdef Q_OS_ANDROID
     g_listener = (QObject*)&w;
 #endif

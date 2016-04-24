@@ -15,6 +15,12 @@ Rectangle {
     property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
     z: 0
 
+    MessageDialog {
+        id: beta_warning
+        text: qsTr("此功能为beta版本!\n识别的准确度较低,识别速度较慢.\n请多多体谅.")
+        standardButtons: StandardButton.Ok
+    }
+
     FileDialog {
         id: file
         selectExisting: true
@@ -25,6 +31,26 @@ Rectangle {
         onAccepted: {
             cropView.source = file.fileUrl
         }
+    }
+
+    DefaultFileDialog {
+        id: file2
+        folder: "file:///mnt"
+        selectExisting: true
+        selectMultiple: false
+        selectFolder: false
+        title: "请选择一张图片"
+        nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
+        onAccepted: {
+            cropView.source = file2.fileUrl
+        }
+    }
+
+    MessageDialog {
+        id: read_error
+        objectName: "read_error"
+        text: "对不起,无法读取图片"
+        standardButtons: StandardButton.Ok
     }
 
     Rectangle {
@@ -104,7 +130,7 @@ Rectangle {
                 anchors.leftMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
-                    file.open()
+                    (Qt.platform.os == "android") ? file2.open() : file.open()
                 }
             }
         }
@@ -132,6 +158,12 @@ Rectangle {
         cache: false
         fillMode: Image.Stretch
 
+        property bool have_read_error: false
+        onHave_read_errorChanged: {
+            if(have_read_error) read_error.open()
+            have_read_error = false
+        }
+
         onStatusChanged: {
             if (cropView.status == Image.Null) {
                 msg_text.text = qsTr("请选择拍照或选择一张图片")
@@ -155,7 +187,7 @@ Rectangle {
                 addCorner(bottomRight);
             }
             else if(cropView.status == Image.Error){
-                msg_text.text = qsTr("图片载入失败,请重试")
+                have_read_error = true
             }
         }
 
@@ -163,6 +195,7 @@ Rectangle {
 
             id: topLeft
             objectName: "topLeft"
+            visible: cropView.status == Image.Ready
             x: (parent.width - parent.paintedWidth) / 2 - this.width / 2
             y: (parent.height - parent.paintedHeight) / 2 - this.height / 2
 
@@ -187,6 +220,7 @@ Rectangle {
             id: topRight
 
             objectName: "topRight"
+            visible: cropView.status == Image.Ready
             x: (parent.width - parent.paintedWidth) / 2 + parent.paintedWidth - this.width / 2
             y: (parent.height - parent.paintedHeight) / 2 - this.height / 2
 
@@ -211,6 +245,7 @@ Rectangle {
             id: bottomLeft
 
             objectName: "bottomLeft"
+            visible: cropView.status == Image.Ready
             x: (parent.width - parent.paintedWidth) / 2 - this.width / 2
             y: (parent.height - parent.paintedHeight) / 2 + parent.paintedHeight - this.height / 2/3
 
@@ -235,6 +270,7 @@ Rectangle {
             id: bottomRight
 
             objectName: "bottomRight"
+            visible: cropView.status == Image.Ready
             x: (parent.width - parent.paintedWidth) / 2 + parent.paintedWidth - this.width / 2
             y: (parent.height - parent.paintedHeight) / 2 + parent.paintedHeight - this.height / 2
 
@@ -258,6 +294,7 @@ Rectangle {
         Canvas {
             id: canvas
             anchors.fill: parent
+            visible: cropView.status == Image.Ready
             z: 10
 
             onPaint: {
@@ -283,7 +320,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle4
-        height: 120*rectangle2.a_max/1280
+        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -313,6 +350,7 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
+                        beta_warning.open()
                         main_widget.search_type_clear()
                         main_widget.search_type_add("ALL")
                         main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))

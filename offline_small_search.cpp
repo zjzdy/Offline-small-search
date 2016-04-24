@@ -15,7 +15,7 @@ Offline_small_search::Offline_small_search(QObject *parent) :
     only_file_name.setPattern(".*[/\\\\]");
     only_file_name.setMinimal(false);
     QObject::connect(&search_thread,SIGNAL(init_finish(int)),this,SLOT(on_search_init_finish(int)));
-    QObject::connect(&search_thread,SIGNAL(search_result(QStringList,int)),this,SLOT(on_search_result(QStringList,int)));
+    QObject::connect(&search_thread,SIGNAL(search_result(QStringList,QStringList,int)),this,SLOT(on_search_result(QStringList,QStringList,int)));
     QObject::connect(this,SIGNAL(xapian_search(QString,int,QStringList)),&search_thread,SIGNAL(search(QString,int,QStringList)));
     QObject::connect(this,SIGNAL(init_search(QStringList,int)),&search_thread,SIGNAL(init(QStringList,int)));
     QObject::connect(&search_thread,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
@@ -214,12 +214,12 @@ void Offline_small_search::show_search(QString str)
     setCurrentIndex(7);
 }
 
-void Offline_small_search::show_search_result(QString str)
+void Offline_small_search::show_search_result(QString str,bool highter)
 {
     if(!(str == ""||str.isEmpty()||str.isNull()))
     {
         search_str = str;
-        search(search_type,search_str);
+        search(search_type,search_str,highter);
     }
     if(view.last() != 8)
         view.append(8);
@@ -487,7 +487,7 @@ QString Offline_small_search::get_text_with_other_from_url(QString url)
     return "";
 }
 
-void Offline_small_search::search(QStringList type, QString str)
+void Offline_small_search::search(QStringList type, QString str, bool highter)
 {
     if(offline_pkg_list.count() == 0)
     {
@@ -501,6 +501,8 @@ void Offline_small_search::search(QStringList type, QString str)
         return;
     }
     show_wait();
+    ++search_batch;
+    search_batch_highter[search_batch] = highter;
     Q_EMIT xapian_search(str,search_batch,type);
     for(int i = 0; i < search_result_list.size(); ++i)
     {
@@ -917,7 +919,7 @@ void Offline_small_search::init_search_from_offline_pkg_list()
     Q_EMIT init_search(dir_list,init_search_batch);
 }
 
-void Offline_small_search::on_search_result(QStringList urls, int batch)
+void Offline_small_search::on_search_result(QStringList urls, QStringList key_words, int batch)
 {
     if(batch == search_batch)
     {
@@ -926,7 +928,9 @@ void Offline_small_search::on_search_result(QStringList urls, int batch)
         {
             search_result = new search_result_obj();
             search_result->setUrl(urls.at(i));
-            search_result->setStr(get_text_from_url(urls.at(i)));
+            //search_result->setStr(get_text_from_url(urls.at(i)));
+            //qDebug()<<"Light xxx:"<<get_text_from_url(urls.at(i))<<" hh "<<key_words;
+            search_result->setStr(search_batch_highter.value(search_batch,true) ? highlight_str(get_text_from_url(urls.at(i)),key_words,100) : get_text_from_url(urls.at(i)));
             search_result_list.append(search_result);
         }
         refresh_search_result_for_search_result_qml();
@@ -947,13 +951,184 @@ void Offline_small_search::on_search_result(QStringList urls, int batch)
     }
 }
 
+QString Offline_small_search::highlight_str(QString str,QStringList &key_words,int max_char)
+{
+    //str.replace("<","&lt;");
+    //str.replace(">","&gt;");
+    //str.replace("&","&amp;");
+    //str.replace("\"","&quot;");
+    str.remove('<').remove('>');
+    str.replace(QRegExp(" +")," ");
+    QVector<bool> word_highter(str.size(),false);
+    QString stopword(" a about above after again against all am an and any are aren't as at be because been before being below between both but by can't cannot could couldn't did didn't do does doesn't doing don't down during each few for from further had hadn't has hasn't have haven't having he he'd he'll he's her here here's hers herself him himself his how how's i i'd i'll i'm i've if in into is isn't it it's its itself let's me more most mustn't my myself no nor not of off on once only or other ought our ours ourselves out over own same shan't she she'd she'll she's should shouldn't so some such than that that's the their theirs them themselves then there there's these they they'd they'll they're they've this those through to too under until up very was wasn't we we'd we'll we're we've were weren't what what's when when's where where's which while who who's whom why why's with won't would wouldn't you you'd you'll you're you've your yours yourself yourselves ");
+    int more_index = 0;
+    QList<QString> have_stopwords;
+    for(auto key_it = key_words.begin(); key_it != key_words.end(); ++key_it)
+    {
+        int key_size = (*key_it).size();
+        if((key_size < 2)&&((*key_it).indexOf(QRegExp("[0-9]")) == -1)) continue;
+        if(stopword.indexOf(" "+(*key_it)+" ") > -1)
+        {
+            have_stopwords.append(*key_it);
+            continue;
+        }
+        int idx = 0-key_size;
+        bool en_key = ((*key_it).indexOf(QRegExp("[A-Za-z]")) >= 0);
+        bool number_key = ((*key_it).indexOf(QRegExp("[0-9]")) >= 0);
+        int sc;
+        if(en_key)
+            sc = str.count(QRegExp("\\b"+(*key_it)+"\\b",Qt::CaseInsensitive));
+        else
+        {
+            if(number_key)
+                sc = str.count(QRegExp("(?=[^0-9])(*key_it)(?=[^0-9])"));
+            else
+                sc = str.count(*key_it,Qt::CaseInsensitive);
+        }
+        more_index += sc;
+        for(int a = 0; a < sc; ++a)
+        {
+            if(en_key)
+                idx = str.indexOf(QRegExp("\\b"+(*key_it)+"\\b",Qt::CaseInsensitive),idx+key_size);
+            else
+            {
+                if(number_key)
+                    idx = str.indexOf(QRegExp("(?=[^0-9])(*key_it)(?=[^0-9])"),idx+key_size);
+                else
+                    idx = str.indexOf(*key_it,idx+key_size,Qt::CaseInsensitive);
+            }
+            for(int b = 0; b < key_size; ++b)
+            {
+                word_highter[idx+b] = true;
+            }
+        }
+    }
+    for(auto key_it = have_stopwords.begin(); key_it != have_stopwords.end(); ++key_it)
+    {
+        int key_size = (*key_it).size();
+        int idx = 0-key_size;
+        bool en_key = ((*key_it).indexOf(QRegExp("[A-Za-z]")) >= 0);
+        int sc;
+        if(en_key)
+            sc = str.count(QRegExp("\\b"+(*key_it)+"\\b",Qt::CaseInsensitive));
+        else
+            sc = str.count(*key_it,Qt::CaseInsensitive);
+        for(int a = 0; a < sc; ++a)
+        {
+            if(en_key)
+            {
+                idx = str.indexOf(QRegExp("\\b"+(*key_it)+"\\b",Qt::CaseInsensitive),idx+key_size);
+                if((idx < 2)&&(word_highter.at(idx+key_size+1) == false))
+                    continue;
+                if(((idx+key_size+2) > word_highter.size())&&(word_highter.at(idx-2) == false))
+                    continue;
+                if((word_highter.at(idx-2) == false)||(word_highter.at(idx+key_size+1) == false))
+                    continue;
+            }
+            else
+            {
+                idx = str.indexOf(*key_it,idx+key_size,Qt::CaseInsensitive);
+                if((idx < 1)&&(word_highter.at(idx+key_size) == false))
+                    continue;
+                if(((idx+key_size+1) > word_highter.size())&&(word_highter.at(idx-1) == false))
+                    continue;
+                if((word_highter.at(idx-1) == false)||(word_highter.at(idx+key_size) == false))
+                    continue;
+            }
+            ++more_index;
+            for(int b = 0; b < key_size; ++b)
+            {
+                word_highter[idx+b] = true;
+            }
+        }
+    }
+    //qDebug()<<"more_index"<<more_index;
+    if(more_index < 6)
+    {
+        for(auto key_it = key_words.begin(); key_it != key_words.end(); ++key_it)
+        {
+            int key_size = (*key_it).size();
+            int idx = 0-key_size;
+            int sc = str.count(*key_it,Qt::CaseInsensitive);
+            for(int a = 0; a < sc; ++a)
+            {
+                ++more_index;
+                idx = str.indexOf(*key_it,idx+key_size,Qt::CaseInsensitive);
+                for(int b = 0; b < key_size; ++b)
+                {
+                    word_highter[idx+b] = true;
+                }
+            }
+        }
+    }
+    QString hight_str;
+    for(int a = 0; a < word_highter.size(); ++a)
+    {
+        if((a == 0)&&word_highter.at(a))
+        {
+            hight_str.append("<font color=\"#FF0000\">");
+        }
+        else
+        {
+            if((a == str.size()-1)&&word_highter.at(a))
+            {
+                hight_str.append("</font>");
+            }
+            else
+            {
+                if(word_highter.at(a))
+                {
+                    if((!word_highter.at(a-1))&&!((str.at(a-1).isSpace()||str.at(a-1).isSymbol())&&word_highter.at(a-2)))
+                        hight_str.append("<font color=\"#FF0000\">");
+                }
+                else
+                {
+                    if(word_highter.at(a-1)&&!((str.at(a-1).isSpace()||str.at(a-1).isSymbol())&&word_highter.at(a+1)))
+                    {
+                        hight_str.append("</font>");
+                    }
+                }
+            }
+        }
+        hight_str.append(str.at(a));
+    }
+    if((max_char != 0)&&(str.length() > max_char))
+    {
+        int first = hight_str.indexOf("<");
+        if(first < (str.length() - max_char))
+        {
+            QString hight_str_left = "";
+            if(first > 0 )
+            {
+                hight_str_left = hight_str.left(first);
+                int two_en = hight_str_left.lastIndexOf(QRegExp("\\b[A-Za-z_]\\b[A-Za-z_]\\b"));
+                if(two_en == -1)
+                    two_en = hight_str_left.lastIndexOf(QRegExp("\\b[A-Za-z_]\\b"));
+                int two_cn = hight_str_left.lastIndexOf(QRegExp("[^A-Za-z_.,。，；：‘’“”《》？、][^A-Za-z_.,。，；：‘’“”《》？、]"));
+                if(two_cn == -1)
+                    two_cn = hight_str_left.lastIndexOf(QRegExp("[^A-Za-z_.,。，；：‘’“”《》？、]"));
+                int two = -1;
+                if(two_cn > two_en)
+                    two = two_cn;
+                else
+                    two = two_en;
+                if(two > 0)
+                    hight_str_left.remove(0,two-1);
+            }
+            hight_str.replace(QRegExp("^[^<]*<font color=\"#FF0000\">"),"<font color=\"#FF0000\">");
+            hight_str = hight_str_left+hight_str;
+        }
+        else hight_str.replace(QRegExp("^[^<]{0,"+QString::number(str.length() - max_char)+"}"),"");
+    }
+    return hight_str;
+}
+
 void Offline_small_search::on_search_init_finish(int batch)
 {
     if(batch == init_search_batch)
     {
         init_search_finish = true;
         qDebug()<<"init_search_finish:"<<init_search_finish;
-        //hide_wait();
     }
 }
 
@@ -1202,11 +1377,16 @@ bool Offline_small_search::event(QEvent *e)
         }
         else
         {
-                    //TODO: show error
+            cropView_obj->setProperty("have_read_error",true);
         }
         return true;
     }
     return QObject::event(e);
+}
+
+bool Offline_small_search::openUrl(QString url)
+{
+    return QDesktopServices::openUrl(QUrl(url));
 }
 
 void Offline_small_search::remove_data(QString url)
@@ -1216,7 +1396,7 @@ void Offline_small_search::remove_data(QString url)
     if(QFile::exists(get_data_dir()+"/"+url))
     {
         QFile::remove(get_data_dir()+"/"+url);
-    }
+    }        
     if(QFile::exists(get_data_dir()+"/"+url.remove(".zip")))
     {
         QString dirName = get_data_dir()+"/"+url;
@@ -1260,6 +1440,54 @@ void Offline_small_search::remove_data(QString url)
             dir.rmpath(".");
         }
         dir.mkpath(get_data_dir());
+    }
+    else
+    {
+        for(int i = 0; i < offline_pkg_list.size(); ++i)
+        {
+            offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+            if(offline_pkg1->name_code() == url||offline_pkg1->name_code() == url2)
+            {
+                QString dirName = offline_pkg1->path();
+                QString dirName2 = offline_pkg1->path();
+                offline_pkg1->deleteLater();
+                offline_pkg_list.removeAt(i);
+                qDebug()<<"remove "<<dirName;
+                static QVector<QString> dirNames;
+                QDir dir;
+                QFileInfoList filst;
+                QFileInfoList::iterator curFi;
+                dirNames.clear();
+                if(dir.exists())
+                {
+                    dirNames<<dirName;
+                }
+                for(int i=0;i<dirNames.size();++i)
+                {
+                    dir.setPath(dirNames[i]);
+                    filst=dir.entryInfoList(QDir::Dirs|QDir::Files|QDir::Readable|QDir::Writable|QDir::Hidden|QDir::NoDotAndDotDot,QDir::Name);
+                    if(filst.size()>0){
+                        curFi=filst.begin();
+                        while(curFi!=filst.end()){
+                            if(curFi->isDir()){
+                                dirNames.push_back(curFi->filePath());
+                            }else if(curFi->isFile()){
+                                dir.remove(curFi->fileName());
+                            }
+                            curFi++;
+                        }
+                    }
+                }
+                for(int i=dirNames.size()-1;i>=0;--i)
+                {
+                    dir.setPath(dirNames[i]);
+                    dir.rmdir(".");
+                    dir.rmpath(".");
+                }
+                dir.mkpath(dirName2.remove(QRegExp("[^/\\\\]*[/\\\\]*$")));
+            }
+        }
+        refresh_offline_pkg_list_for_pkg_qml();
     }
     qDebug()<<"remove dir finish"<<get_data_dir()+"/"+url;//<<get_url_objname(url2);
     QObject* wait_img_obj = obj_list.value(url2);//ui->online_download_qml->rootObject()->findChild<QObject*>(get_url_objname(url2),Qt::FindChildrenRecursively);
@@ -1392,7 +1620,20 @@ QString Offline_small_search::get_data_dir()
 bool Offline_small_search::is_exist(QString file,int type)
 {
     if(type == 1)
-        return QFile::exists(get_data_dir()+"/"+file.remove(only_file_name).remove(".zip"));
+    {
+        if(!QFile::exists(get_data_dir()+"/"+file.remove(only_file_name).remove(".zip")))
+        {
+            for(int i = 0; i < offline_pkg_list.size(); ++i)
+            {
+                offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+                if(offline_pkg1->name_code() == file.remove(only_file_name).remove(".zip")||offline_pkg1->name_code() == file)
+                {
+                    return true;
+                }
+            }
+        }
+        else return true;
+    }
     if(type == 2)
     {
         if(file.indexOf(QRegExp("^file:/")) >= 0)
@@ -1411,7 +1652,7 @@ void Offline_small_search::on_crop_ocr_result(QString text, int batch)
 {
     if(crop_batch == batch && view.last() == 11)
     {
-        show_search(text);
+        show_search_result(text,false);
         cropView_obj->setProperty("source"," ");
         cropView_obj->setProperty("source","");
     }
@@ -1522,7 +1763,7 @@ void Offline_small_search::download_version_finish()
     if(m_reply->error() == QNetworkReply::NoError)
     {
         int master_ver = QString(m_reply->readAll()).toInt();
-        if(master_ver > VERSION_N)
+        if(master_ver > OSS_VERSION_N)
         {
             qDebug()<<"download changelog";
             m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.github.io/oss/Change")));
@@ -1547,7 +1788,12 @@ void Offline_small_search::download_changelog_finish()
     if(m_reply->error() == QNetworkReply::NoError)
     {
         QString changelog = QString::fromUtf8(m_reply->readAll());
-        update_dialog_obj->setProperty("text",changelog+tr("\n请到官网http://zjzdy.github.io/oss/自行下载最新版本"));
+        update_dialog_obj->setProperty("text",tr("当前版本:")+get_version()+"\n"+changelog+"\n"+tr("是否打开最新版本的下载地址?"));
         QMetaObject::invokeMethod(update_dialog_obj, "open");
     }
+}
+
+QString Offline_small_search::get_version()
+{
+    return OSS_VERSION;
 }

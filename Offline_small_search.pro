@@ -8,7 +8,7 @@ lessThan(QT_VERSION, "5.5.0") {
     error("Qt 5.5.0 or above is required to build Offline_small_search.")
 }
 
-QT       += core gui widgets qml quick quickwidgets network multimedia
+QT       += core gui widgets qml quick quickwidgets network multimedia quick-private
 
 TARGET = Offline_small_search
 TEMPLATE = app
@@ -21,7 +21,7 @@ CONFIG += no_keywords
 }
 
 win32:!qtHaveModule(webengine):qtHaveModule(webkit) {
-        QT += webkit
+        QT += webkit webkit_private
 }
 
 QMAKE_CFLAGS += -std=gnu11
@@ -153,3 +153,5 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
+
+DISTFILES +=

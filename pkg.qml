@@ -74,7 +74,7 @@ Rectangle {
                 anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
-                    choose_dir.open()
+                    (Qt.platform.os == "android") ? choose_dir2.open() : choose_dir.open()
                 }
             }
         }
@@ -115,6 +115,19 @@ Rectangle {
             more_info.visible = false
             main_widget.remove_offline_pkg(path_only.text)
         }
+    }
+
+    DefaultFileDialog {
+        id: choose_dir2
+        title: qsTr("选择离线包的目录")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: true
+        folder: "file:///mnt"
+        onAccepted: {
+            main_widget.add_offline_pkg(choose_dir2.folder,true)
+        }
+        onRejected: rectangle2.focus = true
     }
 
     FileDialog {

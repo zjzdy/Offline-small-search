@@ -15,7 +15,7 @@ public:
 
 Q_SIGNALS:
     void search(QString str, int batch, QStringList type);
-    void search_result(QStringList urls, int batch);
+    void search_result(QStringList urls, QStringList key_words, int batch);
     void init(QStringList dir, int batch);
     void init_finish(int batch);
     void init_obj_finish();

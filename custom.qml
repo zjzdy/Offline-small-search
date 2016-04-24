@@ -13,6 +13,22 @@ Rectangle {
     property real a_pd: 0
     property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
+    DefaultFileDialog {
+        id: choose_bf_dir2
+        folder: "file:///mnt"
+        title: qsTr("选择要保存备份数据的目录")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: true
+        sidebarVisible: false
+        onAccepted: {
+            main_widget.write_data_file(choose_bf_dir2.folder+"/oss/")
+            if(main_widget.is_exist(choose_bf_dir2.folder+"/oss/ossbf",2)) bf_finish.open()
+            else bf_fail.open()
+        }
+        onRejected: rectangle2.focus = true
+    }
+
     FileDialog {
         id: choose_bf_dir
         title: qsTr("选择要保存备份数据的目录")
@@ -54,6 +70,25 @@ Rectangle {
         title: qsTr("恢复数据失败")
         text: qsTr("恢复数据失败")
         standardButtons: StandardButton.Ok
+    }
+
+    DefaultFileDialog {
+        id: choose_hf_dir2
+        folder: "file:///mnt"
+        title: qsTr("选择要保存备份数据的目录")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: true
+        sidebarVisible: false
+        onAccepted: {
+            if(main_widget.is_exist(choose_hf_dir2.folder+"/oss/ossbf",2))
+            {
+                main_widget.read_data_file(choose_hf_dir2.folder+"/oss/")
+                hf_finish.open()
+            }
+            else hf_fail.open()
+        }
+        onRejected: rectangle2.focus = true
     }
 
     FileDialog {
@@ -124,6 +159,21 @@ Rectangle {
         onAccepted: {
             custom1.bgc = colorDialog.currentColor
         }
+    }
+
+    DefaultFileDialog {
+        id: choose_bgi2
+        folder: "file:///mnt"
+        nameFilters: [ "Image files (*.jpg *.png *.gif *.jpeg *.tiff *.bmp)", "All files (*)" ]
+        title: qsTr("选择背景图片")
+        selectMultiple: false
+        selectExisting: true
+        selectFolder: false
+        sidebarVisible: false
+        onAccepted: {
+            custom1.bgi = choose_bgi2.fileUrl
+        }
+        onRejected: rectangle2.focus = true
     }
 
     FileDialog {
@@ -211,7 +261,7 @@ Rectangle {
         MouseArea {
             id: mouseArea2
             anchors.fill: parent
-            onClicked: choose_bgi.visible = true
+            onClicked: (Qt.platform.os == "android") ? choose_bgi2.open() : choose_bgi.open()
         }
     }
 
@@ -310,7 +360,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                choose_bf_dir.open()
+                (Qt.platform.os == "android") ? choose_bf_dir2.open() : choose_bf_dir.open()
             }
         }
     }
@@ -355,7 +405,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                choose_hf_dir.open()
+                (Qt.platform.os == "android") ? choose_hf_dir2.open() : choose_hf_dir.open()
             }
         }
     }

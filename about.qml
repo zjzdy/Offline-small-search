@@ -71,7 +71,7 @@ Rectangle {
 
     Text {
         id: text2
-        text: qsTr("版本号: v2.0.2")
+        text: qsTr("版本号: ")+main_widget.get_version()
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.top: text1.bottom

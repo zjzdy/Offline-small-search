@@ -70,7 +70,7 @@ Rectangle {
         delegate: Item {
             z: -1
             width: rectangle2.width
-            height: 200*Math.min(rectangle2.a_max/1280,a_pd/12)
+            height: Math.min(200*Math.min(rectangle2.a_max/1280,a_pd/12),str.contentHeight+3)
             Rectangle{
                 anchors.fill: parent
                 anchors.bottomMargin: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
