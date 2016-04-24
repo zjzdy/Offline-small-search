@@ -157,6 +157,8 @@ cp /mingw32/bin/libopencv_imgcodecs310.dll oss_bin/
 cp /mingw32/bin/libopencv_imgproc310.dll oss_bin/
 cp /mingw32/bin/libopencv_videoio310.dll oss_bin/
 cp /mingw32/bin/libpcre16-0.dll oss_bin/
+cp /mingw32/bin/libpcre-1.dll oss_bin/
+cp /mingw32/bin/libgraphite2.dll oss_bin/
 cp /mingw32/bin/libpng16-16.dll oss_bin/
 cp /mingw32/bin/libsqlite3-0.dll oss_bin/
 cp /mingw32/bin/libstdc++-6.dll oss_bin/
@@ -358,7 +360,6 @@ cd ../
 1. 离线包目录不可以包含中文.
 2. 打开文件对话框后返回键失效
 3. 部分js或css及嵌套html会加载失败(将在3.0版修复)
-4. 用QtWebKit替换QtWebView会造成runJavaScript函数不存在,导致翻译功能失效
 
 ##TODO
 1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能(3.1)
