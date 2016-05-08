@@ -1,21 +1,17 @@
 package qt.oss;
-import android.content.Context;
 import android.content.Intent;
 import android.app.PendingIntent;
 import android.util.Log;
 import android.net.Uri;
-import android.provider.Settings;
 import android.os.Environment;
-import android.os.Bundle;
 import java.io.File;
 import android.provider.MediaStore;
 
-public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindings.QtActivity
-{
-    private final static int CAPTURE_IMAGE_REQUEST_CODE = 2;
+public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+    private static final int CAPTURE_IMAGE_REQUEST_CODE = 2;
     private static OfflineSmallSearchActivity m_instance;
-    private final static String TAG = "OfflineSmallSearchActivity";
-    public String m_imagePath;
+    private static final String TAG = "OfflineSmallSearchActivity";
+    private String mimagePath;
 
     public OfflineSmallSearchActivity(){
         m_instance = this;
@@ -23,11 +19,9 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        switch(requestCode){
-        case CAPTURE_IMAGE_REQUEST_CODE:
-            new OfflineSmallSearchNative().OnImageCaptured(resultCode, m_imagePath);
-            break;
-        default:
+        if(requestCode == CAPTURE_IMAGE_REQUEST_CODE){
+            new OfflineSmallSearchNative().onImageCaptured(resultCode, mimagePath);
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -36,8 +30,7 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
        File sdDir = null;
        boolean sdCardExist = Environment.getExternalStorageState()
                        .equals(android.os.Environment.MEDIA_MOUNTED);
-       if(sdCardExist)
-       {
+       if(sdCardExist) {
             sdDir = Environment.getExternalStorageDirectory();
             return sdDir.toString();
        }
@@ -45,28 +38,28 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
    }
 
    public void initCaptureImagePath(){
-       if( m_imagePath == null ){
+       if( mimagePath == null ){
            String sdPath = getSdcardPath();
            if(sdPath.isEmpty()){
                sdPath = "/sdcard";
            }
-           m_imagePath = String.format("%s/oss", sdPath);
-           File imageDir = new File(m_imagePath);
+           mimagePath = String.format("%s/oss", sdPath);
+           File imageDir = new File(mimagePath);
            if(!imageDir.exists()){
                imageDir.mkdirs();
            }
-           m_imagePath = String.format("%s/oss/cap.jpg", sdPath);
-           File image = new File(m_imagePath);
+           mimagePath = String.format("%s/oss/cap.jpg", sdPath);
+           File image = new File(mimagePath);
            if(image.exists()){
                image.delete();
            }
-           Log.d(TAG, "capture to - " + m_imagePath);
+           Log.d(TAG, "capture to - " + mimagePath);
        }
    }
 
    public static void captureImage(){
        m_instance.initCaptureImagePath();
-       File imageFile = new File(m_instance.m_imagePath);
+       File imageFile = new File(m_instance.mimagePath);
        Uri uri = Uri.fromFile(imageFile);
        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -74,9 +67,9 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
    }
 
    public static void clickHome(){
-       Intent i= new Intent(Intent.ACTION_MAIN);
-       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-       i.addCategory(Intent.CATEGORY_HOME);
-       m_instance.startActivity(i);
+       Intent intent= new Intent(Intent.ACTION_MAIN);
+       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+       intent.addCategory(Intent.CATEGORY_HOME);
+       m_instance.startActivity(intent);
    }
 }

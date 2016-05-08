@@ -31,7 +31,7 @@ ApplicationWindow {
         title: qsTr("检查更新")
         standardButtons: (text == qsTr("已是最新版本")) ? StandardButton.Ok : (StandardButton.No | StandardButton.Yes)
         onYes: {
-            main_widget.openUrl("http://git.oschina.net/zjzdy/Offline-small-search/releases/")
+            main_widget.openUrl("http://github.com/zjzdy/Offline-small-search/releases")
         }
     }
 

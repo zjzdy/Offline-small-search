@@ -21,6 +21,18 @@ Rectangle {
         standardButtons: StandardButton.Ok
     }
 
+    MessageDialog {
+        id: ocr_not_init
+        text: qsTr("对不起:OCR失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: ocr_no_word
+        text: qsTr("对不起:OCR失败,无法从图片中找出一个文字")
+        standardButtons: StandardButton.Ok
+    }
+
     FileDialog {
         id: file
         selectExisting: true
@@ -29,7 +41,8 @@ Rectangle {
         title: "请选择一张图片"
         nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
-            cropView.source = file.fileUrl
+            cropView.source = main_widget.cp_grayimg_to_tmp(file.fileUrl)
+            //cropView.source = file.fileUrl
         }
     }
 
@@ -42,7 +55,8 @@ Rectangle {
         title: "请选择一张图片"
         nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
-            cropView.source = file2.fileUrl
+            cropView.source = main_widget.cp_grayimg_to_tmp(file2.fileUrl)
+            //cropView.source = file2.fileUrl
         }
     }
 
@@ -159,9 +173,19 @@ Rectangle {
         fillMode: Image.Stretch
 
         property bool have_read_error: false
+        property bool have_ocr_init_error: false
+        property bool have_ocr_no_word_error: false
         onHave_read_errorChanged: {
             if(have_read_error) read_error.open()
             have_read_error = false
+        }
+        onHave_ocr_init_errorChanged: {
+            if(have_ocr_init_error) ocr_not_init.open()
+            have_ocr_init_error = false
+        }
+        onHave_ocr_no_word_errorChanged: {
+            if(have_ocr_no_word_error) ocr_no_word.open()
+            have_ocr_no_word_error = false
         }
 
         onStatusChanged: {
@@ -320,7 +344,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle4
-        height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
+        height: 120*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#f0f0f0"
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -382,7 +406,7 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
-                        main_widget.rotate_Q(cropView.source,-90)
+                        main_widget.rotate_Q(cropView.source,90)
                         cropView.source = ""
                         msg_text.text = qsTr("正在旋转图片")
                     }

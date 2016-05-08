@@ -25,3 +25,25 @@ void search_result_obj::setStr(const QString & str)
     m_str = str;
     Q_EMIT strChanged(m_str);
 }
+
+QString search_result_obj::title() const
+{
+    return m_title;
+}
+
+void search_result_obj::setTitle(const QString & title)
+{
+    m_title = title;
+    Q_EMIT titleChanged(m_title);
+}
+
+bool search_result_obj::haveTitle() const
+{
+    return m_haveTitle;
+}
+
+void search_result_obj::setHaveTitle(const bool & haveTitle)
+{
+    m_haveTitle = haveTitle;
+    Q_EMIT haveTitleChanged(m_haveTitle);
+}

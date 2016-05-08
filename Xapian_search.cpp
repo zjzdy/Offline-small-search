@@ -89,6 +89,11 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
 		{
 			urls.append(QString::fromStdString(i.get_document().get_value(1)+":/"+i.get_document().get_data()));
         }
+        if(urls.count() < 1)
+        {
+            urls.append(tr("对不起,没找到相匹配的内容,请换其他的关键词试试.\n提示:最好不要只打数学公式或单个字哦!"));
+            key_words.clear();
+        }
         //qDebug()<<"search result(url):"<<urls<<batch;
         Q_EMIT search_result(urls,key_words,batch);
     }
@@ -97,13 +102,13 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
         stringstream e2;
         e2<<e.what();
         urls.append(QString::fromStdString(e2.str()));
-        urls.append("Happen Error:"+runing);
+        urls.append("发生错误:"+runing);
         Q_EMIT search_result(urls,QStringList(),-1);
         qDebug()<<"search3"<<batch<<str<<type<<urls<<runing;
     }
     catch(...)
     {
-        urls.append("Unknow Error");
+        urls.append("未知错误");
         Q_EMIT search_result(urls,QStringList(),-2);
         qDebug()<<"search4"<<batch<<str<<type;
     }

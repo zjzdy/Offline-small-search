@@ -36,6 +36,9 @@ public:
     Q_INVOKABLE QString crop_ocr(QString imagepath, QVariant cropPoints);
     Q_INVOKABLE void rotate(QString imagepath, int rotate_n);
     Q_INVOKABLE void init(QString tessdata_path);
+    Q_INVOKABLE void rotateFix(QString imagepath);
+    Q_INVOKABLE void rotateFix(Mat &srcImg);
+    int otsu(IplImage *src_image);
     bool getCropPoints(QMap<QString, QPointF> &points, QMap<QString, QVariant> cropPoints, QImage &img);
 
 public Q_SLOTS:

@@ -70,20 +70,41 @@ Rectangle {
         delegate: Item {
             z: -1
             width: rectangle2.width
-            height: Math.min(200*Math.min(rectangle2.a_max/1280,a_pd/12),str.contentHeight+3)
+            height: (model.modelData.haveTitle ? title.height : 0)+str.height+3//Math.min(200*Math.min(rectangle2.a_max/1280,a_pd/12),str.contentHeight+3)
             Rectangle{
                 anchors.fill: parent
                 anchors.bottomMargin: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
 
                 Text {
+                    id: title
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 35*rectangle2.a_sqrt+1
+                    anchors.leftMargin: 20*rectangle2.a_sqrt
+                    anchors.rightMargin: 20*rectangle2.a_sqrt
+                    visible: model.modelData.haveTitle
+                    text: (index+1)+".  "+model.modelData.title
+                    verticalAlignment: Text.AlignTop
+                    maximumLineCount: 1
+                    elide: Text.ElideLeft
+                    wrapMode: Text.Wrap
+                    font.pixelSize: 35*rectangle2.a_sqrt
+                }
+
+                Text {
                     id: str
-                    text: (index+1)+".  "+model.modelData.str
-                    anchors.fill: parent
+                    text: (model.modelData.haveTitle ? " " : (index+1)+".  ")+model.modelData.str
+                    anchors.top: model.modelData.haveTitle ? title.bottom : parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    //height: contentHeight
+                    //anchors.topMargin: title.contentHeight
                     anchors.leftMargin: 20*rectangle2.a_sqrt
                     anchors.rightMargin: 20*rectangle2.a_sqrt
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignTop
-                    maximumLineCount: (height-font.pixelSize)/(linespaceCheck.contentHeight-font.pixelSize)+1
+                    maximumLineCount: 3//(height-font.pixelSize)/(linespaceCheck.contentHeight-font.pixelSize)+1
                     elide: Text.ElideLeft
                     wrapMode: Text.Wrap
                     font.pixelSize: 35*rectangle2.a_sqrt
