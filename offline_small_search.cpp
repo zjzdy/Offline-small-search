@@ -931,6 +931,13 @@ void Offline_small_search::on_search_result(QStringList urls, QStringList key_wo
             //search_result->setStr(get_text_from_url(urls.at(i)));
             //qDebug()<<"Light xxx:"<<get_text_from_url(urls.at(i))<<" hh "<<key_words;
             search_result->setStr(search_batch_highter.value(search_batch,true) ? highlight_str(get_text_from_url(urls.at(i)),key_words,100) : get_text_from_url(urls.at(i)));
+            QString title = get_title(urls.at(i),search_batch_highter.value(search_batch,true),key_words);
+            if(!(title == ""||title.isNull()||title.isEmpty()))
+            {
+                search_result->setHaveTitle(true);
+                search_result->setTitle(title);
+            }
+            else search_result->setHaveTitle(false);
             search_result_list.append(search_result);
         }
         refresh_search_result_for_search_result_qml();
@@ -1132,6 +1139,35 @@ void Offline_small_search::on_search_init_finish(int batch)
     }
 }
 
+QString Offline_small_search::get_title(QString url,bool highter,QStringList key_words)
+{
+    url_name_code = url;
+    //qDebug()<<url;
+    url_name_code.remove(remove_name_reg);
+    url.remove(0,url_name_code.size()+2);
+    QString text;
+    //qDebug()<<url;
+    for(int i = 0; i < offline_pkg_list.size(); ++i)
+    {
+        offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
+        if(offline_pkg1->enable() && offline_pkg1->name_code() == url_name_code)
+        {
+            text = offline_pkg1->get_text_from_url(url);
+            if(!(text == ""||text.isNull()||text.isEmpty()))
+            {
+                htmlparser.reset();
+                htmlparser.parse_html(text.toStdString(),"utf-8",true);
+                QString title = QString::fromStdString(htmlparser.title);
+                if(!(title == ""||title.isNull()||title.isEmpty()))
+                {
+                    return highter ? highlight_str(title,key_words,100) : title;
+                }
+            }
+        }
+    }
+    return QString();
+}
+
 QString Offline_small_search::get_cache_dir()
 {
     return cache_dir;
@@ -1318,6 +1354,11 @@ void Offline_small_search::refresh_more_search_list_for_more_search_qml()
         }
     }
     rootContext->setContextProperty("more_search_list", QVariant::fromValue(more_search_list));
+}
+
+int Offline_small_search::more_search_count()
+{
+    return more_search_list.count();
 }
 
 void Offline_small_search::set_top_bar_height(qreal top_bar_height)
@@ -1652,7 +1693,17 @@ void Offline_small_search::on_crop_ocr_result(QString text, int batch)
 {
     if(crop_batch == batch && view.last() == 11)
     {
-        show_search_result(text,false);
+        if(text == QString())
+            cropView_obj->setProperty("have_ocr_init_error",true);
+        else
+        {
+            if(text == " ")
+                cropView_obj->setProperty("have_ocr_no_word_error",true);
+            else
+            {
+                show_search_result(text,false);
+            }
+        }
         cropView_obj->setProperty("source"," ");
         cropView_obj->setProperty("source","");
     }
@@ -1796,4 +1847,20 @@ void Offline_small_search::download_changelog_finish()
 QString Offline_small_search::get_version()
 {
     return OSS_VERSION;
+}
+
+QString Offline_small_search::cp_grayimg_to_tmp(QString imagepath)
+{
+    QString start = imagepath;
+    if(imagepath.indexOf(QRegExp("^file:/")) >= 0)
+    {
+        imagepath.replace(QRegExp("file:/*"), "");
+#ifndef _WIN32
+        imagepath = "/"+imagepath;
+#endif
+    }
+    start.remove(imagepath);
+    Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    imwrite((cache_dir+"tmp_img.png").toLocal8Bit().data(),srcImg);
+    return start+cache_dir+"tmp_img.png";
 }

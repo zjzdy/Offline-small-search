@@ -39,8 +39,12 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
-#define OSS_VERSION_N 23
-#define OSS_VERSION "V2.1.0"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+using namespace cv;
+#define OSS_VERSION_N 24
+#define OSS_VERSION "V2.1.1"
 
 class Offline_small_search : public QObject
 {
@@ -146,9 +150,12 @@ public Q_SLOTS:
     Q_INVOKABLE void webview_goback();
     Q_INVOKABLE void check_update();
     Q_INVOKABLE bool openUrl(QString url);
+    Q_INVOKABLE QString get_title(QString url, bool highter = false,QStringList key_words = QStringList());
     Q_INVOKABLE QString highlight_str(QString str, QStringList &key_words, int max_char = 0);
     Q_INVOKABLE QColor rand_lightcolor(QString str = "");
     Q_INVOKABLE QString get_version();
+    Q_INVOKABLE int more_search_count();
+    Q_INVOKABLE QString cp_grayimg_to_tmp(QString imagepath);
 private:
 #ifdef Q_OS_ANDROID
     void clickHome();

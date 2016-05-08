@@ -22,6 +22,14 @@ Rectangle {
         onYes: main_widget.close_app()
     }
 
+    MessageDialog {
+        id: no_pkg_messageDialog
+        title: qsTr("请添加离线包")
+        text: qsTr("您还没添加离线包呢! 请到\"更多\"界面的下载离线包下载并添加或访问主页获取更多离线包: http://zjzdy.github.io/oss \n是否现在打开 下载离线包 界面?")
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: main_widget.show_online_download()
+    }
+
     Rectangle {
         id: rectangle1
         //y: 1175*rectangle2.a_max/1280
@@ -161,7 +169,10 @@ Rectangle {
                 main_widget.search_type_clear()
                 main_widget.search_type_add("ALL")
                 main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
-                main_widget.show_search();
+                if(main_widget.more_search_count() < 1)
+                    no_pkg_messageDialog.open();
+                else
+                    main_widget.show_search();
             }
         }
 
@@ -176,7 +187,10 @@ Rectangle {
                 main_widget.search_type_clear()
                 main_widget.search_type_add("ALL")
                 main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
-                main_widget.startCamera()
+                if(main_widget.more_search_count() < 1)
+                    no_pkg_messageDialog.open();
+                else
+                    main_widget.startCamera();
             }
         }
 

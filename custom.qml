@@ -75,7 +75,7 @@ Rectangle {
     DefaultFileDialog {
         id: choose_hf_dir2
         folder: "file:///mnt"
-        title: qsTr("选择要保存备份数据的目录")
+        title: qsTr("选择保存备份数据的目录")
         selectMultiple: false
         selectExisting: true
         selectFolder: true
@@ -84,6 +84,7 @@ Rectangle {
             if(main_widget.is_exist(choose_hf_dir2.folder+"/oss/ossbf",2))
             {
                 main_widget.read_data_file(choose_hf_dir2.folder+"/oss/")
+                main_widget.write_data_file()
                 hf_finish.open()
             }
             else hf_fail.open()
@@ -93,7 +94,7 @@ Rectangle {
 
     FileDialog {
         id: choose_hf_dir
-        title: qsTr("选择要保存备份数据的目录")
+        title: qsTr("选择保存备份数据的目录")
         selectMultiple: false
         selectExisting: true
         selectFolder: true
@@ -102,6 +103,7 @@ Rectangle {
             if(main_widget.is_exist(choose_hf_dir.folder+"/oss/ossbf",2))
             {
                 main_widget.read_data_file(choose_hf_dir.folder+"/oss/")
+                main_widget.write_data_file()
                 hf_finish.open()
             }
             else hf_fail.open()
