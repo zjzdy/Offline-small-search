@@ -17,6 +17,26 @@ Rectangle {
     property int currentCamera: 0
     property var cameras: QtMultimedia.availableCameras
     z: 0
+    Item {
+        z: 2
+        anchors.fill: parent
+        visible: cameras.length === 0
+        Text {
+            anchors.fill: parent
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            text: qsTr("未找到摄像头,点击屏幕任意位置进入剪裁页面,请在剪裁页面自行导入图片.")
+            wrapMode: Text.Wrap
+            font.pixelSize: 100*rectangle2.a_sqrt
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                main_widget.show_crop()
+            }
+        }
+    }
+
     VideoOutput {
         id: vo
         anchors.fill: parent

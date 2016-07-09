@@ -132,7 +132,9 @@ Rectangle {
         font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*Math.min(rectangle2.a_max/1280,a_pd/12)*/*rectangle2.a_min/720)
         Text {
             id:please_input
-            text:qsTr("请在此输入您要搜索的内容")
+            anchors.fill: parent
+            text:qsTr("请在此输入您要搜索的内容.如输入法并未出现,请单击此处.")
+            wrapMode: TextEdit.Wrap
             color: "#868686"
             font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*Math.min(rectangle2.a_max/1280,a_pd/12)*/*rectangle2.a_min/720)
             visible: textEdit1.text.length < 1

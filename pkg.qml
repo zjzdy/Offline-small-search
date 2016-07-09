@@ -123,7 +123,7 @@ Rectangle {
         selectMultiple: false
         selectExisting: true
         selectFolder: true
-        folder: "file:///mnt"
+        folder: "file:///sdcard"
         onAccepted: {
             main_widget.add_offline_pkg(choose_dir2.folder,true)
         }
@@ -162,7 +162,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 width: 450*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.a_min/720
+                font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
 
             Text {
@@ -171,7 +171,7 @@ Rectangle {
                 anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 width: 70*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.a_min/720
+                font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
 
             Text {
@@ -180,7 +180,7 @@ Rectangle {
                 anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 width: 180*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.a_min/720
+                font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
         }
     }

@@ -15,6 +15,13 @@ Rectangle {
     property real a_pd: 0
     property real a_sqrt: Math.min(Math.sqrt(a_max/1280*a_min/720),a_pd/12)
 
+    MessageDialog {
+        id: android_fanyi_errorDialog
+        title: qsTr("系统版本低")
+        text: qsTr("很抱歉,您系统版本过低,无法运行翻译功能.\n翻译功能需要Android 4.4及其以上(API level >= 19)的版本.")
+        standardButtons: StandardButton.Ok
+    }
+
     Rectangle {
         id: rectangle3
         height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
@@ -177,6 +184,7 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+        z: 1
         Rectangle {
             id: back
             color: "#f0f0f0"
@@ -243,6 +251,14 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    if(Qt.platform.os === "android")
+                    {
+                        if(main_widget.getAndroidVerCache() < 18)
+                        {
+                            android_fanyi_errorDialog.open()
+                            return;
+                        }
+                    }
                     text.runJavaScript("javascript:var d = document.createElement(\"script\");d.setAttribute(\"src\", \"http://fanyi.youdao.com/web2/scripts/all-packed-utf-8.js?572877&\" + Date.parse(new Date()));d.setAttribute(\"type\", \"text/javascript\");d.setAttribute(\"charset\", \"utf-8\");document.body.appendChild(d);",function() { console.log("runjs"); })
                 }
             }

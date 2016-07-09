@@ -43,8 +43,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 using namespace cv;
-#define OSS_VERSION_N 24
-#define OSS_VERSION "V2.1.1"
+#define OSS_VERSION_N 29
+#define OSS_VERSION "V2.1.2"
 
 class Offline_small_search : public QObject
 {
@@ -125,6 +125,7 @@ public Q_SLOTS:
     Q_INVOKABLE void add_history(QString str, bool img, QString time, QStringList type);
     Q_INVOKABLE bool is_exist(QString file,int type = 0);
     Q_INVOKABLE bool have_home(QString pkg = "");
+    Q_INVOKABLE bool have_home_def(QString pkg = "");
     //mark
     Q_INVOKABLE void check_mark();
     Q_INVOKABLE bool is_mark(QString url);
@@ -156,8 +157,11 @@ public Q_SLOTS:
     Q_INVOKABLE QString get_version();
     Q_INVOKABLE int more_search_count();
     Q_INVOKABLE QString cp_grayimg_to_tmp(QString imagepath);
+    Q_INVOKABLE QString systemType();
+    Q_INVOKABLE int getAndroidVerCache();
 private:
 #ifdef Q_OS_ANDROID
+    int getAndroidVersion();
     void clickHome();
 #endif
 
@@ -216,6 +220,9 @@ public:
     QQmlContext *rootContext;
     QObject *rootObject;
     MyHtmlParser htmlparser;
+#ifdef Q_OS_ANDROID
+    int androidVersion;
+#endif
     //QString unzip_url;
 };
 

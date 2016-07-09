@@ -13,7 +13,7 @@ ApplicationWindow {
     width: initialWidth
     height: initialHeight
     title: qsTr("离线小搜")
-    property real pd: Screen.pixelDensity
+    property real pd: Math.max(6,Screen.pixelDensity)
     onWidthChanged: if(splash.visible) splash.source = choose_splash()
     onHeightChanged: if(splash.visible) splash.source = choose_splash()
 

@@ -58,6 +58,7 @@ private:
 	//xapian
     Xapian::Database db;
     Xapian::TermGenerator termgen;
+    Xapian::Stem enstem;
 };
 
 #endif // Xapian_search_H

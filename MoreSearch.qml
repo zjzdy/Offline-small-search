@@ -191,7 +191,7 @@ Rectangle {
                         main_widget.search_type_clear()
                         main_widget.search_type_add(model.modelData.name_code)
                         main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
-                        main_widget.have_home() ? main_widget.show_pkg_home() : main_widget.show_search();
+                        main_widget.have_home_def() ? main_widget.show_pkg_home() : main_widget.show_search();
                     }
                 }
             }

@@ -107,7 +107,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 width: 450*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.a_min/720
+                font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
 
             Text {
@@ -116,7 +116,7 @@ Rectangle {
                 anchors.topMargin: 5*Math.min(rectangle2.a_max/1280,a_pd/12)
                 width: 180*rectangle2.width/720
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 40*rectangle2.a_min/720
+                font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
         }
     }
@@ -202,9 +202,9 @@ Rectangle {
         AnimatedImage {
             id: wait_img2
             anchors.centerIn: parent
-            height: rectangle2.a_min/2
+            //height: rectangle2.a_min/2
             width: rectangle2.a_min/2
-            source: "qrc:/image/icon_wait2.gif"
+            source: "qrc:/image/icon_wait3.gif"
             visible: parent.visible
             fillMode: Image.PreserveAspectFit
         }
@@ -373,12 +373,16 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        text: qsTr("更多离线请访问主页: http://zjzdy.github.io/oss")
-        font.pixelSize: 30*rectangle2.a_sqrt
+        text: qsTr("更多离线请访问主页: \n http://zjzdy.github.io/oss")
+        font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         elide: Text.ElideLeft
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         horizontalAlignment: Text.AlignHCenter
         z: 3
+        MouseArea {
+            anchors.fill: parent
+            onClicked: main_widget.openUrl("http://zjzdy.github.io/oss")
+        }
     }
 
     Rectangle {
