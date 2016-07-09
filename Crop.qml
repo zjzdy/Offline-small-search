@@ -38,7 +38,7 @@ Rectangle {
         selectExisting: true
         selectMultiple: false
         selectFolder: false
-        title: "请选择一张图片"
+        title: qsTr("请选择一张图片")
         nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
             cropView.source = main_widget.cp_grayimg_to_tmp(file.fileUrl)
@@ -48,7 +48,7 @@ Rectangle {
 
     DefaultFileDialog {
         id: file2
-        folder: "file:///mnt"
+        folder: "file:///sdcard"
         selectExisting: true
         selectMultiple: false
         selectFolder: false
@@ -63,7 +63,14 @@ Rectangle {
     MessageDialog {
         id: read_error
         objectName: "read_error"
-        text: "对不起,无法读取图片"
+        text: qsTr("对不起,无法读取图片")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: system_carema_error
+        objectName: "system_carema_error"
+        text: qsTr("对不起,调用系统相机失败")
         standardButtons: StandardButton.Ok
     }
 
@@ -160,6 +167,19 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
     }
 
+    AnimatedImage {
+        id: wait_img2
+        z: 2
+        anchors.bottom: msg_text.top
+        anchors.bottomMargin: -(msg_text.height-msg_text.contentHeight)/2+40*rectangle2.a_sqrt
+        //height: rectangle2.a_min/2
+        width:  Math.min(rectangle2.a_min/2,msg_text.height-msg_text.contentHeight)
+        anchors.horizontalCenter: parent.horizontalCenter
+        source: "qrc:/image/icon_wait3.gif"
+        visible: msg_text.text === qsTr("正在处理图片并OCR") || msg_text.text === qsTr("正在载入图片")
+        fillMode: Image.PreserveAspectFit
+    }
+
     Image {
         id: cropView
         z: 0
@@ -175,6 +195,7 @@ Rectangle {
         property bool have_read_error: false
         property bool have_ocr_init_error: false
         property bool have_ocr_no_word_error: false
+        property bool have_system_carema_error: false
         onHave_read_errorChanged: {
             if(have_read_error) read_error.open()
             have_read_error = false
@@ -187,6 +208,11 @@ Rectangle {
             if(have_ocr_no_word_error) ocr_no_word.open()
             have_ocr_no_word_error = false
         }
+        onHave_system_carema_errorChanged: {
+            if(have_system_carema_error) system_carema_error.open()
+            have_system_carema_error = false
+        }
+
 
         onStatusChanged: {
             if (cropView.status == Image.Null) {
@@ -211,7 +237,9 @@ Rectangle {
                 addCorner(bottomRight);
             }
             else if(cropView.status == Image.Error){
+                msg_text.text = ""
                 have_read_error = true
+                cropView.source = ""
             }
         }
 

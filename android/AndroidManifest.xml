@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
-<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="2.1.1" android:versionCode="24" android:installLocation="auto">
+<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="2.1.2" android:versionCode="29" android:installLocation="auto">
     <application android:largeHeap="true" android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
-    <!--android:largeHeap="true" android:hardwareAccelerated="true"-->
-        <!-- <application android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon"> -->
-        <!-- <activity android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop"> -->
-        <!--android:name="org.qtproject.qt5.android.bindings.QtActivity"-->
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="qt.oss.OfflineSmallSearchActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Application arguments -->
+            <!-- meta-data android:name="android.app.arguments" android:value="arg1 arg2 arg3"/ -->
+            <!-- Application arguments -->
+
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
             <meta-data android:name="android.app.qt_sources_resource_id" android:resource="@array/qt_sources"/>
             <meta-data android:name="android.app.repository" android:value="default"/>
@@ -33,6 +34,7 @@
 
             <!-- Splash screen -->
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splash"/>
+            <!-- meta-data android:name="android.app.splash_screen_sticky" android:value="true"/-->
             <!-- Splash screen -->
 
             <!-- Background running -->
@@ -42,9 +44,26 @@
                           signal is sent! -->
             <meta-data android:name="android.app.background_running" android:value="false"/>
             <!-- Background running -->
-        </activity>
+
+            <!-- auto screen scale factor -->
+            <meta-data android:name="android.app.auto_screen_scale_factor" android:value="false"/>
+            <!-- auto screen scale factor -->
+
+            <!-- extract android style -->
+            <!-- available android:values :
+                * full - useful QWidget & Quick Controls 1 apps
+                * minimal - useful for Quick Controls 2 apps, it is much faster than "full"
+                * none - useful for apps that don't use any of the above Qt modules
+                -->
+            <meta-data android:name="android.app.extract_android_style" android:value="full"/>
+            <!-- extract android style -->
+    </activity>
+
+    <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
+
     </application>
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
+
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
@@ -55,7 +74,7 @@
          Remove the comment if you do not require these default features. -->
     <!-- %%INSERT_FEATURES -->
 
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

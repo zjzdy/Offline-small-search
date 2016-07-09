@@ -11,8 +11,9 @@ Xapian_search::Xapian_search(QObject *parent) : QObject(parent)
 #else
     putenv(const_cast<char*>("XAPIAN_CJK_NGRAM=1"));
 #endif
+    enstem = Xapian::Stem("en");
     termgen.set_flags(Xapian::TermGenerator::FLAG_CJK_NGRAM);
-    termgen.set_stemmer(Xapian::Stem("en"));
+    termgen.set_stemmer(enstem);
 }
 
 void Xapian_search::on_init(QStringList dir, int batch)
@@ -51,6 +52,7 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
         Xapian::Document doc;
         Xapian::Enquire enquire(db);
 		termgen.set_document(doc);
+        termgen.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
 		termgen.index_text_without_positions(str.toStdString(),1,"C");
 		runing = "Add Term!";
 		Xapian::TermIterator it;
@@ -61,7 +63,8 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
 		}
         Xapian::Document doc2;
         termgen.set_document(doc2);
-        termgen.index_text_without_positions(str.toStdString(),1);
+        termgen.set_stemming_strategy(Xapian::TermGenerator::STEM_NONE);
+        termgen.index_text_without_positions(str.toStdString()+enstem(str.toStdString()),1);
         Xapian::TermIterator it2;
         for (it2 = doc2.termlist_begin(); it2 != doc2.termlist_end(); ++it2)
         {

@@ -149,4 +149,11 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         visible: false
     }
+
+    Text {
+        anchors.top: image2.bottom
+        text:qsTr("正在搜索中")
+        visible: image2.visible
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
 }

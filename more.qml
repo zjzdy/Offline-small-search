@@ -125,6 +125,42 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
+
+            Item {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.top: parent.top
+                width: exit_image.width+exit_text.width+20*rectangle2.a_min/720
+                Image {
+                    id: exit_image
+                    width: height
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10*rectangle2.a_min/720
+                    anchors.bottom: parent.bottom
+                    anchors.top: parent.top
+                    source: "qrc:/image/icon_exit.png"
+                }
+
+                Text {
+                    id: exit_text
+                    text: qsTr("退出")
+                    verticalAlignment: Text.AlignVCenter
+                    //anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 35*Math.min(rectangle2.a_max/1280,a_pd/12)
+                    anchors.right: exit_image.left
+                    anchors.rightMargin: 10*rectangle2.a_min/720
+                    anchors.bottom: parent.bottom
+                    anchors.top: parent.top
+                }
+
+                MouseArea {
+                    id: exit_mouseArea
+                    anchors.rightMargin: -10*rectangle2.a_min/720
+                    anchors.leftMargin: -10*rectangle2.a_min/720
+                    anchors.fill: parent
+                    onClicked: exit_messageDialog.open()
+                }
+            }
         }
 
         Rectangle {
@@ -202,7 +238,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.leftMargin: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -259,7 +295,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.leftMargin: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -316,7 +352,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.leftMargin: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -373,7 +409,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.leftMargin: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }
@@ -430,7 +466,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 100*rectangle2.a_min/720
+                anchors.leftMargin: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
             }

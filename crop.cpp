@@ -28,7 +28,7 @@ void crop::init(QString tessdata_path)
     k.push_back("edges_max_children_per_outline");
     v.push_back("40");
     */
-    if (api.Init(tessdata_path.toLatin1().data(), "chi_sim"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
+    if (api.Init(tessdata_path.toLocal8Bit().data(), "chi_sim"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
     {
         tess_init = false;
         qDebug()<<"Could not initialize tesseract";

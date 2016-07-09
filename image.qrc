@@ -37,5 +37,9 @@
         <file>image/splash3.png</file>
         <file>image/icon_flash.png</file>
         <file>image/icon_flash_off.png</file>
+        <file>image/icon_wait3.gif</file>
+        <file>image/icon_rotate_left.png</file>
+        <file>image/icon_rotate_right.png</file>
+        <file>image/icon_exit.png</file>
     </qresource>
 </RCC>

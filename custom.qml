@@ -15,7 +15,7 @@ Rectangle {
 
     DefaultFileDialog {
         id: choose_bf_dir2
-        folder: "file:///mnt"
+        folder: "file:///sdcard"
         title: qsTr("选择要保存备份数据的目录")
         selectMultiple: false
         selectExisting: true
@@ -26,7 +26,6 @@ Rectangle {
             if(main_widget.is_exist(choose_bf_dir2.folder+"/oss/ossbf",2)) bf_finish.open()
             else bf_fail.open()
         }
-        onRejected: rectangle2.focus = true
     }
 
     FileDialog {
@@ -41,7 +40,6 @@ Rectangle {
             if(main_widget.is_exist(choose_bf_dir.folder+"/oss/ossbf",2)) bf_finish.open()
             else bf_fail.open()
         }
-        onRejected: rectangle2.focus = true
     }
 
     MessageDialog {
@@ -74,7 +72,7 @@ Rectangle {
 
     DefaultFileDialog {
         id: choose_hf_dir2
-        folder: "file:///mnt"
+        folder: "file:///sdcard"
         title: qsTr("选择保存备份数据的目录")
         selectMultiple: false
         selectExisting: true
@@ -89,7 +87,6 @@ Rectangle {
             }
             else hf_fail.open()
         }
-        onRejected: rectangle2.focus = true
     }
 
     FileDialog {
@@ -108,7 +105,6 @@ Rectangle {
             }
             else hf_fail.open()
         }
-        onRejected: rectangle2.focus = true
     }
 
     Rectangle {
