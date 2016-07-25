@@ -148,7 +148,6 @@ AC_DEFINE_UNQUOTED(LZMA_MEMORY_SIZE, $lzma_memory_size, [set lzma uncompress mem
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  src/tools/Makefile
   include/Makefile
   test/Makefile
   ])

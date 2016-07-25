@@ -135,7 +135,8 @@ namespace zim
     void ZimCreator::createDirentsAndClusters(ArticleSource& src, const std::string& tmpfname)
     {
       INFO("collect articles");
-      std::ofstream out(tmpfname.c_str());
+	  std::ofstream out;
+	  out.open(tmpfname.c_str(),std::ios::out|std::ios::binary);
       currentSize =
         80 /* for header */ +
         1 /* for mime type table termination */ +
@@ -446,7 +447,8 @@ namespace zim
 
     void ZimCreator::write(const std::string& fname, const std::string& tmpfname)
     {
-      std::ofstream zimfile(fname.c_str());
+	  std::ofstream zimfile;
+	  zimfile.open(fname.c_str(),std::ios::out|std::ios::binary);
       Md5stream md5;
       Tee out(zimfile, md5);
 
@@ -538,7 +540,8 @@ namespace zim
 
       if (!isEmpty)
       {
-        std::ifstream blobsfile(tmpfname.c_str());
+        std::ifstream blobsfile;
+		blobsfile.open(tmpfname.c_str(),std::ios::in|std::ios::binary);
         out << blobsfile.rdbuf();
       }
       else
