@@ -9,6 +9,5 @@ endif
 
 SUBDIRS = \
 	src \
-	src/tools \
 	include \
 	$(UNITTEST_DIR)
