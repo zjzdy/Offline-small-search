@@ -92,13 +92,45 @@ Rectangle {
         onClicked: main_widget.check_update()
     }
 
+    Text {
+        id: website_project
+        anchors.left: check_update.right
+        anchors.leftMargin: 45*rectangle2.width/720
+        anchors.bottom: check_update.bottom
+        text: qsTr("项目主页")
+        font.underline: true
+        verticalAlignment: Text.AlignBottom
+        color: "#00c4ff"
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -30*rectangle2.width/720
+            onClicked: main_widget.openUrl("http://git.oschina.net/zjzdy/Offline-small-search")
+        }
+    }
+
+    Text {
+        id: website_official
+        anchors.right: check_update.left
+        anchors.rightMargin: 60*rectangle2.width/720
+        anchors.bottom: check_update.bottom
+        text: qsTr("官网")
+        font.underline: true
+        verticalAlignment: Text.AlignBottom
+        color: "#00c4ff"
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -30*rectangle2.width/720
+            onClicked: main_widget.openUrl("http://zjzdy.oschina.io/oss")
+        }
+    }
+
     TextArea {
         id: text3
         readOnly: true
         selectByKeyboard: false
         selectByMouse: false
         backgroundVisible: false
-        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n    Xpian: http://xapian.org\n    OpenCV: http://www.opencv.org\n    Tesseract: https://github.com/tesseract-ocr/tesseract\n")
+        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n如果有问题,建议或bug请\n1.到http://git.oschina.net/zjzdy/Offline-small-search/issues新建一个issues\n2.发送邮件到zjzengdongyang@163.com \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n    Xpian: http://xapian.org\n    OpenCV: http://www.opencv.org\n    Tesseract: https://github.com/tesseract-ocr/tesseract\n    OpenCC: https://github.com/BYVoid/OpenCC\n")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         wrapMode: Text.Wrap

@@ -16,6 +16,7 @@ ApplicationWindow {
     property real pd: Math.max(6,Screen.pixelDensity)
     onWidthChanged: if(splash.visible) splash.source = choose_splash()
     onHeightChanged: if(splash.visible) splash.source = choose_splash()
+    //onFocusObjectChanged: console.log(activeFocusItem)
 
     MessageDialog {
         id: exit_messageDialog

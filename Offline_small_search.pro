@@ -22,6 +22,10 @@ CONFIG += no_keywords
 
 win32:!qtHaveModule(webengine):qtHaveModule(webkit) {
         QT += webkit webkit_private
+        DEFINES += USE_WEBKIT
+        RESOURCES += WebKit_qml/Webkit_qml.qrc
+} else {
+    RESOURCES += Result.qrc
 }
 
 QMAKE_CFLAGS += -std=gnu11
@@ -69,10 +73,14 @@ HEADERS  += \
 
 RESOURCES += \
     qml.qrc \
-    image.qrc
+    image.qrc \
+    opencc.qrc
 
 DEPENDPATH+=$$PWD/quazip
 include($$PWD/quazip/quazip.pri)
+
+DEPENDPATH+=$$PWD/opencc
+include($$PWD/opencc/opencc.pri)
 
 win32 {
     RC_ICONS = image/logo.ico
@@ -83,7 +91,7 @@ win32 {
            -ltesseract -llept -lgif -lxapian -lzim -llzma \
            -lcrypt32 -luuid -lws2_32 -lrpcrt4 \
            -Wl,-Bdynamic \
-           -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -ltiff -ljasper -lpng -ljpeg -lwebp -lz
+           -lopencv_photo -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -ltiff -ljasper -lpng -ljpeg -lwebp -lz
     DEFINES += QUAZIP_STATIC
 }
 
@@ -131,7 +139,7 @@ android {
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
     LIBS +=-L$$PWD/build-bin/lib/ \
-        -Wl,-Bstatic,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
+        -Wl,-Bstatic,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
 
     DISTFILES += \
@@ -153,5 +161,3 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
-
-DISTFILES +=

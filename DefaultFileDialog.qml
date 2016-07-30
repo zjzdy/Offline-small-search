@@ -312,12 +312,12 @@ AbstractFileDialog {
                 }
                 Button {
                     id: cancelButton
-                    text: qsTr("Cancel")
+                    text: qsTr("取消")
                     onClicked: root.reject()
                 }
                 Button {
                     id: okButton
-                    text: root.selectFolder ? qsTr("Choose") : (selectExisting ? qsTr("Open") : qsTr("Save"))
+                    text: root.selectFolder ? qsTr("确定") : (selectExisting ? qsTr("打开") : qsTr("保存"))
                     onClicked: {
                         if (view.model.isFolder(view.currentIndex) && !selectFolder)
                             dirDown(view.model.get(view.currentIndex, "filePath"))

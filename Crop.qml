@@ -16,20 +16,21 @@ Rectangle {
     z: 0
 
     MessageDialog {
-        id: beta_warning
-        text: qsTr("此功能为beta版本!\n识别的准确度较低,识别速度较慢.\n请多多体谅.")
+        id: ocr_warning
+        property bool isShow: false
+        text: qsTr("提示:本程序目前识别的准确度较低,识别速度较慢,可能需要数秒到数分钟,请稍等.")
         standardButtons: StandardButton.Ok
     }
 
     MessageDialog {
         id: ocr_not_init
-        text: qsTr("对不起:OCR失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.")
+        text: qsTr("对不起:OCR识别失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.")
         standardButtons: StandardButton.Ok
     }
 
     MessageDialog {
         id: ocr_no_word
-        text: qsTr("对不起:OCR失败,无法从图片中找出一个文字")
+        text: qsTr("对不起:OCR识别失败,无法从图片中找出一个文字")
         standardButtons: StandardButton.Ok
     }
 
@@ -41,6 +42,7 @@ Rectangle {
         title: qsTr("请选择一张图片")
         nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
+            cropView.source = ""
             cropView.source = main_widget.cp_grayimg_to_tmp(file.fileUrl)
             //cropView.source = file.fileUrl
         }
@@ -55,8 +57,15 @@ Rectangle {
         title: "请选择一张图片"
         nameFilters: ["支持的图片文件 (*.jpg *.png *.jpeg *.tiff)", "所有文件 (*)"]
         onAccepted: {
+            cropView.source = ""
             cropView.source = main_widget.cp_grayimg_to_tmp(file2.fileUrl)
             //cropView.source = file2.fileUrl
+        }
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
         }
     }
 
@@ -176,7 +185,7 @@ Rectangle {
         width:  Math.min(rectangle2.a_min/2,msg_text.height-msg_text.contentHeight)
         anchors.horizontalCenter: parent.horizontalCenter
         source: "qrc:/image/icon_wait3.gif"
-        visible: msg_text.text === qsTr("正在处理图片并OCR") || msg_text.text === qsTr("正在载入图片")
+        visible: msg_text.text === qsTr("正在处理图片并识别") || msg_text.text === qsTr("正在载入图片")
         fillMode: Image.PreserveAspectFit
     }
 
@@ -402,13 +411,15 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     if (cropView.status == Image.Ready) {
-                        beta_warning.open()
-                        main_widget.search_type_clear()
-                        main_widget.search_type_add("ALL")
+                        if(!ocr_warning.isShow)
+                        {
+                            ocr_warning.open()
+                            ocr_warning.isShow = true
+                        }
                         main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
-                        main_widget.crop_ocr_Q(cropView.source,cropPoints)
+                        main_widget.crop_ocr_Q(cropView.source,cropPoints,ocr_language.ocr_lang)
                         cropView.source = ""
-                        msg_text.text = qsTr("正在处理图片并OCR")
+                        msg_text.text = qsTr("正在处理图片并识别")
                     }
                 }
             }
@@ -491,6 +502,70 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     image7.lock = !image7.lock
+                }
+            }
+        }
+        Text {
+            id: ocr_language
+            anchors.right: image7.left
+            anchors.rightMargin: 20*rectangle2.a_min/720
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            property bool ocr_eng: false
+            property bool ocr_cht: false
+            property bool have_ocr_eng: main_widget.is_exist("ocr/eng.zip",1)
+            property bool have_ocr_cht: main_widget.is_exist("ocr/cht.zip",1)
+            text: qsTr("简体中文识别")
+            property string ocr_lang: "zh_cn"
+
+            MouseArea {
+                id: mouseArea8
+                anchors.rightMargin: -10*rectangle2.a_min/720
+                anchors.leftMargin: -10*rectangle2.a_min/720
+                anchors.bottomMargin: -20*rectangle2.a_max/1280
+                anchors.topMargin: -20*rectangle2.a_max/1280
+                anchors.fill: parent
+                onClicked: {
+                    if(ocr_language.ocr_eng) {
+                        if(ocr_language.have_ocr_cht) {
+                            ocr_language.text = qsTr("繁体中文识别")
+                            ocr_language.ocr_cht = true
+                            ocr_language.ocr_eng = false
+                            ocr_language.ocr_lang = "cht"
+                        }
+                        else {
+                            ocr_language.text = qsTr("简体中文识别")
+                            ocr_language.ocr_cht = false
+                            ocr_language.ocr_eng = false
+                            ocr_language.ocr_lang = "zh_cn"
+                        }
+                    }
+                    else {
+                        if(ocr_language.ocr_cht) {
+                            ocr_language.text = qsTr("简体中文识别")
+                            ocr_language.ocr_cht = false
+                            ocr_language.ocr_eng = false
+                            ocr_language.ocr_lang = "zh_cn"
+                        }
+                        else {
+                            if(ocr_language.have_ocr_eng) {
+                                ocr_language.text = qsTr("英文识别")
+                                ocr_language.ocr_cht = false
+                                ocr_language.ocr_eng = true
+                                ocr_language.ocr_lang = "eng"
+                            }
+                            else {
+                                if(ocr_language.have_ocr_cht) {
+                                    ocr_language.text = qsTr("繁体中文识别")
+                                    ocr_language.ocr_cht = true
+                                    ocr_language.ocr_eng = false
+                                    ocr_language.ocr_lang = "cht"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -3,7 +3,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Build;
 import java.io.File;
 import android.provider.MediaStore;
 
@@ -30,37 +29,30 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
        boolean sdCardExist = Environment.getExternalStorageState()
                        .equals(android.os.Environment.MEDIA_MOUNTED);
        if(sdCardExist) {
-            File sdDir = null;
-            sdDir = Environment.getExternalStorageDirectory();
-            return sdDir.toString();
+            return Environment.getExternalStorageDirectory().toString();
        }
        return "";
    }
 
-   public void initCaptureImagePath(){
-       if( mimagePath == null ){
+   public static void captureImage(){
+       if(minstance.mimagePath == null ){
            String sdPath = getSdcardPath();
            if(sdPath.isEmpty()){
                sdPath = "/sdcard";
            }
-           mimagePath = String.format("%s/oss", sdPath);
-           File imageDir = new File(mimagePath);
+           minstance.mimagePath = String.format("%s/oss", sdPath);
+           File imageDir = new File(minstance.mimagePath);
            if(!imageDir.exists()){
                imageDir.mkdirs();
            }
-           mimagePath = String.format("%s/oss/cap.png", sdPath);
-           File image = new File(mimagePath);
-           if(image.exists()){
-               image.delete();
-           }
-           Log.d(TAG, "capture to - " + mimagePath);
+           minstance.mimagePath = String.format("%s/cap.png", minstance.mimagePath);
+           Log.d(TAG, "capture to - " + minstance.mimagePath);
        }
-   }
-
-   public static void captureImage(){
-       minstance.initCaptureImagePath();
-       File imageFile = new File(minstance.mimagePath);
-       Uri uri = Uri.fromFile(imageFile);
+       File image = new File(minstance.mimagePath);
+       if(image.exists()){
+           image.delete();
+       }
+       Uri uri = Uri.fromFile(image);
        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
        minstance.startActivityForResult(intent, CAPTURE_IMAGE_REQUEST_CODE);
@@ -71,116 +63,119 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
        intent.addCategory(Intent.CATEGORY_HOME);
        minstance.startActivity(intent);
+       android.os.Process.killProcess(android.os.Process.myPid());
    }
 
-    public static int getAndroidVersion(){
+    public static int getSysVer(){
         //在使用非标准版本号时会奔溃
         try{
             return android.os.Build.VERSION.SDK_INT;
         }
         catch (Exception e){
+            Log.d(TAG,"android.os.Build.VERSION.SDK_INT have question.Try to use android.os.Build.VERSION.RELEASE",e);
             int ver = 0;
-            if(android.os.Build.VERSION.RELEASE.startsWith("1"))
+            String release = android.os.Build.VERSION.RELEASE;
+            if(release.startsWith("1"))
             {
                 ver = 1;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("1.1"))
+            if(release.startsWith("1.1"))
             {
                 ver = 2;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("1.5"))
+            if(release.startsWith("1.5"))
             {
                 ver = 3;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("1.6"))
+            if(release.startsWith("1.6"))
             {
                 ver = 4;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2"))
+            if(release.startsWith("2"))
             {
                 ver = 5;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.0.1"))
+            if(release.startsWith("2.0.1"))
             {
                 ver = 6;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.1"))
+            if(release.startsWith("2.1"))
             {
                 ver = 7;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.2"))
+            if(release.startsWith("2.2"))
             {
                 ver = 8;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.3"))
+            if(release.startsWith("2.3"))
             {
                 ver = 9;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.3.3"))
+            if(release.startsWith("2.3.3"))
             {
                 ver = 10;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("2.3.4"))
+            if(release.startsWith("2.3.4"))
             {
                 ver = 10;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("3"))
+            if(release.startsWith("3"))
             {
                 ver = 11;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("3.1"))
+            if(release.startsWith("3.1"))
             {
                 ver = 12;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("3.2"))
+            if(release.startsWith("3.2"))
             {
                 ver = 13;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4"))
+            if(release.startsWith("4"))
             {
                 ver = 14;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.0.3"))
+            if(release.startsWith("4.0.3"))
             {
                 ver = 15;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.0.4"))
+            if(release.startsWith("4.0.4"))
             {
                 ver = 15;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.1"))
+            if(release.startsWith("4.1"))
             {
                 ver = 16;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.2"))
+            if(release.startsWith("4.2"))
             {
                 ver = 17;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.3"))
+            if(release.startsWith("4.3"))
             {
                 ver = 18;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.4"))
+            if(release.startsWith("4.4"))
             {
                 ver = 19;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("4.4W"))
+            if(release.startsWith("4.4W"))
             {
                 ver = 20;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("5"))
+            if(release.startsWith("5"))
             {
                 ver = 21;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("5.1"))
+            if(release.startsWith("5.1"))
             {
                 ver = 22;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("6"))
+            if(release.startsWith("6"))
             {
                 ver = 23;
             }
-            if(android.os.Build.VERSION.RELEASE.startsWith("7"))
+            if(release.startsWith("7"))
             {
                 ver = 24;
             }

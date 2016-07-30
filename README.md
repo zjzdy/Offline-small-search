@@ -10,18 +10,19 @@ Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.n
 
 GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
 
-主页: [http://zjzdy.github.io/oss/](http://zjzdy.github.io/oss/)
+主页: [http://zjzdy.oschina.io/oss/](http://zjzdy.oschina.io/oss/)
 
-当前版本: v2.1.2
+当前版本: v2.2.0
 
 ##功能及特点
 * 离线全文检索,采用高度压缩打包的ZIM文件存储数据
-* 主页模式
+* 可任意自行打包或添加离线包
 * 网址自定义,支持外部链接
 * 收藏夹,历史纪录
 * 搜索单一离线包,一键搜索所有离线包
 * 拍照搜索(需下载相关模块)
 * 在线翻译(使用有道翻译)(Android平台需要Android 4.4及以上)
+* 简体繁体自动转换搜索,无论繁体还是简体都可以找到
 * 更多功能等待发现
 
 ##下载
@@ -41,12 +42,10 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 ##共享的离线包地址
 注意：离线包版本请用最新版,程序不保证兼容旧版本的离线包.
-* 高中试题离线包 [http://pan.baidu.com/s/1qXmynFm](http://pan.baidu.com/s/1qXmynFm) 密码: 6w8i
-* 初中试题离线包 [http://pan.baidu.com/s/1jHi6Ham](http://pan.baidu.com/s/1jHi6Ham) 密码: b3k9
-* 小学试题离线包 [http://pan.baidu.com/s/1nuyFCKD](http://pan.baidu.com/s/1nuyFCKD) 密码: 1sqi
-* 古诗文离线包 [http://pan.baidu.com/s/1nu4LqdF](http://pan.baidu.com/s/1nu4LqdF) 密码: xq5b
-* 开发文档离线包 [http://pan.baidu.com/s/1bn7an8](http://pan.baidu.com/s/1bn7an8) 密码: 52v5
-* 开发文档离线包(360云盘分流) [https://yunpan.cn/cYj7v3VfEBc9E](https://yunpan.cn/cYj7v3VfEBc9E) 密码: 237d
+* 中小学试题离线包 [http://pan.baidu.com/s/1o7KGd8Q](http://pan.baidu.com/s/1o7KGd8Q) 密码: cqwx
+* 古诗文离线包 [http://pan.baidu.com/s/1i4P9ZDj](http://pan.baidu.com/s/1i4P9ZDj) 密码: hre8
+* 开发文档离线包 [http://pan.baidu.com/s/1geD2PLD](http://pan.baidu.com/s/1geD2PLD) 密码: mc6s
+* 开发文档离线包(360云盘分流) [https://yunpan.cn/c6Fn4Ly4SSGqq](https://yunpan.cn/c6Fn4Ly4SSGqq) 密码: 6311
 * 离线包打包器 [http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build](http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build)
 * 如果需要分享离线包,可联系我在此页面添加下载链接
 * 因服务器资源有限,程序内的在线下载模块暂不开放离线包的下载,请自行下载添加
@@ -105,12 +104,6 @@ cp /mingw32/include/tesseract/tesscallback.h /mingw32/include/tesseract/tesscall
 sed -i 's/template <class T> struct remove_reference;//g' /mingw32/include/tesseract/tesscallback.h
 sed -i 's/template<typename T> struct remove_reference { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
 sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };//g' /mingw32/include/tesseract/tesscallback.h
-```
-如果Qt库没有带webengine,则改用QtWebKit.
-```
-sed -i 's/QtWebView 1.0/QtWebKit 3.0\nimport QtWebKit.experimental 1.0/g' Result.qml
-sed -i 's/text.runJavaScript/text.experimental.evaluateJavaScript/g' Result.qml
-sed -i 's/,function() { console.log("runjs"); }//g' Result.qml
 ```
 1.打开Qt Creator
 
@@ -236,6 +229,7 @@ cp /mingw32/bin/libopencv_core310.dll oss_bin/
 cp /mingw32/bin/libopencv_imgcodecs310.dll oss_bin/
 cp /mingw32/bin/libopencv_imgproc310.dll oss_bin/
 cp /mingw32/bin/libopencv_videoio310.dll oss_bin/
+cp /mingw32/bin/libopencv_photo310.dll oss_bin/
 cp /mingw32/bin/libpng16-16.dll oss_bin/
 cp /mingw32/bin/libsqlite3-0.dll oss_bin/
 cp /mingw32/bin/libwinpthread-1.dll oss_bin/
@@ -464,11 +458,9 @@ cd ../
 
 
 ##已知问题
-1. 在浏览内容的界面按返回键有小几率闪退
+1. 在浏览内容的界面按返回键有极小几率闪退,如果可复现请开issues(需要提供具体离线包和复现操作).
 
-2. 打开文件对话框后返回键失效
-
-3. 部分js或css及嵌套html会加载失败(将在3.0版修复)
+2. 部分js或css及嵌套html会加载失败(将在3.0版修复)
 
 ##TODO
 1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能(3.1)
@@ -479,12 +471,4 @@ cd ../
 		+ 2.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
 	+ 2.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
 	
-3. 索引改用Xapian的glassify格式,使用单一文件"data.idx"(Xapian 1.3.4及以上)
-```
-Xapian::WritableDatabase db_out(dest, Xapian::DB_CREATE|Xapian::DB_BACKEND_GLASS);
-
-db_out.compact("data.idx",Xapian::DBCOMPACT_SINGLE_FILE)
-```
-转换到glassify格式的单一文件的参考代码:[glassify.cc](https://github.com/kiwix/kiwix/blob/master/android/glassify.cc)
-
-4. 终极目标:对Kiwix及Zeal的功能进行整合,能做为一个帮助服务器使用,支持自定义插件(包括在线检索,语音搜索,对显示的内容的操作:如翻译)
+3. 终极目标:对Kiwix,Zeal及Mdict的功能进行整合,能做为一个帮助服务器使用,支持自定义插件(包括在线检索,语音搜索,对显示的内容的操作:如翻译)

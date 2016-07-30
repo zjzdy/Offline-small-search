@@ -119,28 +119,35 @@ Rectangle {
 
     DefaultFileDialog {
         id: choose_dir2
-        title: qsTr("选择离线包的目录")
+        title: qsTr("选择离线包的pkg文件")
         selectMultiple: false
         selectExisting: true
-        selectFolder: true
+        //selectFolder: true
         folder: "file:///sdcard"
+        nameFilters: [ "离线包 (*.idx *.zim *.pkg)" ]
+        onFolderChanged: console.log(choose_dir2.folder)
         onAccepted: {
             main_widget.add_offline_pkg(choose_dir2.folder,true)
         }
-        onRejected: rectangle2.focus = true
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
+        }
     }
 
     FileDialog {
         id: choose_dir
-        title: qsTr("选择离线包的目录")
+        title: qsTr("选择离线包的pkg文件")
         selectMultiple: false
         selectExisting: true
-        selectFolder: true
+        //selectFolder: true
         sidebarVisible: false
+        nameFilters: [ "离线包 (*.idx *.zim *.pkg)" ]
         onAccepted: {
             main_widget.add_offline_pkg(choose_dir.folder,true)
         }
-        onRejected: rectangle2.focus = true
     }
 
     Rectangle {
@@ -189,7 +196,7 @@ Rectangle {
         id: listView1
         anchors.top: rectangle1.bottom
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.bottom: auto_check_tip.top
         anchors.left: parent.left
         anchors.topMargin: 0
         model: offline_pkg_list
@@ -465,6 +472,22 @@ Rectangle {
             anchors.topMargin: 20*Math.min(rectangle2.a_max/1280,a_pd/12)
             font.pixelSize: 35*rectangle2.a_sqrt
             wrapMode: Text.Wrap
+        }
+    }
+
+    Text {
+        id: auto_check_tip
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        text: qsTr("提示: 把离线包放在")+main_widget.get_data_dir()+qsTr("目录中可以自动扫描添加")
+        font.pixelSize: 33*Math.min(rectangle2.a_max/1280,a_pd/12)
+        elide: Text.ElideLeft
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        horizontalAlignment: Text.AlignHCenter
+        MouseArea {
+            anchors.fill: parent
+            onClicked: main_widget.check_data_pkgs()
         }
     }
 }

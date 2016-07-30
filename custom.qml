@@ -26,6 +26,12 @@ Rectangle {
             if(main_widget.is_exist(choose_bf_dir2.folder+"/oss/ossbf",2)) bf_finish.open()
             else bf_fail.open()
         }
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
+        }
     }
 
     FileDialog {
@@ -86,6 +92,12 @@ Rectangle {
                 hf_finish.open()
             }
             else hf_fail.open()
+        }
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
         }
     }
 
@@ -157,6 +169,12 @@ Rectangle {
         onAccepted: {
             custom1.bgc = colorDialog.currentColor
         }
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
+        }
     }
 
     DefaultFileDialog {
@@ -171,7 +189,12 @@ Rectangle {
         onAccepted: {
             custom1.bgi = choose_bgi2.fileUrl
         }
-        onRejected: rectangle2.focus = true
+        onVisibleChanged: {
+            if(!visible)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
+        }
     }
 
     FileDialog {
