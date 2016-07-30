@@ -172,6 +172,12 @@ Rectangle {
             }
             else console.log("load3",url)
         }
+        onLoadProgressChanged: {
+            if(loadProgress == 100 || loadProgress == 0)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
+        }
     }
 
     Rectangle {

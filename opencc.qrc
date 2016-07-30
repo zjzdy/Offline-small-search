@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>opencc/s2t.json</file>
+        <file>opencc/STCharacters.ocd</file>
+        <file>opencc/STPhrases.ocd</file>
+        <file>opencc/t2s.json</file>
+        <file>opencc/TSCharacters.ocd</file>
+        <file>opencc/TSPhrases.ocd</file>
+    </qresource>
+</RCC>

@@ -4,7 +4,7 @@
 offline_pkg::offline_pkg(QObject *parent) : QObject(parent)
 {
     zim_exist = false;
-    img.setPattern("[\"'\\(]([a-zA-Z0-9-_@&\\./\\\\]*\\.[a-gi-zA-GI-Z0-9]{2,4})[\"'\\)]");
+    img.setPattern("[\"'\\(]([a-zA-Z0-9-_@&%\\?\\./\\\\]*\\.[a-gi-zA-GI-Z0-9]{2,4})[\"'\\)]");
     img.setMinimal(true);
     img.setCaseSensitivity(Qt::CaseInsensitive);
 }
@@ -134,8 +134,12 @@ void offline_pkg::setHome_enable(const bool & home_enable)
 QString offline_pkg::get_text_from_url(QString & url)
 {
     if(!zim_exist) return "";
-	QRegExp parse("[\\?#].*$");
+    QRegExp parse("[\\?#].*$");
     parse.setMinimal(false);
+    url.remove(QRegExp("#.*$"));
+    QUrl url_a(url);
+    QString url_a1 = url_a.resolved(url).toString().replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
+    QString url_a2 = url_a.resolved(url).toString(QUrl::FullyEncoded).replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     url.replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
@@ -148,30 +152,230 @@ QString offline_pkg::get_text_from_url(QString & url)
                 if (!it.first)
                 {
                     it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
-					if (!it.first)
-					{
-						it = zim_file->findx("A/"+url.toStdString()+"/index.html");
-						if (!it.first)
-						{
-							it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
-							if (!it.first)
-							{
-								it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
-								if (!it.first)
-								{
-									it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
-									if (!it.first)
-									{
-										it = zim_file->findx("A/"+url.toStdString()+"/index");
-										if (!it.first)
-										{
-											it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
-										}
-									}
-								}
-							}
-						}
-					}
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url.toStdString()+"/index.html");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url.toStdString()+"/index");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a1.toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a1.toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a1.toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a1.toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a1.toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a1.toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a1.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a2.toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a2.toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a2.toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a2.toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a2.toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a2.toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a2.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -190,8 +394,12 @@ QString offline_pkg::get_text_from_url(QString & url)
 QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_dir)
 {
     if(!zim_exist) return "";
-	QRegExp parse("[\\?#].*$");
+    QRegExp parse("[\\?#].*$");
     parse.setMinimal(false);
+    url.remove(QRegExp("#.*$"));
+    QUrl url_a(url);
+    QString url_a1 = url_a.resolved(url).toString().replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
+    QString url_a2 = url_a.resolved(url).toString(QUrl::FullyEncoded).replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     url.replace(QRegExp("[/\\\\]{2,}"),"/").remove(QRegExp("^/")).remove(parse);
     try{
         auto it = zim_file->findx("A/"+url.toStdString());
@@ -204,30 +412,230 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
                 if (!it.first)
                 {
                     it = zim_file->findx("A/"+url.toUpper().toStdString()+".HTML");
-					if (!it.first)
-					{
-						it = zim_file->findx("A/"+url.toStdString()+"/index.html");
-						if (!it.first)
-						{
-							it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
-							if (!it.first)
-							{
-								it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
-								if (!it.first)
-								{
-									it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
-									if (!it.first)
-									{
-										it = zim_file->findx("A/"+url.toStdString()+"/index");
-										if (!it.first)
-										{
-											it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
-										}
-									}
-								}
-							}
-						}
-					}
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url.toStdString()+"/index.html");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTML");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url.toStdString()+"/index.htm");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX.HTM");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url.toStdString()+"/index");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url.toUpper().toStdString()+"/INDEX");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a1.toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a1.toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a1.toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a1.toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a1.toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a1.toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a1.toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a1.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a1.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a1.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a2.toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a2.toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a2.toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a2.toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a2.toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a2.toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a2.toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!it.first)
+        {
+            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString());
+            if (!it.first)
+            {
+                it = zim_file->findx(url_a2.toUtf8().toStdString());
+                if (!it.first)
+                {
+                    it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+".html");
+                    if (!it.first)
+                    {
+                        it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+".HTML");
+                        if (!it.first)
+                        {
+                            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index.html");
+                            if (!it.first)
+                            {
+                                it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX.HTML");
+                                if (!it.first)
+                                {
+                                    it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index.htm");
+                                    if (!it.first)
+                                    {
+                                        it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX.HTM");
+                                        if (!it.first)
+                                        {
+                                            it = zim_file->findx("A/"+url_a2.toUtf8().toStdString()+"/index");
+                                            if (!it.first)
+                                            {
+                                                it = zim_file->findx("A/"+url_a2.toUtf8().toUpper().toStdString()+"/INDEX");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -245,14 +653,26 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
         url2.remove(QRegExp("[^/\\\\]*$"));
         QUrl url3(url2);
         QString url4;
+        QString url5;
         dir.mkpath(cache_dir+url2);
         while ((pos = img.indexIn(str, pos)) != -1)
         {
             pos += img.matchedLength();
             url4 = url3.resolved(img.cap(1)).toString();
+            url5 = url3.resolved(img.cap(1)).toString(QUrl::FullyEncoded);
+            url4.remove(QRegExp("#.*$"));
+            url5.remove(QRegExp("#.*$"));
             if(QFile::exists(cache_dir+url4)) continue;
+            if(QFile::exists(cache_dir+url5)) continue;
             it = zim_file->findx(QString("A/"+url4).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url4).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toUtf8().toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url4).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toLocal8Bit().toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url5).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url5).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toUtf8().toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url5).replace(QRegExp("[/\\\\]{2,}"),"/").remove(parse).toLocal8Bit().toStdString());
             if (!it.first) it = zim_file->findx(QString("A/"+url2+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url2+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toUtf8().toStdString());
+            if (!it.first) it = zim_file->findx(QString("A/"+url2+img.cap(1).replace(QRegExp("[/\\\\]{2,}"),"/")).toLocal8Bit().toStdString());
             if (it.first)
             {
                 img_file.setFileName(cache_dir+url2+img.cap(1));
@@ -270,6 +690,44 @@ QString offline_pkg::get_text_with_other_from_url(QString & url, QString &cache_
                     img_file.write(it.second->getData().data(), it.second->getData().size());
                     img_file.flush();
                     img_file.close();
+                }
+                if (url2+img.cap(1) != url4)
+                {
+                    img_file.setFileName(cache_dir+url4);
+                    fileinfo.setFile(img_file);
+                    dir.mkpath(fileinfo.absolutePath());
+                    if (it.second->isRedirect())
+                    {
+                        img_file.open(QFile::ReadWrite);
+                        img_file.write(it.second->getRedirectArticle().getData().data(), it.second->getRedirectArticle().getData().size());
+                        img_file.close();
+                    }
+                    else
+                    {
+                        img_file.open(QFile::ReadWrite);
+                        img_file.write(it.second->getData().data(), it.second->getData().size());
+                        img_file.flush();
+                        img_file.close();
+                    }
+                }
+                if (url2+img.cap(1) != url5&&url5 != url4)
+                {
+                    img_file.setFileName(cache_dir+url5);
+                    fileinfo.setFile(img_file);
+                    dir.mkpath(fileinfo.absolutePath());
+                    if (it.second->isRedirect())
+                    {
+                        img_file.open(QFile::ReadWrite);
+                        img_file.write(it.second->getRedirectArticle().getData().data(), it.second->getRedirectArticle().getData().size());
+                        img_file.close();
+                    }
+                    else
+                    {
+                        img_file.open(QFile::ReadWrite);
+                        img_file.write(it.second->getData().data(), it.second->getData().size());
+                        img_file.flush();
+                        img_file.close();
+                    }
                 }
             }
         }

@@ -164,8 +164,7 @@ Rectangle {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: 
-            {
+            onClicked: {
                 main_widget.search_type_clear()
                 main_widget.search_type_add("ALL")
                 main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
@@ -182,15 +181,17 @@ Rectangle {
             visible: image2.visible
             anchors.rightMargin: -20*rectangle2.a_min/720
             anchors.leftMargin: -20*rectangle2.a_min/720
-            onClicked:
-            {
+            onClicked: {
                 main_widget.search_type_clear()
                 main_widget.search_type_add("ALL")
                 main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
                 if(main_widget.more_search_count() < 1)
                     no_pkg_messageDialog.open();
-                else
+                else {
+                    main_widget.search_type_clear()
+                    main_widget.search_type_add("ALL")
                     main_widget.startCamera();
+                }
             }
         }
 

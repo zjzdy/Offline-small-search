@@ -3,6 +3,49 @@
 
 Xapian_search::Xapian_search(QObject *parent) : QObject(parent)
 {
+#ifndef NO_OPENCC
+    if(!QFile::exists("opencc/"))
+    {
+        QDir opencc;
+        opencc.mkpath("opencc/");
+    }
+    if(!QFile::exists("opencc/s2t.json"))
+    {
+        QFile::copy(":/opencc/s2t.json","opencc/s2t.json");
+    }
+    if(!QFile::exists("opencc/STCharacters.ocd"))
+    {
+        QFile::copy(":/opencc/STCharacters.ocd","opencc/STCharacters.ocd");
+    }
+    if(!QFile::exists("opencc/STPhrases.ocd"))
+    {
+        QFile::copy(":/opencc/STPhrases.ocd","opencc/STPhrases.ocd");
+    }
+    if(!QFile::exists("opencc/t2s.json"))
+    {
+        QFile::copy(":/opencc/t2s.json","opencc/t2s.json");
+    }
+    if(!QFile::exists("opencc/TSCharacters.ocd"))
+    {
+        QFile::copy(":/opencc/TSCharacters.ocd","opencc/TSCharacters.ocd");
+    }
+    if(!QFile::exists("opencc/TSPhrases.ocd"))
+    {
+        QFile::copy(":/opencc/TSPhrases.ocd","opencc/TSPhrases.ocd");
+    }
+    enable_opencc = false;
+    try
+    {
+        opencc_t2s = new opencc::SimpleConverter("opencc/t2s.json");
+        opencc_s2t = new opencc::SimpleConverter("opencc/s2t.json");
+        enable_opencc = true;
+    }
+    catch(...)
+    {
+        qDebug()<<"opencc start fail";
+        enable_opencc = false;
+    }
+#endif
     qDebug()<<"start xapian";
 #ifdef HAVE__PUTENV_S
     _putenv_s("XAPIAN_CJK_NGRAM", "1");
@@ -23,7 +66,10 @@ void Xapian_search::on_init(QStringList dir, int batch)
         db = Xapian::Database();
 		for(int i = 0; i < dir.size(); ++i)
         {
-            db.add_database(Xapian::Database(dir.at(i).toStdString()));
+            if(QFile::exists(dir.at(i)+"/data.idx"))
+                db.add_database(Xapian::Database(dir.at(i).toStdString()+"/data.idx"));
+            else
+                db.add_database(Xapian::Database(dir.at(i).toStdString()));
         }
         //enquire = shared_ptr<Xapian::Enquire>(new Xapian::Enquire(db));
         Q_EMIT init_finish(batch);
@@ -53,7 +99,23 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
         Xapian::Enquire enquire(db);
 		termgen.set_document(doc);
         termgen.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
-		termgen.index_text_without_positions(str.toStdString(),1,"C");
+        string str_o = str.toStdString();
+        string str_c = "";
+#ifndef NO_OPENCC
+        if(enable_opencc)
+        {
+            string str_t = opencc_s2t->Convert(str_o);
+            string str_s = opencc_t2s->Convert(str_o);
+            if(str_t != str_o)
+                str_c += str_t;
+            if(str_s != str_o)
+                str_c += str_s;
+            str_o += str_c;
+        }
+#endif
+        if(str_c == ""||str_c.empty())
+            str_c = str_o;
+        termgen.index_text_without_positions(str_o,1,"C");
 		runing = "Add Term!";
 		Xapian::TermIterator it;
         QList<Xapian::Query> querys;
@@ -64,10 +126,11 @@ void Xapian_search::on_search(QString str, int batch, QStringList type)
         Xapian::Document doc2;
         termgen.set_document(doc2);
         termgen.set_stemming_strategy(Xapian::TermGenerator::STEM_NONE);
-        termgen.index_text_without_positions(str.toStdString()+enstem(str.toStdString()),1);
+        termgen.index_text_without_positions(str_c+enstem(str.toStdString()),1);
         Xapian::TermIterator it2;
         for (it2 = doc2.termlist_begin(); it2 != doc2.termlist_end(); ++it2)
         {
+            querys.append(Xapian::Query(*it2,it2.get_wdf()));
             key_words.append(QString::fromStdString(*it2));
         }
         Xapian::Query query(Xapian::Query::OP_ELITE_SET, querys.begin(), querys.end(), 20);

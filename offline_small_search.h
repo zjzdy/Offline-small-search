@@ -43,8 +43,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 using namespace cv;
-#define OSS_VERSION_N 29
-#define OSS_VERSION "V2.1.2"
+#define OSS_VERSION_N 32
+#define OSS_VERSION "V2.2.0"
 
 class Offline_small_search : public QObject
 {
@@ -62,15 +62,15 @@ Q_SIGNALS:
     void xapian_search(QString str, int batch, QStringList type);
     void init_search(QStringList dir, int batch);
     void unzip(QString zipfile, QString dir, int batch);
-    void crop_ocr(QString imagepath, QVariant cropPoints, int batch);
+    void crop_ocr(QString imagepath, QVariant cropPoints, QString lang, int batch);
     void rotate(QString imagepath, int rotate_n, int batch);
-    void init_ocr(QString tessdata_path, int batch);
+    void init_ocr(QString tessdata_path, QString lang, int batch);
 
 public Q_SLOTS:
     Q_INVOKABLE void init_obj();
     Q_INVOKABLE void download_data(QString url);
     Q_INVOKABLE void remove_data(QString url);
-    Q_INVOKABLE void crop_ocr_Q(QString imagepath, QVariant cropPoints);
+    Q_INVOKABLE void crop_ocr_Q(QString imagepath, QVariant cropPoints, QString lang = "zh_cn");
     Q_INVOKABLE void rotate_Q(QString imagepath, int rotate_n);
     void download_data_finish();
     void onReadyRead();
@@ -159,6 +159,7 @@ public Q_SLOTS:
     Q_INVOKABLE QString cp_grayimg_to_tmp(QString imagepath);
     Q_INVOKABLE QString systemType();
     Q_INVOKABLE int getAndroidVerCache();
+    Q_INVOKABLE void check_data_pkgs(bool enable = true);
 private:
 #ifdef Q_OS_ANDROID
     int getAndroidVersion();

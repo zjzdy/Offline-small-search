@@ -3,9 +3,13 @@
 crop::crop(QObject *parent) : QObject(parent)
 {
     tess_init = false;
+    bracket1.setPattern("\\(.{1,20}\\)");
+    bracket2.setPattern("\\[.{1,20}\\]");
+    bracket1.setMinimal(false);
+    bracket2.setMinimal(false);
 }
 
-void crop::init(QString tessdata_path)
+void crop::init(QString tessdata_path, QString lang)
 {
     /*
     char* configs[1];
@@ -28,20 +32,62 @@ void crop::init(QString tessdata_path)
     k.push_back("edges_max_children_per_outline");
     v.push_back("40");
     */
-    if (api.Init(tessdata_path.toLocal8Bit().data(), "chi_sim"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
+    if(lang == "zh_cn")
     {
-        tess_init = false;
-        qDebug()<<"Could not initialize tesseract";
+        if(api.Init(tessdata_path.toLocal8Bit().data(), "chi_sim"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
+        {
+            tess_init = false;
+            qDebug()<<"Could not initialize tesseract";
+        }
+        else
+        {
+            tess_init = true;
+            api.SetPageSegMode(PSM_AUTO);
+            qDebug()<<"Initialize tesseract finish";
+        }
     }
     else
     {
-        tess_init = true;
-        api.SetPageSegMode(PSM_AUTO);
-        qDebug()<<"Initialize tesseract finish";
+        if(lang == "cht")
+        {
+            if(api_cht.Init(tessdata_path.toLocal8Bit().data(), "chi_tra"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
+            {
+                tess_cht_init = false;
+                qDebug()<<"Could not initialize tesseract for cht";
+            }
+            else
+            {
+                tess_cht_init = true;
+                api_cht.SetPageSegMode(PSM_AUTO);
+                qDebug()<<"Initialize tesseract for cht finish";
+            }
+        }
+        if(lang == "eng")
+        {
+            if(api_eng.Init(tessdata_path.toLocal8Bit().data(), "eng"))//,OEM_DEFAULT,configs,1,NULL,NULL,false)) {
+            {
+                tess_eng_init = false;
+                qDebug()<<"Could not initialize tesseract for eng";
+            }
+            else
+            {
+                tess_eng_init = true;
+                api_eng.SetPageSegMode(PSM_AUTO);
+                qDebug()<<"Initialize tesseract for eng finish";
+            }
+        }
     }
 }
+QString crop::crop_ocr(QString imagepath, QVariant cropPoints, QString lang)
+{
+    QString str = crop_ocr_orig(imagepath, cropPoints, 55, lang);
+    str.remove(QRegExp("[ \n\t\\\\/_.,'\"。，？、><]*"));
+    if(str.isEmpty()||str.isNull()||str == "")
+        str = " ";
+    return str;
+}
 
-QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
+QString crop::crop_ocr_orig(QString imagepath, QVariant cropPoints, float min_confidence, QString lang)
 {
     if(imagepath.indexOf(QRegExp("^file:/")) >= 0)
     {
@@ -105,49 +151,258 @@ QString crop::crop_ocr(QString imagepath, QVariant cropPoints)
         image = cv::imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
         //img.save("tmp/trans.jpg", "jpg", 100);
     }
-
-    //imwrite("/sdcard/imageText.jpg",image);
-    medianBlur(image,image,3);
-    rotateFix(image);
+    //medianBlur(image,image,3);
+    int orig_width = image.cols;
+    int orig_heigth = image.rows;
+    int rotate = rotateFix(image);
     Mat local;
     adaptiveThreshold(image, local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 25, 11);
-
-    //imwrite("local.jpg", local);
-
+    zoomFix(local,rotate,orig_width,orig_heigth);
+    fastNlMeansDenoising(local,local,13);
+    //imwrite("/sdcard/imageText.jpg",local);
+    /*TVL1去噪,denoise_TVL1和fastNlMeansDenoising效果难分难舍,各有所长,各有所短
+     * ,最神奇的是OCR打分都一样,但fastNlMeansDenoising人眼看得更顺眼
+    vector<Mat> l3;
+    l3.push_back(local);
+    denoise_TVL1(l3,local,1,2);
+    */
     if(!tess_init)
     {
         qDebug()<<"tesseract isn't init";
         return QString();//tr("对不起:OCR失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.");
     }
+
     //api->InitLangMod(".", "chi_sim");
     IplImage iplimg(local);
-    //iplimg = cvLoadImage("tmp/local.jpg");
-    //api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
-    api.Clear();
-    api.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
-
     QString outText = " ";
     qDebug()<<"Ocr start time: "<<QDateTime::currentDateTime().toString();
-    if(api.Recognize(NULL) >=0)
+    //iplimg = cvLoadImage("tmp/local.jpg");
+    //api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
+    if(lang == "cht")
     {
-        ResultIterator *it = api.GetIterator();
-        do {
-            if (it->Empty(RIL_SYMBOL)) continue;
-            char *word_text = it->GetUTF8Text(RIL_SYMBOL);
-            //qDebug()<<"Word: "<<word_text<<" Confidence: "<<
-            if(it->Confidence(RIL_SYMBOL) > 60.0)
-                outText.append(word_text);
-            delete []word_text;
-        } while (it->Next(RIL_SYMBOL));
-        qDebug()<<"ALL Confidence: "<<api.MeanTextConf();
+        if(!tess_cht_init)
+            return QString();
+        api_cht.Clear();
+        api_cht.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+        if(api_cht.Recognize(NULL) >=0)
+        {
+            ResultIterator *it = api_cht.GetIterator();
+            do {
+                if (it->Empty(RIL_TEXTLINE)) continue;
+                char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                //qDebug()<<"Word: "<<word_text<<" Confidence: "<<
+                if(it->Confidence(RIL_TEXTLINE) >= min_confidence)
+                    outText.append(word_text);
+                outText.append(" ");
+                delete []word_text;
+            } while (it->Next(RIL_TEXTLINE));
+            qDebug()<<"ALL Confidence: "<<api_cht.MeanTextConf();
+        }
+    }
+    else
+    {
+        if(lang == "eng")
+        {
+            if(!tess_eng_init)
+                return QString();
+            api_eng.Clear();
+            api_eng.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+            if(api_eng.Recognize(NULL) >=0)
+            {
+                ResultIterator *it = api_eng.GetIterator();
+                do {
+                    if (it->Empty(RIL_TEXTLINE)) continue;
+                    char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                    //qDebug()<<"Word: "<<word_text<<" Confidence: "<<
+                    if(it->Confidence(RIL_TEXTLINE) >= (min_confidence))
+                        outText.append(word_text);
+                    outText.append(" ");
+                    delete []word_text;
+                } while (it->Next(RIL_TEXTLINE));
+                qDebug()<<"ALL Confidence: "<<api_eng.MeanTextConf();
+            }
+        }
+        else
+        {
+            api.Clear();
+            api.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+            if(api.Recognize(NULL) >=0)
+            {
+                ResultIterator *it = api.GetIterator();
+                do {
+                    if (it->Empty(RIL_TEXTLINE)) continue;
+                    char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                    //qDebug()<<"Word: "<<word_text<<" Confidence: "<<
+                    if(it->Confidence(RIL_TEXTLINE) >= min_confidence)
+                        outText.append(word_text);
+                    outText.append(" ");
+                    delete []word_text;
+                } while (it->Next(RIL_TEXTLINE));
+                qDebug()<<"ALL Confidence: "<<api.MeanTextConf();
+            }
+        }
     }
     qDebug()<<"Ocr end time: "<<QDateTime::currentDateTime().toString();
-    api.Clear();
-    //qDebug()<<outText;
-    outText.remove(QRegExp("[ \n\t\\\\/_.,'\"。，？、><]*"));
-    if(outText.isEmpty()||outText.isNull()||outText == "")
-        outText = " ";
+    qDebug()<<lang<<outText;
     return outText;
+}
+
+QStringList crop::crop_ocr_list(QString imagepath, QVariant cropPoints, QString lang)
+{
+    if(imagepath.indexOf(QRegExp("^file:/")) >= 0)
+    {
+        imagepath.replace(QRegExp("file:/*"), "");
+#ifndef _WIN32
+        imagepath = "/"+imagepath;
+#endif
+    }
+    qDebug()<<imagepath;
+    QImage img(imagepath);
+    QMap<QString, QPointF> points;
+    Mat image;
+    qreal width = 0;
+    qreal height = 0;
+    if(getCropPoints(points, cropPoints.toMap(), img))
+    {
+        QLineF topLine(points.value("topLeft"), points.value("topRight"));
+        QLineF bottomLine(points.value("bottomLeft"), points.value("bottomRight"));
+        QLineF leftLine(points.value("topLeft"), points.value("bottomLeft"));
+        QLineF rightLine(points.value("topRight"), points.value("bottomRight"));
+        if(topLine.length() > bottomLine.length()) {
+            width = topLine.length();
+        } else {
+            width = bottomLine.length();
+        }
+        if(topLine.length() > bottomLine.length()) {
+            height = leftLine.length();
+        } else {
+            height = rightLine.length();
+        }
+        Mat img = imread(imagepath.toLocal8Bit().data(),COLOR_BGR2GRAY);
+        if(img.total() < 1) return QStringList();
+        int img_height = height;
+        int img_width = width;
+        vector<Point2f> corners(4);
+        corners[0] = Point2f(0,0);
+        corners[1] = Point2f(img_width-1,0);
+        corners[2] = Point2f(0,img_height-1);
+        corners[3] = Point2f(img_width-1,img_height-1);
+        vector<Point2f> corners_trans(4);
+        corners_trans[0] = Point2f(points.value("topLeft").x(),points.value("topLeft").y());
+        corners_trans[1] = Point2f(points.value("topRight").x(),points.value("topRight").y());
+        corners_trans[2] = Point2f(points.value("bottomLeft").x(),points.value("bottomLeft").y());
+        corners_trans[3] = Point2f(points.value("bottomRight").x(),points.value("bottomRight").y());
+        Mat warpMatrix = getPerspectiveTransform(corners_trans,corners);
+        warpPerspective(img, image, warpMatrix, Size(img_width,img_height), INTER_LINEAR, BORDER_CONSTANT);
+    }
+    else
+        image = cv::imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    int orig_width = image.cols;
+    int orig_heigth = image.rows;
+    int rotate = rotateFix(image);
+    Mat local;
+    adaptiveThreshold(image, local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 25, 11);
+    zoomFix(local,rotate,orig_width,orig_heigth);
+    fastNlMeansDenoising(local,local,13);
+    if(!tess_init)
+        return QStringList();//tr("对不起:OCR失败,OCR模块未初始化或初始化失败,请确认OCR模块是否已经成功安装.");
+    IplImage iplimg(local);
+    QString outText = " ";
+    qDebug()<<"Ocr start time: "<<QDateTime::currentDateTime().toString();
+    if(lang == "cht")
+    {
+        if(!tess_cht_init)
+            return QStringList();
+        api_cht.Clear();
+        api_cht.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+        if(api_cht.Recognize(NULL) >=0)
+        {
+            ResultIterator *it = api_cht.GetIterator();
+            do {
+                if (it->Empty(RIL_TEXTLINE)) continue;
+                char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                if(it->Confidence(RIL_TEXTLINE) >= 50)
+                {
+                    outText.append(word_text);
+                    outText.append("\n");
+                    //qDebug()<<word_text<<":"<<it->Confidence(RIL_TEXTLINE);
+                }
+                delete []word_text;
+            } while (it->Next(RIL_TEXTLINE));
+            qDebug()<<"ALL Confidence: "<<api_cht.MeanTextConf();
+        }
+        api_cht.Clear();
+    }
+    else
+    {
+        if(lang == "eng")
+        {
+            if(!tess_eng_init)
+                return QStringList();
+            api_eng.Clear();
+            api_eng.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+            if(api_eng.Recognize(NULL) >=0)
+            {
+                ResultIterator *it = api_eng.GetIterator();
+                do {
+                    if (it->Empty(RIL_TEXTLINE)) continue;
+                    char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                    if(it->Confidence(RIL_TEXTLINE) >= 50)
+                    {
+                        outText.append(word_text);
+                        outText.append("\n");
+                        //qDebug()<<word_text<<":"<<it->Confidence(RIL_TEXTLINE);
+                    }
+                    delete []word_text;
+                } while (it->Next(RIL_TEXTLINE));
+                qDebug()<<"ALL Confidence: "<<api_eng.MeanTextConf();
+            }
+            api_eng.Clear();
+        }
+        else
+        {
+            api.Clear();
+            api.SetImage((unsigned char*)(iplimg.imageData), iplimg.width, iplimg.height, iplimg.nChannels, iplimg.widthStep);
+            if(api.Recognize(NULL) >=0)
+            {
+                ResultIterator *it = api.GetIterator();
+                do {
+                    if (it->Empty(RIL_TEXTLINE)) continue;
+                    char *word_text = it->GetUTF8Text(RIL_TEXTLINE);
+                    if(it->Confidence(RIL_TEXTLINE) >= 50)
+                    {
+                        outText.append(word_text);
+                        outText.append("\n");
+                        //qDebug()<<word_text<<":"<<it->Confidence(RIL_TEXTLINE);
+                    }
+                    delete []word_text;
+                } while (it->Next(RIL_TEXTLINE));
+                qDebug()<<"ALL Confidence: "<<api.MeanTextConf();
+            }
+            api.Clear();
+        }
+    }
+    QString str = outText;
+    if(str.isEmpty()||str.isNull()||str == "")
+    {
+        str = " ";
+        QStringList str_list;
+        str_list.append(str);
+        return str_list;
+    }
+    str.remove(bracket1);
+    str.remove(bracket2);
+    QStringList str_list = str.split(QRegExp("^[^A-Za-z0-9Ⅰ-Ⅻ\u4E00-\u9FD5\u3400-\u4DB5]*[0-9Ⅰ-ⅫiI]{1,3}"));
+    int i;
+    for(i = 0; i < str_list.size(); ++i)
+    {
+        str_list[i].remove(QRegExp("[ \n\t\\\\/_.,'\"。，？、><]*"));
+    }
+    if(str_list.isEmpty())
+    {
+        str_list.append(str);
+    }
+    return str_list;
 }
 
 void crop::rotate(QString imagepath, int rotate_n)
@@ -226,15 +481,15 @@ bool crop::getCropPoints(QMap<QString, QPointF> &points, QMap<QString, QVariant>
     return cropNeeded;
 }
 
-void crop::rotateFix(QString imagepath)
+int crop::rotateFix(QString imagepath)
 {
     Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
     if(srcImg.empty())
-        return;
-    else rotateFix(srcImg);
+        return 0;
+    else return rotateFix(srcImg);
 }
 
-void crop::rotateFix(Mat &srcImg)
+int crop::rotateFix(Mat &srcImg)
 {
     Mat padded;
     int opWidth = getOptimalDFTSize(srcImg.rows);
@@ -284,7 +539,7 @@ void crop::rotateFix(Mat &srcImg)
     {
         //imwrite("/sdcard/imageText_D.jpg",srcImg);
         qDebug()<<"Not rotateFix(numLines == 0).";
-        return;
+        return 0;
     }
     for(int l=0; l<numLines; l++)
     {
@@ -292,7 +547,7 @@ void crop::rotateFix(Mat &srcImg)
         {
             //imwrite("/sdcard/imageText_D.jpg",srcImg);
             qDebug()<<"Not rotateFix(lines[l][1] == 0).";
-            return;
+            return 0;
         }
     }
     //Rotate the image to recover
@@ -311,6 +566,7 @@ void crop::rotateFix(Mat &srcImg)
     warpAffine(srcImg,srcImg,rotMat,srcImg.size(),INTER_LINEAR, BORDER_CONSTANT,Scalar(255,255,255));
     //imwrite("/sdcard/imageText_D.jpg",srcImg);
     qDebug()<<"rotateFix Finsh.";
+    return angle;
 }
 
 int crop::otsu(IplImage *src_image)
@@ -349,9 +605,9 @@ int crop::otsu(IplImage *src_image)
     return 0;
 }
 
-void crop::on_crop_ocr(QString imagepath, QVariant cropPoints, int batch)
+void crop::on_crop_ocr(QString imagepath, QVariant cropPoints, QString lang, int batch)
 {
-    Q_EMIT ocr_result(crop_ocr(imagepath,cropPoints),batch);
+    Q_EMIT ocr_result(crop_ocr(imagepath,cropPoints,lang),batch);
 }
 
 void crop::on_rotate(QString imagepath, int rotate_n, int batch)
@@ -360,8 +616,134 @@ void crop::on_rotate(QString imagepath, int rotate_n, int batch)
     Q_EMIT rotate_finish(imagepath,batch);
 }
 
-void crop::on_init(QString tessdata_path, int batch)
+void crop::on_init(QString tessdata_path, QString lang, int batch)
 {
-    init(tessdata_path);
+    init(tessdata_path,lang);
     Q_EMIT init_finish(batch);
+}
+
+void crop::zoomFix(QString imagepath, int angle, int width, int height)
+{
+    Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    if(srcImg.empty())
+        return;
+    else zoomFix(srcImg,angle,width,height);
+}
+
+void crop::zoomFix(Mat &srcImg, int angle, int width, int height)
+{
+    if(srcImg.rows < 1||srcImg.cols < 1)
+        return;
+    if(srcImg.channels() == 3)
+        cvtColor(srcImg,srcImg,cv::COLOR_BGR2GRAY);
+    if(srcImg.channels() != 1)
+        return;
+    Mat black_img = Mat::zeros(srcImg.size(),CV_8UC1);
+    if((angle != 0)&&(width > 0)&&(height > 0))
+    {
+        black_img = Mat::zeros(height,width,CV_8UC1);
+        double a = sin(angle), b = cos(angle);
+        int width_rotate = int(black_img.rows*fabs(a) + black_img.cols*fabs(b) + 1);
+        int height_rotate = int(black_img.cols*fabs(a) + black_img.rows*fabs(b) + 1);
+        int width_border = abs(width_rotate-black_img.cols)*2/3;
+        int height_border = abs(height_rotate-black_img.rows)*2/3;
+        copyMakeBorder(black_img, black_img,height_border,height_border,width_border,width_border, BORDER_CONSTANT,Scalar(255,255,255));
+        Point center(black_img.cols/2, black_img.rows/2);
+        Mat rotMat = getRotationMatrix2D(center,angle,1.0);
+        //rows 行数 height y , cols 列数 width x
+        //Mat dstImg = Mat::ones(srcImg.size(),CV_8UC3);
+        //Size(_width, _height);
+        warpAffine(black_img,black_img,rotMat,black_img.size(),INTER_LINEAR, BORDER_CONSTANT,Scalar(255,255,255));
+    }
+    //imwrite("imageText_D.jpg",srcImg);
+    //imwrite("imageTex.jpg",black_img);
+    QList<int> line_lengths;
+    int line_length = 0,line_white = 0;
+    int i,j;
+    const int max_line_white = 3;
+    for(i = 0;i < srcImg.rows;++i)
+    {
+        int length = 0,count = 0;
+        //Vec3b *pixrow1 = srcImg.ptr<Vec3b>(i);
+        uchar *pixrow1= srcImg.ptr<uchar>(i);
+        uchar *pixrow2= black_img.ptr<uchar>(i);
+        //Vec3b *pixrow2 = black_img.ptr<Vec3b>(i);
+        for(j = 0;j < srcImg.cols;++j)
+        {
+            if(pixrow2[j] == 0)
+            {
+                length++;
+                if(pixrow1[j] < 126)
+                {
+                    count++;
+                }
+            }
+        }
+        if(count > (length/13))
+        {
+            //if(line_length == 0)
+            //    start_line = i;
+            line_length++;
+            if(line_white < max_line_white)
+            {
+                line_length += line_white;
+                line_white = 0;
+            }
+        }
+        else
+        {
+            line_white++;
+            if((line_white >= max_line_white)&&(line_length != 0))
+            {
+                if(line_length > 8)
+                line_lengths.append(line_length);
+                line_length = 0;
+            }
+        }
+    }
+    qDebug()<<line_lengths;
+    QMap<int,int> zooms;
+    int zoom = 0;
+    for(zoom = 0;zoom < line_lengths.size();++zoom)
+    {
+        zooms[int(line_lengths.at(zoom)/7.5)]++;
+    }
+    qDebug()<<zooms;
+    QMapIterator<int, int> zoom_i(zooms);
+    int zoom_v = 0;
+    float zoom_o = 1;
+    while (zoom_i.hasNext())
+    {
+        zoom_i.next();
+        if(zoom_v < zoom_i.value())
+        {
+            zoom_v = zoom_i.value();
+            zoom_o = zoom_i.key();
+        }
+    }
+    zoom_o = zoom_o/2;
+    qDebug()<<"zoom "<<zoom_o<<srcImg.rows<<srcImg.cols;
+    if(zoom_o < 1.5)
+    {
+        if(srcImg.rows*srcImg.cols > 700000)
+        {
+            double zoom5 = 1.0/sqrt(srcImg.rows*srcImg.cols/700000);
+            if(zoom5 < 1)
+                resize(srcImg,srcImg,Size(),zoom5,zoom5);
+        }
+        qDebug()<<"zoom after"<<srcImg.rows<<srcImg.cols;
+        return;
+    }
+    if(srcImg.rows/zoom_o < 200&&srcImg.cols/zoom_o < 200)
+    {
+        if(srcImg.rows < 200&&srcImg.cols < 200)
+            return;
+        double zoom5 = 1.0/sqrt(srcImg.rows*srcImg.cols/90000);
+        if(zoom5 < 1)
+            resize(srcImg,srcImg,Size(),zoom5,zoom5);
+        qDebug()<<"zoom after"<<srcImg.rows<<srcImg.cols;
+        return;
+    }
+    resize(srcImg,srcImg,Size(),(double)1.0/zoom_o,(double)1.0/zoom_o);
+    qDebug()<<"zoom after"<<srcImg.rows<<srcImg.cols;
 }

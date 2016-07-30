@@ -25,8 +25,8 @@ Offline_small_search::Offline_small_search(QObject *parent) :
     QObject::connect(&crop_thread_obj,SIGNAL(ocr_result(QString,int)),this,SLOT(on_crop_ocr_result(QString,int)));
     QObject::connect(&crop_thread_obj,SIGNAL(rotate_finish(QString,int)),this,SLOT(on_crop_ocr_rotate_finish(QString,int)));
     QObject::connect(this,SIGNAL(rotate(QString,int,int)),&crop_thread_obj,SIGNAL(rotate(QString,int,int)));
-    QObject::connect(this,SIGNAL(crop_ocr(QString,QVariant,int)),&crop_thread_obj,SIGNAL(crop_ocr(QString,QVariant,int)));
-    QObject::connect(this,SIGNAL(init_ocr(QString,int)),&crop_thread_obj,SIGNAL(init(QString,int)));
+    QObject::connect(this,SIGNAL(crop_ocr(QString,QVariant,QString,int)),&crop_thread_obj,SIGNAL(crop_ocr(QString,QVariant,QString,int)));
+    QObject::connect(this,SIGNAL(init_ocr(QString,QString,int)),&crop_thread_obj,SIGNAL(init(QString,QString,int)));
     //QObject::connect(&crop_thread_obj,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
     crop_thread_obj.start();
 
@@ -43,7 +43,11 @@ Offline_small_search::Offline_small_search(QObject *parent) :
     clean_cache();
     view.append(0);
     if(is_exist("/ocr/zh_cn.zip",1))
-        Q_EMIT init_ocr(get_data_dir()+"/zh_cn",++crop_batch);
+        Q_EMIT init_ocr(get_data_dir()+"/zh_cn","zh_cn",++crop_batch);
+    if(is_exist("/ocr/eng.zip",1))
+        Q_EMIT init_ocr(get_data_dir()+"/eng","eng",++crop_batch);
+    if(is_exist("/ocr/cht.zip",1))
+        Q_EMIT init_ocr(get_data_dir()+"/cht","cht",++crop_batch);
     #ifdef Q_OS_ANDROID
     androidVersion = getAndroidVersion();
     #endif
@@ -63,6 +67,7 @@ void Offline_small_search::init_obj(QObject *rootobj)
     setCurrentIndex(8);
     setCurrentIndex(9);
     setCurrentIndex(11);
+    setCurrentIndex(5);
     setCurrentIndex(0);
     result_obj = rootobj->findChild<QObject*>("text");
     mark_img_obj = rootobj->findChild<QObject*>("mark_img");
@@ -100,6 +105,7 @@ void Offline_small_search::init_data()
     data_file_to_history_list();
     data_file_to_mark_list();
     refresh_search_result_for_search_result_qml();
+    check_data_pkgs();
 }
 
 void Offline_small_search::setCurrentIndex(int index)
@@ -116,11 +122,11 @@ void Offline_small_search::show_back()
 
 void Offline_small_search::close_app()
 {
+    show_result("Bye");
+    QCoreApplication::exit();
 #ifdef Q_OS_ANDROID
     clickHome(); //exit is too slow.
 #endif
-    show_result("Bye");
-    QCoreApplication::exit();
     //QCoreApplication::quit();
 }
 
@@ -213,7 +219,7 @@ void Offline_small_search::show_search(QString str)
     if(str != " ")
         search_text_obj->setProperty("text",str);
     search_text_obj->setProperty("focus",true);
-    home_img_obj->setProperty("visible",have_home());
+    home_img_obj->setProperty("have_home",have_home());
     setCurrentIndex(7);
 }
 
@@ -363,6 +369,7 @@ void Offline_small_search::load_html(QString url)
     if((url.indexOf("http://") == 0)||(url.indexOf("https://") == 0)) return;
     if(url.isEmpty()||url.isNull()||url.indexOf(QRegExp("[/\\\\]$")) != -1) return;
     QString search_url2;
+    url.remove(QRegExp("#.*$"));
     url.remove(QRegExp("^file:/*"+get_cache_dir())).remove(get_cache_dir()).replace(QRegExp("[/\\\\]{2,}"),"/");
     url_name_code = url;
     url_name_code.remove(remove_name_reg);
@@ -414,6 +421,7 @@ void Offline_small_search::load_html(QString url)
         QDir tmp;
         tmp.mkpath(baseurl);
     }
+#ifndef USE_WEBKIT //QtWebkit 载入非html,htm结尾的文件会有问题
     QFile html_file(get_cache_dir()+"/"+url);
     if(html_file.open(QFile::WriteOnly|QFile::Text|QFile::Truncate))
     {
@@ -424,9 +432,12 @@ void Offline_small_search::load_html(QString url)
         result_obj->setProperty("url",localurl);
     }
     else
+#else
+    html_data.remove(" target=\"_blank\"");//QtWebkit处理target="_blank"有问题
+#endif
         QMetaObject::invokeMethod(result_obj, "loadHtml",Qt::QueuedConnection,Q_ARG(QString, html_data),Q_ARG(QUrl, QUrl(baseurl)));
     result_obj->setProperty("count",webview_history.count());
-    //qDebug()<<"load_html3"<<search_url;
+    qDebug()<<"load_html3"<<search_url;
     //qDebug()<<"file:///"+get_cache_dir();
 }
 
@@ -557,6 +568,22 @@ void Offline_small_search::search(QStringList type, QString str, bool highter)
     }
     search_result_list.clear();
     refresh_search_result_for_search_result_qml();
+}
+
+void Offline_small_search::check_data_pkgs(bool enable)
+{
+    QDirIterator dir_it(get_data_dir(),QStringList(QString("data.zim")),QDir::Files,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+    while(dir_it.hasNext())
+    {
+        dir_it.next();
+        add_offline_pkg(dir_it.fileInfo().absolutePath(),enable);
+    }
+    QDirIterator dir_it2("data",QStringList(QString("data.zim")),QDir::Files,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+    while(dir_it2.hasNext())
+    {
+        dir_it2.next();
+        add_offline_pkg(dir_it2.fileInfo().absolutePath(),enable);
+    }
 }
 
 void Offline_small_search::add_offline_pkg(QString path,bool enable)
@@ -841,7 +868,8 @@ void Offline_small_search::offline_pkg_list_to_data_file(QString file_path)
     for(int i = 0; i < offline_pkg_list.size(); ++i)
     {
         offline_pkg1 = qobject_cast<offline_pkg*>(offline_pkg_list.at(i));
-        pkg_stream << offline_pkg1->path() <<offline_pkg1->enable();
+        if(offline_pkg1->path().indexOf(QRegExp("^"+get_data_dir())) == -1)
+            pkg_stream << offline_pkg1->path() <<offline_pkg1->enable();
     }
     pkg.close();
 }
@@ -1473,7 +1501,7 @@ int Offline_small_search::getAndroidVersion()
     int ver = 19;
     ver = QAndroidJniObject::callStaticMethod<int>(
                 "qt/oss/OfflineSmallSearchActivity",
-                "getAndroidVersion");
+                "getSysVer");
     QAndroidJniEnvironment env;
     if (env->ExceptionCheck())
     {
@@ -1826,9 +1854,9 @@ void Offline_small_search::on_unzip_finish(int batch,QString dir)
     if(wait_img_obj) wait_img_obj->setProperty("visible",false);
 }
 
-void Offline_small_search::crop_ocr_Q(QString imagepath, QVariant cropPoints)
+void Offline_small_search::crop_ocr_Q(QString imagepath, QVariant cropPoints, QString lang)
 {
-    Q_EMIT crop_ocr(imagepath,cropPoints,++crop_batch);
+    Q_EMIT crop_ocr(imagepath,cropPoints,lang,++crop_batch);
 }
 
 void Offline_small_search::rotate_Q(QString imagepath, int rotate_n)
@@ -1957,8 +1985,13 @@ QString Offline_small_search::cp_grayimg_to_tmp(QString imagepath)
         QDir tmp;
         tmp.mkpath(cache_dir);
     }
-    qDebug()<<imwrite((cache_dir+"tmp_img.png").toLocal8Bit().data(),srcImg);
-    qDebug()<<start+cache_dir+"tmp_img.png";
+    if(srcImg.rows*srcImg.cols > 1500000)
+    {
+        double zoom = 1.0/sqrt(srcImg.rows*srcImg.cols/1500000);
+        if(zoom < 1)
+            resize(srcImg,srcImg,Size(),zoom,zoom);
+    }
+    imwrite((cache_dir+"tmp_img.png").toLocal8Bit().data(),srcImg);
     return start+cache_dir+"tmp_img.png";
 }
 

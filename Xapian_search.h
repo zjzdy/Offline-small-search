@@ -17,7 +17,10 @@
 
 //Xapian
 #include <xapian.h>
-
+#ifndef NO_OPENCC
+//OpenCC
+#include <opencc/opencc.h>
+#endif
 //c++
 #include <iomanip>
 #include <string>
@@ -59,6 +62,12 @@ private:
     Xapian::Database db;
     Xapian::TermGenerator termgen;
     Xapian::Stem enstem;
+#ifndef NO_OPENCC
+    //OpenCC
+    bool enable_opencc;
+    opencc::SimpleConverter *opencc_s2t;
+    opencc::SimpleConverter *opencc_t2s;
+#endif
 };
 
 #endif // Xapian_search_H

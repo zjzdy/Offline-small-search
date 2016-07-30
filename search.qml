@@ -33,8 +33,10 @@ Rectangle {
             text: qsTr("搜索")
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+            anchors.left: image1.right
+            anchors.right: image4.left
             font.pixelSize: 45*rectangle3.height/100//Math.min(rectangle2.a_max/1280,a_pd/12)
         }
 
@@ -88,19 +90,43 @@ Rectangle {
 
         Image {
             id: image3
-            objectName: "home_img"
-            width: height
+            objectName: "camera_img"
+            width: have_ocr ? height : 0
             anchors.right: image2.left
-            anchors.rightMargin: 30*rectangle2.a_min/720
+            anchors.rightMargin: have_ocr ? 30*rectangle2.a_min/720 : 0
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            source: "qrc:/image/icon_home.png"
-            visible: main_widget.have_home()
+            source: "qrc:/image/icon_camera.png"
+            property bool have_ocr: main_widget.is_exist("ocr/zh_cn.zip",1)
+            //visible: main_widget.is_exist("ocr/zh_cn.zip",1)
 
             MouseArea {
                 id: mouseArea3
-                anchors.leftMargin: -15*rectangle2.a_min/720
-                anchors.rightMargin: -15*rectangle2.a_min/720
+                anchors.leftMargin: parent.have_ocr ? -15*rectangle2.a_min/720 : 0
+                anchors.rightMargin: parent.have_ocr ? -15*rectangle2.a_min/720 : 0
+                anchors.fill: parent
+                onClicked: {
+                    rectangle2.focus = true
+                    main_widget.startCamera()
+                }
+            }
+        }
+
+        Image {
+            id: image4
+            objectName: "home_img"
+            width: have_home ? height : 0
+            anchors.right: image3.left
+            anchors.rightMargin: have_home ? 30*rectangle2.a_min/720 : 0
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            source: "qrc:/image/icon_home.png"
+            property bool have_home: main_widget.have_home()
+
+            MouseArea {
+                id: mouseArea4
+                anchors.leftMargin: parent.have_home ? -15*rectangle2.a_min/720 : 0
+                anchors.rightMargin: parent.have_home ? -15*rectangle2.a_min/720 : 0
                 anchors.fill: parent
                 onClicked: {
                     rectangle2.focus = true

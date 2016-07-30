@@ -9,7 +9,6 @@
         <file>Custom.qml</file>
         <file>Search.qml</file>
         <file>SearchResult.qml</file>
-        <file>Result.qml</file>
         <file>Mark.qml</file>
         <file>Crop.qml</file>
         <file>CornerPoint.qml</file>
