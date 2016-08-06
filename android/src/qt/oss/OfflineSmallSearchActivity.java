@@ -35,21 +35,21 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
    }
 
    public static void captureImage(){
-       if(minstance.mimagePath == null ){
+       if(minstance.mimagePath == null ) {
            String sdPath = getSdcardPath();
-           if(sdPath.isEmpty()){
+           if(sdPath.isEmpty()) {
                sdPath = "/sdcard";
            }
            minstance.mimagePath = String.format("%s/oss", sdPath);
            File imageDir = new File(minstance.mimagePath);
-           if(!imageDir.exists()){
+           if(!imageDir.exists()) {
                imageDir.mkdirs();
            }
            minstance.mimagePath = String.format("%s/cap.png", minstance.mimagePath);
            Log.d(TAG, "capture to - " + minstance.mimagePath);
        }
        File image = new File(minstance.mimagePath);
-       if(image.exists()){
+       if(image.exists()) {
            image.delete();
        }
        Uri uri = Uri.fromFile(image);
@@ -75,112 +75,67 @@ public class OfflineSmallSearchActivity extends org.qtproject.qt5.android.bindin
             Log.d(TAG,"android.os.Build.VERSION.SDK_INT have question.Try to use android.os.Build.VERSION.RELEASE",e);
             int ver = 0;
             String release = android.os.Build.VERSION.RELEASE;
-            if(release.startsWith("1"))
-            {
-                ver = 1;
-            }
-            if(release.startsWith("1.1"))
-            {
-                ver = 2;
-            }
-            if(release.startsWith("1.5"))
-            {
-                ver = 3;
-            }
-            if(release.startsWith("1.6"))
-            {
-                ver = 4;
-            }
-            if(release.startsWith("2"))
-            {
-                ver = 5;
-            }
-            if(release.startsWith("2.0.1"))
-            {
-                ver = 6;
-            }
-            if(release.startsWith("2.1"))
-            {
-                ver = 7;
-            }
-            if(release.startsWith("2.2"))
-            {
-                ver = 8;
-            }
-            if(release.startsWith("2.3"))
-            {
-                ver = 9;
-            }
-            if(release.startsWith("2.3.3"))
-            {
-                ver = 10;
-            }
-            if(release.startsWith("2.3.4"))
-            {
-                ver = 10;
-            }
-            if(release.startsWith("3"))
-            {
-                ver = 11;
-            }
-            if(release.startsWith("3.1"))
-            {
-                ver = 12;
-            }
-            if(release.startsWith("3.2"))
-            {
-                ver = 13;
-            }
-            if(release.startsWith("4"))
-            {
-                ver = 14;
-            }
-            if(release.startsWith("4.0.3"))
-            {
-                ver = 15;
-            }
-            if(release.startsWith("4.0.4"))
-            {
-                ver = 15;
-            }
-            if(release.startsWith("4.1"))
-            {
-                ver = 16;
-            }
-            if(release.startsWith("4.2"))
-            {
-                ver = 17;
-            }
-            if(release.startsWith("4.3"))
-            {
-                ver = 18;
-            }
-            if(release.startsWith("4.4"))
-            {
-                ver = 19;
-            }
-            if(release.startsWith("4.4W"))
-            {
-                ver = 20;
-            }
-            if(release.startsWith("5"))
-            {
-                ver = 21;
-            }
-            if(release.startsWith("5.1"))
-            {
-                ver = 22;
-            }
-            if(release.startsWith("6"))
-            {
+            if(release.startsWith("1")) {
+                if(release.startsWith("1.1")) {
+                    ver = 2;
+                } else if(release.startsWith("1.5")) {
+                    ver = 3;
+                } else if(release.startsWith("1.6")) {
+                    ver = 4;
+                } else {
+                    ver = 1;
+                }
+            } else if(release.startsWith("2")) {
+                if(release.startsWith("2.0.1")) {
+                    ver = 6;
+                } else if(release.startsWith("2.1")) {
+                    ver = 7;
+                } else if(release.startsWith("2.2")) {
+                    ver = 8;
+                } else if(release.startsWith("2.3")) {
+                    ver = 9;
+                } else if(release.startsWith("2.3.3") || release.startsWith("2.3.4")) {
+                    ver = 10;
+                } else {
+                    ver = 5;
+                }
+            } else if(release.startsWith("3")) {
+                if(release.startsWith("3.1")) {
+                    ver = 12;
+                } else if(release.startsWith("3.2")) {
+                    ver = 13;
+                } else {
+                    ver = 11;
+                }
+            } else if(release.startsWith("4")) {
+                if(release.startsWith("4.0.3")) {
+                    ver = 15;
+                } else if(release.startsWith("4.0.4")) {
+                    ver = 15;
+                } else if(release.startsWith("4.1")) {
+                    ver = 16;
+                } else if(release.startsWith("4.2")) {
+                    ver = 17;
+                } else if(release.startsWith("4.3")) {
+                    ver = 18;
+                } else if(release.startsWith("4.4")) {
+                    ver = 19;
+                } else if(release.startsWith("4.4W")) {
+                    ver = 20;
+                } else {
+                    ver = 14;
+                }
+            } else if(release.startsWith("5")) {
+                if(release.startsWith("5.1")) {
+                    ver = 22;
+                } else {
+                    ver = 21;
+                }
+            } else if(release.startsWith("6")) {
                 ver = 23;
-            }
-            if(release.startsWith("7"))
-            {
+            } else if(release.startsWith("7")) {
                 ver = 24;
-            }
-            if(ver == 0)
-            {
+            } else if(ver == 0) {
                 ver = 24;
             }
             return ver;
