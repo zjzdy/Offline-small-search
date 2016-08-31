@@ -8,7 +8,7 @@
 ###项目地址:
 Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
 
-GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzengdongyang/Offline-small-search)
+GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzdy/Offline-small-search)
 
 主页: [http://zjzdy.oschina.io/oss/](http://zjzdy.oschina.io/oss/)
 
