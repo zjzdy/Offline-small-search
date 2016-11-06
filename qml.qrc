@@ -20,5 +20,8 @@
         <file>qml/IconGlyph.qml</file>
         <file>qml/icons.ttf</file>
         <file>qml/qmldir</file>
+        <file>SwipeMain.qml</file>
+        <file>MTabButton.qml</file>
+        <file>PluginPages.qml</file>
     </qresource>
 </RCC>

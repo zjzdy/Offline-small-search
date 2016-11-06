@@ -1,1 +1,13 @@
 /build-bin
+/e2fsprogs-*
+/libuuid
+/xapian-core-*
+/arm-*
+/android-*
+/leptonica-*
+/xz-*
+/tess-two-*
+/OpenCV-*
+/cryptopp-*
+/CRYPTOPP_*
+/bin

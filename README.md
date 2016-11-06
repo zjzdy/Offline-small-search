@@ -12,7 +12,7 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 主页: [http://zjzdy.oschina.io/oss/](http://zjzdy.oschina.io/oss/)
 
-当前版本: v2.2.0
+当前版本: v2.3.0_Beta
 
 ##功能及特点
 * 离线全文检索,采用高度压缩打包的ZIM文件存储数据
@@ -278,6 +278,7 @@ wget http://dl.google.com/android/repository/android-ndk-r12b-windows-x86_64.zip
 unzip android-ndk-r12b-windows-x86_64.zip
 cd android-ndk-r12b/
 export NDK_ROOT=$PWD
+export ANDROID_NDK_ROOT=$PWD
 export PATH=$PWD:$PATH
 ./build/tools/make_standalone_toolchain.py --arch=arm --stl=gnustl --api=9 --install-dir=../arm-linux-androideabi-4.9
 cd ../
@@ -429,7 +430,46 @@ make
 make install
 cd ../
 ```
-###9.编译 离线小搜
+###9.编译 Crypto++
+到Crypto++的Github的Releases去下载最新版本的Crypto++
+
+下载地址:[https://github.com/weidai11/cryptopp/releases](https://github.com/weidai11/cryptopp/releases)
+
+以下使用CRYPTOPP_5_6_4.zip
+
+注:在链接可执行文件(如exe文件)中出错可以无视,只要编译出libcryptopp.a即可
+```
+wget https://github.com/weidai11/cryptopp/archive/CRYPTOPP_5_6_4.zip
+unzip CRYPTOPP_5_6_4.zip
+cd cryptopp-CRYPTOPP_5_6_4/
+#sed -i 's/\"darwin-x86_64\" \"linux-x86\" \"darwin-x86\"/\"darwin-x86_64\" \"windows-x86_64\" \"linux-x86\" \"darwin-x86\" \"windows-x86\"/g' ./setenv-android.sh
+#AOSP_API="android-16" ./setenv-android.sh neon gnu
+export IS_ANDROID=1
+export ANDROID_FLAGS="-march=armv7-a -mfpu=neon -mfloat-abi=softfp -Wl,--fix-cortex-a8 -funwind-tables -fexceptions -frtti -I${ossbuild}/arm-linux-androideabi-4.9/sysroot/usr/include"
+export CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe"
+export CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe"
+export CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe"
+export LD="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ld.exe"
+export AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe"
+export AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe"
+export RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe"
+export STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe"
+export ANDROID_SYSROOT="${NDK_ROOT}/platforms/android-16/arch-arm"
+export AOSP_SYSROOT=$ANDROID_SYSROOT
+export ANDROID_STL_INC="${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include"
+export AOSP_STL_INC=$ANDROID_STL_INC
+export ANDROID_STL_LIB="${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/libgnustl_shared.so"
+export AOSP_STL_LIB=$ANDROID_STL_LIB
+export AOSP_BITS_INC="${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include"
+make -f GNUmakefile-cross
+cp libcryptopp.a ../build-bin/lib/
+mkdir ../build-bin/include/cryptopp
+cp *.h ../build-bin/include/cryptopp
+cd ../
+sed -i 's/typedef SIGNED/typedef TESS_SIGNED/g' ./build-bin/include/tesseract/host.h
+sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/platform.h
+```
+###10.编译 离线小搜
 1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
 
 2.打开Qt Creator
@@ -453,6 +493,7 @@ cd ../
 * Tesseract: [https://github.com/tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)
 * Leptonica: [http://www.leptonica.com](http://www.leptonica.com)
 * OpenCC: [https://github.com/BYVoid/OpenCC](https://github.com/BYVoid/OpenCC)
+* Crypto++: [http://www.cryptopp.com/](http://www.cryptopp.com/)
 * Zeal: [https://zealdocs.org](https://zealdocs.org)
 * Dash: [https://kapeli.com](https://kapeli.com)
 
@@ -463,12 +504,16 @@ cd ../
 2. 部分js或css及嵌套html会加载失败(将在3.0版修复)
 
 ##TODO
-1. 插件功能,自定义一个qml文件和动态链接库,动态加载链接库和qml文件实现扩展功能(3.1)
-
-2. 进行3.0版的重构(此项将于2017年高考完成后进行)
-	+ 2.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
-	+ 2.2 整理界面代码和业务逻辑
-		+ 2.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
-	+ 2.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
+1. 进行3.0版的重构(此项将于2017年高考完成后进行)
+	+ 1.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
+	+ 1.2 整理界面代码和业务逻辑
+		+ 1.2.1 使用QHash或QMap存储设置以及除离线包外的数据(历史纪录,收藏夹,离线包的部分元数据)
+	+ 1.3 支持对docset的索引(SQLite)进行查询(Dash及Zeal)
+	+ 1.4 对插件的功能进行前后端分离
+	+ 1.5 整个程序分解为前后端,前端单纯依赖Qt库,只负责界面处理和显示,后端负责具体功能实现
+	+ 1.6 前端可使用远程后端
+	+ 1.7 后端支持多个前端
+	
+2. 对插件的安全问题进行处理,进行安全检测和来源效验.
 	
 3. 终极目标:对Kiwix,Zeal及Mdict的功能进行整合,能做为一个帮助服务器使用,支持自定义插件(包括在线检索,语音搜索,对显示的内容的操作:如翻译)

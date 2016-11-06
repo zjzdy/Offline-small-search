@@ -1,6 +1,6 @@
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 Rectangle {
@@ -20,7 +20,7 @@ Rectangle {
         standardButtons: StandardButton.Yes | StandardButton.No
         onYes: main_widget.close_app()
     }
-
+/*
     Rectangle {
         id: rectangle1
         //y: 1175*rectangle2.a_max/1280
@@ -98,7 +98,7 @@ Rectangle {
             }
         }
     }
-
+*/
     Rectangle {
         id: rectangle3
         height: 100*Math.min(rectangle2.a_max/1280,a_pd/12)
@@ -153,7 +153,7 @@ Rectangle {
         id: listView1
         anchors.top: rectangle3.bottom
         anchors.right: parent.right
-        anchors.bottom: rectangle1.top
+        anchors.bottom: parent.bottom//rectangle1.top
         anchors.left: parent.left
         anchors.topMargin: 0
         model: history_list

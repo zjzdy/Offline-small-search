@@ -1,0 +1,27 @@
+name: Offline small search
+version: 1.0  
+summary: Offline full-text search for documentation,questions,etc.
+description: Offline full-text search for documentation,questions,etc.
+confinement: strict  
+  
+apps:  
+  offline_small_search:  
+    command: qt5-launch offline_small_search  
+    plugs: [network,network-bind,network-manager,home]  
+  
+parts: 
+  offline_small_search:  
+    source: ./
+    plugin: qmake  
+    qt-version: qt5  
+    build-packages:  
+      - intltool  
+      - qt5-default  
+      - qtbase5-dev  
+      - qtbase5-private-dev
+    stage-packages:  
+      - libqt5core5a
+      - libqt5network5
+      - libqt5gui5
+      - libqt5sql5-mysql
+    after: [qt5conf,desktop/qt5]  

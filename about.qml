@@ -1,6 +1,6 @@
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 
 Rectangle {
     id: rectangle2
@@ -123,25 +123,31 @@ Rectangle {
             onClicked: main_widget.openUrl("http://zjzdy.oschina.io/oss")
         }
     }
-
-    TextArea {
-        id: text3
-        readOnly: true
-        selectByKeyboard: false
-        selectByMouse: false
-        backgroundVisible: false
-        text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n如果有问题,建议或bug请\n1.到http://git.oschina.net/zjzdy/Offline-small-search/issues新建一个issues\n2.发送邮件到zjzengdongyang@163.com \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n    Xpian: http://xapian.org\n    OpenCV: http://www.opencv.org\n    Tesseract: https://github.com/tesseract-ocr/tesseract\n    OpenCC: https://github.com/BYVoid/OpenCC\n")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        wrapMode: Text.Wrap
-        horizontalAlignment: Text.AlignLeft
+    Flickable {
+        id: flickable
         anchors.top: check_update.bottom
         anchors.topMargin: 85*Math.min(rectangle2.a_max/1280,a_pd/12)
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: 0
-        font.pixelSize: 33*rectangle2.a_sqrt
-    }
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+
+        TextArea.flickable: TextArea {
+            anchors.fill: parent
+            id: text3
+            readOnly: true
+            selectByKeyboard: false
+            selectByMouse: false
+            //backgroundVisible: false
+            text: qsTr("声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.\n本软件采用GPL协议发布,希望所有人都能一起来改进本软件.\n项目地址: http://git.oschina.net/zjzdy/Offline-small-search \n如果有问题,建议或bug请\n1.到http://git.oschina.net/zjzdy/Offline-small-search/issues新建一个issues\n2.发送邮件到zjzengdongyang@163.com \n软件主要开发者:\nzjzdy(zjzengdongyang@163.com)\n感谢以下的项目,排名不分先后:\n    Qt: http://www.qt.io/\n    Zimlib: http://www.openzim.org/wiki/Zimlib\n    Xpian: http://xapian.org\n    OpenCV: http://www.opencv.org\n    Tesseract: https://github.com/tesseract-ocr/tesseract\n    OpenCC: https://github.com/BYVoid/OpenCC\n")
+            wrapMode: Text.Wrap
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 33*rectangle2.a_sqrt
+        }
+        //ScrollBar.vertical: ScrollBar { }
+  }
+
 }
 

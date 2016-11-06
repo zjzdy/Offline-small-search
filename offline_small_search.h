@@ -14,6 +14,7 @@
 #include <QVector>
 #include <QHash>
 #include <QMap>
+#include <tuple>
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
@@ -22,6 +23,7 @@
 #include <QCryptographicHash>
 #include <QNetworkReply>
 #include <QDesktopServices>
+#include <QPluginLoader>
 #include "capcustomevent.h"
 #include "quazip/JlCompress.h"
 #ifdef Q_OS_ANDROID
@@ -39,12 +41,15 @@
 #include "crop_thread.h"
 #include "unzip_thread.h"
 #include "parse/myhtmlparse.h"
+#include "interfaces.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <cryptopp/rsa.h>
+#include <cryptopp/hex.h>
 using namespace cv;
-#define OSS_VERSION_N 32
-#define OSS_VERSION "V2.2.0"
+#define OSS_VERSION_N 34
+#define OSS_VERSION "V2.3.0_beta"
 
 class Offline_small_search : public QObject
 {
@@ -56,7 +61,6 @@ public:
     bool event(QEvent *);
     void init_con(QQmlContext *rootcon);
     void init_obj(QObject *rootobj);
-    void init_data();
 
 Q_SIGNALS:
     void xapian_search(QString str, int batch, QStringList type);
@@ -68,6 +72,8 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     Q_INVOKABLE void init_obj();
+    Q_INVOKABLE void init_data();
+    Q_INVOKABLE void init_plugin_library(QObject *obj);
     Q_INVOKABLE void download_data(QString url);
     Q_INVOKABLE void remove_data(QString url);
     Q_INVOKABLE void crop_ocr_Q(QString imagepath, QVariant cropPoints, QString lang = "zh_cn");
@@ -79,6 +85,7 @@ public Q_SLOTS:
     void download_changelog_finish();
     void on_search_result(QStringList urls, QStringList key_words, int batch);
     void on_search_init_finish(int batch);
+    void on_init_search_obj_finish();
     void on_crop_ocr_result(QString text, int batch);
     void on_crop_ocr_rotate_finish(QString imagepath,int batch);
     void on_crop_ocr_init_finish(int batch);
@@ -102,9 +109,11 @@ public Q_SLOTS:
     Q_INVOKABLE void show_wait();
     Q_INVOKABLE void hide_wait();
     Q_INVOKABLE void show_result(QString url);
+    Q_INVOKABLE void show_plugin_pages(QString pluginID = "",QString pluginQmlPath = "",QString absoluteQmlPath = "");
     Q_INVOKABLE void load_html(QString url);
     Q_INVOKABLE void close_app();
     Q_INVOKABLE void startCamera();
+    Q_INVOKABLE void startCamera(QObject *wait_camera, QString img_source_name = "source", QString img_camer_error_name = "have_system_carema_error");
     Q_INVOKABLE void search_type_add(QString type);
     Q_INVOKABLE void search_type_add(QStringList type);
     Q_INVOKABLE void search_type_clear();
@@ -126,6 +135,7 @@ public Q_SLOTS:
     Q_INVOKABLE bool is_exist(QString file,int type = 0);
     Q_INVOKABLE bool have_home(QString pkg = "");
     Q_INVOKABLE bool have_home_def(QString pkg = "");
+    Q_INVOKABLE void re_search(bool highter = true);
     //mark
     Q_INVOKABLE void check_mark();
     Q_INVOKABLE bool is_mark(QString url);
@@ -160,6 +170,11 @@ public Q_SLOTS:
     Q_INVOKABLE QString systemType();
     Q_INVOKABLE int getAndroidVerCache();
     Q_INVOKABLE void check_data_pkgs(bool enable = true);
+    Q_INVOKABLE void loadPlugins(QString pluginDir = QString());
+    Q_INVOKABLE void installPlugins(QString opluFilePath);
+    Q_INVOKABLE int checkOplu(QString opluFilePath);
+    Q_INVOKABLE bool verifyData(QString publicKey,const char *data,const char *signatureData);
+    Q_INVOKABLE void addChildToPluginPagesObject(QObject *obj);
 private:
 #ifdef Q_OS_ANDROID
     int getAndroidVersion();
@@ -186,7 +201,9 @@ private:
     Xapian_search_thread search_thread;
     int init_search_batch;
     int search_batch;
+    bool init_search_obj_finish;
     bool init_search_finish;
+    bool init_data_finish;
     bool search_finish;
     QRegExp remove_name_reg;
     QRegExp only_file_name;
@@ -197,6 +214,11 @@ private:
     QNetworkReply *m_reply;
     QNetworkRequest *m_request;
     QStringList webview_history;
+    //PagePlugins
+    QMap<QString,PageInterface*> pagePluginInterfacsList;//Key:ID,Value:PageInterface*
+    QMap<QString,QString> pagePluginIdAndNameMap;//Key:ID,Value:Name
+    QMap<QString,QString> pagePluginIdAndNameMapForInstall;//Key:ID,Value:Name
+    QList<std::tuple<QString,QString,QString,QString>> pagePluginEntrysList;//0:ID,1:PluginDir,2:QmlName,3:Title
 
 public:
     QObject* result_obj;
@@ -206,10 +228,17 @@ public:
     QObject* search_top_bar_obj;
     QObject* cropView_obj;
     QObject* tabView_obj;
+    QObject* swipeView_obj;
     QObject* search_text_obj;
     QObject* home_img_obj;
     QObject* result_search_img_obj;
+    QObject* result_search_light_img_obj;
     QObject* update_dialog_obj;
+    QObject* pluginPages_obj;
+    QObject* wait_camera_obj;
+    char *wait_camera_img_source_name;
+    char *wait_camera_img_camer_error_name;
+    //QObject* pagePluginObjects;
     custom_obj custom1;
     //crop crop_obj;
     crop_thread crop_thread_obj;
@@ -217,6 +246,7 @@ public:
     //QString crop_filename;
     unzip_thread unzip_thread_obj;
     QHash<int,QString> unzip_url_map;
+    QHash<int,QString> unzip_oplu_map;
     int unzip_batch;
     QQmlContext *rootContext;
     QObject *rootObject;

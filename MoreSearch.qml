@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 Rectangle {
@@ -20,7 +20,7 @@ Rectangle {
         standardButtons: StandardButton.Yes | StandardButton.No
         onYes: main_widget.close_app()
     }
-
+/*
     Rectangle {
         id: rectangle1
         width: rectangle2.width
@@ -95,14 +95,10 @@ Rectangle {
             }
         }
     }
-
+*/
     Item {
         id: column1
-        anchors.bottom: rectangle1.top
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottomMargin: 0
+        anchors.fill: parent
 
         Rectangle {
             id: rectangle3
@@ -157,6 +153,7 @@ Rectangle {
                 height: 240*Math.min(rectangle2.a_max/1280,a_pd/12)
                 Column {
                     z: -2
+                    spacing: 5
                     Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 20*Math.min(rectangle2.a_min/720,a_pd/12)
@@ -188,10 +185,17 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        main_widget.search_type_clear()
-                        main_widget.search_type_add(model.modelData.name_code)
-                        main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
-                        main_widget.have_home_def() ? main_widget.show_pkg_home() : main_widget.show_search();
+                        if(model.modelData.is_plugin)
+                        {
+                            main_widget.show_plugin_pages(model.modelData.name_code,model.modelData.pluginQmlPath,model.modelData.absoluteQmlPath)
+                        }
+                        else
+                        {
+                            main_widget.search_type_clear()
+                            main_widget.search_type_add(model.modelData.name_code)
+                            main_widget.set_top_bar_height(100*Math.min(rectangle2.a_max/1280,a_pd/12))
+                            main_widget.have_home_def() ? main_widget.show_pkg_home() : main_widget.show_search();
+                        }
                     }
                 }
             }

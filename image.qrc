@@ -41,5 +41,10 @@
         <file>image/icon_rotate_left.png</file>
         <file>image/icon_rotate_right.png</file>
         <file>image/icon_exit.png</file>
+        <file>image/icon_more2.png</file>
+        <file>image/icon_close.png</file>
+        <file>image/icon_search_in_html.png</file>
+        <file>image/icon_light.png</file>
+        <file>image/icon_no_light.png</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 Rectangle {
@@ -89,6 +89,7 @@ Rectangle {
             {
                 main_widget.read_data_file(choose_hf_dir2.folder+"/oss/")
                 main_widget.write_data_file()
+                main_widget.init_data()
                 hf_finish.open()
             }
             else hf_fail.open()
@@ -113,6 +114,7 @@ Rectangle {
             {
                 main_widget.read_data_file(choose_hf_dir.folder+"/oss/")
                 main_widget.write_data_file()
+                main_widget.init_data()
                 hf_finish.open()
             }
             else hf_fail.open()
@@ -244,7 +246,7 @@ Rectangle {
 
     Rectangle {
         id: rectangle7
-        height: 4*Math.min(rectangle2.a_max/1280,a_pd/12)
+        height: 3*Math.min(rectangle2.a_max/1280,a_pd/12)
         color: "#bbbbbb"
         border.width: 0
         anchors.right: parent.right
@@ -333,11 +335,23 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             value: custom1.max_history
+            editable: true
             font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
-            suffix: qsTr("条")
-            minimumValue: 0
-            maximumValue: 1000
-            onEditingFinished: custom1.max_history = value
+            //suffix: qsTr("条")
+            textFromValue: function(value) {
+                return Number(value).toString()+qsTr("条")
+            }
+
+            valueFromText: function(text) {
+                return Number.fromString(String(text).replace(qsTr("条"),""))
+            }
+
+            from: 0
+            to: 1000
+            onValueChanged: {
+                if(custom1.max_history != value)
+                    custom1.max_history = value
+            }
         }
     }
 

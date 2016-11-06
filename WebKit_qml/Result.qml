@@ -1,8 +1,7 @@
-import QtQuick 2.5
+import QtQuick 2.7
 import QtQuick.Dialogs 1.2
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.2
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtWebKit 3.0
 import QtWebKit.experimental 1.0
 
@@ -47,7 +46,7 @@ Rectangle {
         */
         TextField {
             anchors.left: image1.right
-            anchors.right: search_img.left
+            anchors.right: mark_img.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             Layout.fillWidth: true
@@ -62,25 +61,15 @@ Rectangle {
             }
 
             ProgressBar {
-                anchors.centerIn: parent
-                style: ProgressBarStyle {
-                    background: Rectangle {
-                        radius: 2
-                        color: "transparent"
-                        implicitHeight: text8.height - 2
-                        implicitWidth: text8.width
-                    }
-                    progress: Rectangle {
-                        anchors.fill: parent
-                        color: "#80c342"
-                        opacity: 0.5
-                    }
-
-                }
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                //color: "transparent"
+                //secondColor: "#80c342"
                 z: Qt.platform.os === "android" ? -1 : 1
                 visible: text.loading && Qt.platform.os !== "ios" && (text.url.toString().indexOf("/") > -1)
-                minimumValue: 0
-                maximumValue: 100
+                from: 0
+                to: 100
                 value: text.loadProgress > 100 ? 0 : text.loadProgress
             }
         }
@@ -92,21 +81,69 @@ Rectangle {
             anchors.leftMargin: 10*rectangle2.a_min/720
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            source: "qrc:/image/icon_back.png"
+            anchors.topMargin: 10*rectangle2.a_max/1280
+            anchors.bottomMargin: 10*rectangle2.a_max/1280
+            source: "qrc:/image/icon_close.png"
 
             MouseArea {
                 id: mouseArea1
+                anchors.topMargin: -10*rectangle2.a_max/1280
+                anchors.bottomMargin: -10*rectangle2.a_max/1280
                 anchors.leftMargin: -10*rectangle2.a_min/720
-                anchors.rightMargin: -10*rectangle2.a_min/720
+                //anchors.rightMargin: -10*rectangle2.a_min/720
                 anchors.fill: parent
                 onClicked: {
                     main_widget.show_back()
                 }
             }
         }
+        /*
+        Button {
+            anchors.right: parent.right
+            anchors.rightMargin: 10*rectangle2.a_min/720
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            anchors.topMargin: 10*rectangle2.a_max/1280
+            anchors.bottomMargin: 10*rectangle2.a_max/1280
+            contentItem: Image {
+                id: search_img
+                objectName: "result_search_img"
+                fillMode: Image.Pad
+                horizontalAlignment: Image.AlignHCenter
+                verticalAlignment: Image.AlignVCenter
+                source: "qrc:/image/icon_search.png"
+            }
+            onClicked: optionsMenu.open()
+
+            Menu {
+                id: optionsMenu
+                x: parent.width - width
+                transformOrigin: Menu.TopRight
+
+                MenuItem {
+                    text: "Settings"
+                    //onTriggered: settingsPopup.open()
+                }
+                MenuItem {
+                    text: "About"
+                    //onTriggered: aboutDialog.open()
+                }
+            }
+        }
+        */
         Image {
-            id: search_img
-            objectName: "result_search_img"
+            id: refresh_img
+            anchors.fill: mark_img
+            width: height
+            source: "qrc:/image/icon_refresh.png"
+            visible: !mark_img.visible
+        }
+
+        Image {
+            //id: search_img
+            //objectName: "result_search_img"
+            id: mark_img
+            objectName: "mark_img"
             width: height
             anchors.right: parent.right
             anchors.rightMargin: 10*rectangle2.a_min/720
@@ -114,39 +151,25 @@ Rectangle {
             anchors.top: parent.top
             anchors.topMargin: 10*rectangle2.a_max/1280
             anchors.bottomMargin: 10*rectangle2.a_max/1280
-            source: "qrc:/image/icon_search.png"
+            visible: !((text8.text.indexOf("http://") == 0)||(text8.text.indexOf("https://") == 0))
+        }
 
-            MouseArea {
-                id: mouseArea2
-                anchors.topMargin: -10*rectangle2.a_max/1280
-                anchors.bottomMargin: -10*rectangle2.a_max/1280
-                anchors.leftMargin: -10*rectangle2.a_min/720
-                anchors.rightMargin: -10*rectangle2.a_min/720
-                anchors.fill: parent
-                onClicked: {
-                    rectangle2.focus = true
-                    main_widget.show_search()
+        MouseArea {
+            id: mouseArea2
+            anchors.topMargin: -10*rectangle2.a_max/1280
+            anchors.bottomMargin: -10*rectangle2.a_max/1280
+            //anchors.leftMargin: -10*rectangle2.a_min/720
+            anchors.rightMargin: -10*rectangle2.a_min/720
+            anchors.fill: mark_img.visible ? mark_img : refresh_img
+            onClicked: {
+                if((text8.text.indexOf("http://") == 0)||(text8.text.indexOf("https://") == 0)) text.reload()
+                else {
+                    main_widget.check_mark()
+                    main_widget.mark_list_to_data_file()
                 }
             }
         }
     }
-/*
-    TextArea {
-        id: text
-        objectName: "text"
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.top: rectangle3.bottom
-        anchors.topMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        textFormat: TextEdit.RichText
-        readOnly: true
-        wrapMode: TextEdit.Wrap
-    }
-*/
 
     WebView {
         id: text
@@ -182,6 +205,12 @@ Rectangle {
             }
             else console.log("load3",url)
             url2 = url.toString();
+        }
+        onLoadProgressChanged: {
+            if(loadProgress == 100 || loadProgress == 0)
+            {
+                rectangle2.parent.parent.forceActiveFocus()
+            }
         }
     }
 
@@ -270,7 +299,7 @@ Rectangle {
                             return;
                         }
                     }
-                    text.experimental.evaluateJavaScript("javascript:var d = document.createElement(\"script\");d.setAttribute(\"src\", \"http://fanyi.youdao.com/web2/scripts/all-packed-utf-8.js?572877&\" + Date.parse(new Date()));d.setAttribute(\"type\", \"text/javascript\");d.setAttribute(\"charset\", \"utf-8\");document.body.appendChild(d);")
+                    text.runJavaScript("javascript:var d = document.createElement(\"script\");d.setAttribute(\"src\", \"http://fanyi.youdao.com/web2/scripts/all-packed-utf-8.js?572877&\" + Date.parse(new Date()));d.setAttribute(\"type\", \"text/javascript\");d.setAttribute(\"charset\", \"utf-8\");document.body.appendChild(d);",function() { console.log("runjs"); })
                 }
             }
         }
@@ -286,26 +315,18 @@ Rectangle {
             anchors.top: parent.top
             anchors.topMargin: 0
             Image {
-                id: mark_img
-                objectName: "mark_img"
+                id: search_img
+                objectName: "result_search_img"
                 anchors.right: mark_t.left
                 anchors.bottom: parent.bottom
                 anchors.top: parent.top
                 width: height
-                visible: !((text8.text.indexOf("http://") == 0)||(text8.text.indexOf("https://") == 0))
-            }
-
-            Image {
-                id: refresh_img
-                anchors.fill: mark_img
-                width: height
-                source: "qrc:/image/icon_refresh.png"
-                visible: !mark_img.visible
+                source: "qrc:/image/icon_search.png"
             }
 
             Text {
                 id: mark_t
-                text: ((text8.text.indexOf("http://") == 0)||(text8.text.indexOf("https://")) == 0) ? qsTr("刷新") :qsTr("收藏")
+                text: qsTr("再搜一次")
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: 40*rectangle3.height/100
@@ -314,11 +335,8 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if((text8.text.indexOf("http://") == 0)||(text8.text.indexOf("https://") == 0)) text.reload()
-                    else {
-                        main_widget.check_mark()
-                        main_widget.mark_list_to_data_file()
-                    }
+                    rectangle2.focus = true
+                    main_widget.show_search()
                 }
             }
         }

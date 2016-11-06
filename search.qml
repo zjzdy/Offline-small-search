@@ -1,7 +1,6 @@
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtQuick.Window 2.2
 
 Rectangle {
@@ -136,10 +135,8 @@ Rectangle {
         }
     }
 
-    TextArea {
-        id: textEdit1
-        objectName: "search_text"
-        horizontalAlignment: Text.AlignLeft
+    Flickable {
+        id: flickable
         anchors.bottom: rectangle5.top
         anchors.bottomMargin: 0
         anchors.top: rectangle3.bottom
@@ -148,23 +145,30 @@ Rectangle {
         anchors.rightMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: 0
-        textFormat: TextEdit.PlainText
-        wrapMode: TextEdit.Wrap
-        style: TextAreaStyle {
-                textColor: "black"
-                selectedTextColor: "white"
-                backgroundColor: "white"
-            }
-        font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*Math.min(rectangle2.a_max/1280,a_pd/12)*/*rectangle2.a_min/720)
-        Text {
-            id:please_input
-            anchors.fill: parent
-            text:qsTr("请在此输入您要搜索的内容.如输入法并未出现,请单击此处.")
+
+        TextArea.flickable: TextArea {
+            id: textEdit1
+            objectName: "search_text"
+            horizontalAlignment: Text.AlignLeft
+            textFormat: TextEdit.PlainText
             wrapMode: TextEdit.Wrap
-            color: "#868686"
-            font.pixelSize: 40*Math.sqrt(rectangle3.height/100/*Math.min(rectangle2.a_max/1280,a_pd/12)*/*rectangle2.a_min/720)
-            visible: textEdit1.text.length < 1
+            selectByKeyboard: true
+            selectByMouse: true
+            //renderType: Text.NativeRendering
+            selectedTextColor: "white"
+            selectionColor: "#03A9F4"
+            font.pixelSize: 40*rectangle3.height/100
+            Text {
+                id:please_input
+                anchors.fill: parent
+                text:qsTr("请在此输入您要搜索的内容.如输入法并未出现,请单击此处.")
+                wrapMode: TextEdit.Wrap
+                color: "#868686"
+                font.pixelSize: 40*rectangle3.height/100
+                visible: textEdit1.text.length < 1
+            }
         }
+        ScrollBar.vertical: ScrollBar { }
     }
 
     Rectangle {
@@ -173,6 +177,7 @@ Rectangle {
         anchors.bottomMargin: 0//555*Math.min(rectangle2.a_max/1280,a_pd/12)
         height: 80*rectangle3.height/100//Math.min(rectangle2.a_max/1280,a_pd/12)
         width: rectangle2.width
+        color: "#f0f0f0"
         Row {
             Text {
                 height: rectangle5.height

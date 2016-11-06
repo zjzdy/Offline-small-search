@@ -1,6 +1,6 @@
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 
 Rectangle {
     id: rectangle2
@@ -52,6 +52,36 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     main_widget.show_back()
+                }
+            }
+        }
+
+        Image {
+            id: light_img
+            objectName: "result_search_light_img"
+            width: height
+            anchors.right: parent.right
+            anchors.rightMargin: 10*rectangle2.a_min/720
+            anchors.topMargin: 10*rectangle2.a_max/1280
+            anchors.bottomMargin: 10*rectangle2.a_max/1280
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            source: ""//"qrc:/image/icon_no_light.png"
+
+            MouseArea {
+                id: mouseArea3
+                anchors.leftMargin: -10*rectangle2.a_min/720
+                anchors.rightMargin: -10*rectangle2.a_min/720
+                anchors.topMargin: -10*rectangle2.a_max/1280
+                anchors.bottomMargin: -10*rectangle2.a_max/1280
+                anchors.fill: parent
+                onClicked: {
+                    if(light_img.source == "qrc:/image/icon_no_light.png")
+                        main_widget.re_search(true)
+                    else {
+                        if(light_img.source == "qrc:/image/icon_light.png")
+                            main_widget.re_search(false)
+                    }
                 }
             }
         }
@@ -119,7 +149,8 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         rectangle2.focus = true
-                        main_widget.show_result(model.modelData.url)
+                        if(model.modelData.url.indexOf(":/") > 0)
+                            main_widget.show_result(model.modelData.url)
                     }
                 }
             }

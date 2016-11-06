@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
@@ -36,6 +36,15 @@ ApplicationWindow {
         }
     }
 
+    MessageDialog {
+        id: pluginInstallFinsh_messageDialog
+        objectName: "pluginInstallFinsh_messageDialog"
+        title: qsTr("插件安装完成")
+        property string pluginName: ""
+        text: qsTr("插件:")+pluginName+qsTr("安装完成,请重启离线小搜.")
+        standardButtons: StandardButton.Ok
+    }
+
     function choose_splash() {
         if(app.width*1.3 < app.height)
             return "qrc:/image/splash.png";
@@ -60,7 +69,8 @@ ApplicationWindow {
         focus: true
         Keys.enabled: true
         Keys.onBackPressed: {
-            console.log(currentIndex)
+            //console.log(currentIndex)
+            /*
             if(tabview.currentIndex < 4)
                 exit_messageDialog.visible = true;
             else main_widget.show_back()
@@ -69,9 +79,20 @@ ApplicationWindow {
                 main_widget.init_search_from_offline_pkg_list()
             }
             if(tabview.currentIndex == 5)
+                custom1.write_custom()
+            */
+            if(tabview.currentIndex == 0)
+                exit_messageDialog.visible = true;
+            else main_widget.show_back()
+            if(tabview.currentIndex == 1) {
+                main_widget.offline_pkg_list_to_data_file()
+                main_widget.init_search_from_offline_pkg_list()
+            }
+            if(tabview.currentIndex == 2)
                 custom1.write_custom()
         }
         Keys.onEscapePressed: {
+            /*
             if(tabview.currentIndex < 4)
                 exit_messageDialog.visible = true;
             else main_widget.show_back()
@@ -81,8 +102,35 @@ ApplicationWindow {
             }
             if(tabview.currentIndex == 5)
                 custom1.write_custom()
+            */
+            if(tabview.currentIndex == 0)
+                exit_messageDialog.visible = true;
+            else main_widget.show_back()
+            if(tabview.currentIndex == 1) {
+                main_widget.offline_pkg_list_to_data_file()
+                main_widget.init_search_from_offline_pkg_list()
+            }
+            if(tabview.currentIndex == 2)
+                custom1.write_custom()
         }
 
+        /*
+        contentItem: ListView {
+            model: tabview.contentModel
+            currentIndex: tabview.currentIndex
+
+            spacing: tabview.spacing
+            orientation: Qt.Horizontal
+            snapMode: ListView.SnapOneItem
+            boundsBehavior: Flickable.StopAtBounds
+
+            highlightRangeMode: ListView.StrictlyEnforceRange
+            preferredHighlightBegin: 0
+            preferredHighlightEnd: 0
+            highlightMoveDuration: 250
+            interactive: false
+        }*/
+        /*
         Tab {
             title: "Main"
             Main {
@@ -109,6 +157,15 @@ ApplicationWindow {
             History {
                 a_pd: app.pd
                 id: history
+            }
+        }
+        */
+
+        Tab {
+            title: "SwipeMain"
+            SwipeMain {
+                a_pd: app.pd
+                id: swipeview
             }
         }
         Tab {
@@ -182,6 +239,59 @@ ApplicationWindow {
                 id: camera
             }
         }
+        Tab {
+            title: "PluginPages"
+            PluginPages {
+                a_pd: app.pd
+                id: pluginPages
+            }
+        }
+        /*
+        SwipeMain {
+            a_pd: app.pd
+            id: swipeview
+        }
+        Pkg {
+            a_pd: app.pd
+            id: pkg
+        }
+        Custom {
+            a_pd: app.pd
+            id: cstom
+        }
+        About {
+            a_pd: app.pd
+            id:about
+        }
+        Search {
+            a_pd: app.pd
+            id: search
+        }
+        SearchResult {
+            a_pd: app.pd
+            id: searchResult
+        }
+        Result {
+            a_pd: app.pd
+            id: result
+        }
+        Mark {
+            a_pd: app.pd
+            id:mark
+        }
+        Crop {
+            a_pd: app.pd
+            id: crop
+        }
+        OnlineDownload {
+            a_pd: app.pd
+            id: onlineDownload
+        }
+        Camera {
+            a_pd: app.pd
+            id: camera
+        }
+        */
         frameVisible: false
         tabsVisible: false
     }

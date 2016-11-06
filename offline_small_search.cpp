@@ -3,7 +3,7 @@
 extern QObject *g_listener;
 
 Offline_small_search::Offline_small_search(QObject *parent) :
-    QObject(parent)
+    QObject(parent),init_data_finish(false),init_search_obj_finish(false)
 {
     if(!QFile::exists(QDir::currentPath()+"/tmp/"))
     {
@@ -18,8 +18,8 @@ Offline_small_search::Offline_small_search(QObject *parent) :
     QObject::connect(&search_thread,SIGNAL(search_result(QStringList,QStringList,int)),this,SLOT(on_search_result(QStringList,QStringList,int)));
     QObject::connect(this,SIGNAL(xapian_search(QString,int,QStringList)),&search_thread,SIGNAL(search(QString,int,QStringList)));
     QObject::connect(this,SIGNAL(init_search(QStringList,int)),&search_thread,SIGNAL(init(QStringList,int)));
-    QObject::connect(&search_thread,SIGNAL(init_obj_finish()),this,SLOT(init_search_from_offline_pkg_list()));
-    search_thread.start();
+    QObject::connect(&search_thread,SIGNAL(init_obj_finish()),this,SLOT(on_init_search_obj_finish()));
+    search_thread.start();// init_search_from_offline_pkg_list
 
     QObject::connect(&crop_thread_obj,SIGNAL(init_finish(int)),this,SLOT(on_crop_ocr_init_finish(int)));
     QObject::connect(&crop_thread_obj,SIGNAL(ocr_result(QString,int)),this,SLOT(on_crop_ocr_result(QString,int)));
@@ -48,6 +48,7 @@ Offline_small_search::Offline_small_search(QObject *parent) :
         Q_EMIT init_ocr(get_data_dir()+"/eng","eng",++crop_batch);
     if(is_exist("/ocr/cht.zip",1))
         Q_EMIT init_ocr(get_data_dir()+"/cht","cht",++crop_batch);
+    loadPlugins();
     #ifdef Q_OS_ANDROID
     androidVersion = getAndroidVersion();
     #endif
@@ -62,12 +63,14 @@ void Offline_small_search::init_obj(QObject *rootobj)
 {
     rootObject = rootobj;
     tabView_obj = rootobj->findChild<QObject*>("tabView");
+    swipeView_obj = rootobj->findChild<QObject*>("swipeView");
     setCurrentIndex(4);
     setCurrentIndex(7);
     setCurrentIndex(8);
     setCurrentIndex(9);
     setCurrentIndex(11);
     setCurrentIndex(5);
+    setCurrentIndex(14);
     setCurrentIndex(0);
     result_obj = rootobj->findChild<QObject*>("text");
     mark_img_obj = rootobj->findChild<QObject*>("mark_img");
@@ -78,9 +81,13 @@ void Offline_small_search::init_obj(QObject *rootobj)
     search_text_obj = rootobj->findChild<QObject*>("search_text");
     home_img_obj = rootobj->findChild<QObject*>("home_img");
     result_search_img_obj = rootobj->findChild<QObject*>("result_search_img");
-    update_dialog_obj = rootObject->findChild<QObject*>("update_dialog");
+    result_search_light_img_obj = rootobj->findChild<QObject*>("result_search_light_img");
+    update_dialog_obj = rootobj->findChild<QObject*>("update_dialog");
+    pluginPages_obj = rootobj->findChild<QObject*>("pluginPages");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(tabView_obj)) qDebug()<<"tabView_obj not find";
+    if(!(swipeView_obj)) qDebug()<<"swipeView_obj not find";
+    init_plugin_library(pluginPages_obj);
 }
 
 void Offline_small_search::init_obj()
@@ -94,9 +101,30 @@ void Offline_small_search::init_obj()
     search_text_obj = rootObject->findChild<QObject*>("search_text");
     home_img_obj = rootObject->findChild<QObject*>("home_img");
     result_search_img_obj = rootObject->findChild<QObject*>("result_search_img");
+    result_search_light_img_obj = rootObject->findChild<QObject*>("result_search_light_img");
     update_dialog_obj = rootObject->findChild<QObject*>("update_dialog");
+    pluginPages_obj = rootObject->findChild<QObject*>("pluginPages");
     if(!(result_obj)) qDebug()<<"result_obj not find";
     if(!(search_text_obj)) qDebug()<<"search_text_obj not find";
+}
+
+void Offline_small_search::init_plugin_library(QObject *obj)
+{
+    QMapIterator<QString,PageInterface*> pagePluginInterfacsListIterator(pagePluginInterfacsList);
+    QMap<QString,QVariant> parm;
+    parm["tempDir"] = get_cache_dir()+"/plugin/temp/";
+    parm["cacheDir"] = get_cache_dir()+"/plugin/cache/";
+    parm["dataDir"] = get_data_dir()+"/plugin/data/";
+    while (pagePluginInterfacsListIterator.hasNext()) {
+        pagePluginInterfacsListIterator.next();
+        qDebug()<<obj;
+        for(int i = 0; i < pagePluginEntrysList.size(); ++i)
+        {
+            if(std::get<0>(pagePluginEntrysList.at(i)) == pagePluginInterfacsListIterator.key())
+                parm["pluginInstallDir"] = std::get<1>(pagePluginEntrysList.at(i))+"/";
+        }
+        rootContext->setContextProperty(pagePluginInterfacsListIterator.key(),pagePluginInterfacsListIterator.value()->init(obj,parm));
+    }
 }
 
 void Offline_small_search::init_data()
@@ -106,11 +134,22 @@ void Offline_small_search::init_data()
     data_file_to_mark_list();
     refresh_search_result_for_search_result_qml();
     check_data_pkgs();
+    if(init_search_obj_finish)
+        init_search_from_offline_pkg_list();
+    init_data_finish = true;
 }
 
 void Offline_small_search::setCurrentIndex(int index)
 {
-    tabView_obj->setProperty("currentIndex",index);
+    if(index <4)
+    {
+        tabView_obj->setProperty("currentIndex",0);
+        //swipeView_obj->setProperty("currentIndex",index);
+    }
+    else
+    {
+        tabView_obj->setProperty("currentIndex",index-3);
+    }
 }
 
 void Offline_small_search::show_back()
@@ -185,23 +224,23 @@ void Offline_small_search::show_main()
 
 void Offline_small_search::show_more()
 {
+    if(view.last() != 3)
+        view.append(3);
+    setCurrentIndex(3);
+}
+
+void Offline_small_search::show_more_search()
+{
     if(view.last() != 1)
         view.append(1);
     setCurrentIndex(1);
 }
 
-void Offline_small_search::show_more_search()
+void Offline_small_search::show_history()
 {
     if(view.last() != 2)
         view.append(2);
     setCurrentIndex(2);
-}
-
-void Offline_small_search::show_history()
-{
-    if(view.last() != 3)
-        view.append(3);
-    setCurrentIndex(3);
 }
 
 void Offline_small_search::show_search(QString str)
@@ -230,9 +269,15 @@ void Offline_small_search::show_search_result(QString str,bool highter)
         search_str = str;
         search(search_type,search_str,highter);
     }
+    result_search_light_img_obj->setProperty("source","");
     if(view.last() != 8)
         view.append(8);
     setCurrentIndex(8);
+}
+
+void Offline_small_search::re_search(bool highter)
+{
+    show_search_result(search_str,highter);
 }
 
 void Offline_small_search::show_pkg()
@@ -561,6 +606,7 @@ void Offline_small_search::search(QStringList type, QString str, bool highter)
     show_wait();
     ++search_batch;
     search_batch_highter[search_batch] = highter;
+    //qDebug()<<str<<search_batch<<type;
     Q_EMIT xapian_search(str,search_batch,type);
     for(int i = 0; i < search_result_list.size(); ++i)
     {
@@ -1015,19 +1061,23 @@ void Offline_small_search::on_search_result(QStringList urls, QStringList key_wo
             search_result->setUrl(urls.at(i));
             //search_result->setStr(get_text_from_url(urls.at(i)));
             //qDebug()<<"Light xxx:"<<get_text_from_url(urls.at(i))<<" hh "<<key_words;
-            search_result->setStr(search_batch_highter.value(search_batch,true) ? highlight_str(get_text_from_url(urls.at(i)),key_words,100) : get_text_from_url(urls.at(i)));
-            QString title = get_title(urls.at(i),search_batch_highter.value(search_batch,true),key_words);
-            if(!(title == ""||title.isNull()||title.isEmpty()))
+            if(urls.at(i).indexOf(":/") > 0)
             {
-                search_result->setHaveTitle(true);
-                search_result->setTitle(title);
+                search_result->setStr(search_batch_highter.value(search_batch,true) ? highlight_str(get_text_from_url(urls.at(i)),key_words,100) : get_text_from_url(urls.at(i)));
+                QString title = get_title(urls.at(i),search_batch_highter.value(search_batch,true),key_words);
+                if(!(title == ""||title.isNull()||title.isEmpty()))
+                {
+                    search_result->setHaveTitle(true);
+                    search_result->setTitle(title);
+                }
+                else search_result->setHaveTitle(false);
             }
-            else search_result->setHaveTitle(false);
             if(search_result->str().isEmpty()||search_result->str().isNull())
                 search_result->setStr(search_result->url());
             search_result_list.append(search_result);
         }
         refresh_search_result_for_search_result_qml();
+        result_search_light_img_obj->setProperty("source",search_batch_highter.value(search_batch,true) ? "qrc:/image/icon_light.png" : "qrc:/image/icon_no_light.png");
         hide_wait();
     }
     if(batch < 0)
@@ -1215,6 +1265,13 @@ QString Offline_small_search::highlight_str(QString str,QStringList &key_words,i
         else hight_str.replace(QRegExp("^[^<]{0,"+QString::number(str.length() - max_char)+"}"),"");
     }
     return hight_str;
+}
+
+void Offline_small_search::on_init_search_obj_finish()
+{
+    init_search_obj_finish = true;
+    if(init_data_finish)
+        init_search_from_offline_pkg_list();
 }
 
 void Offline_small_search::on_search_init_finish(int batch)
@@ -1442,8 +1499,20 @@ void Offline_small_search::refresh_more_search_list_for_more_search_qml()
             more_search->setType(offline_pkg1->type());
             more_search->setName_code(offline_pkg1->name_code());
             more_search->setName(offline_pkg1->name().remove(pkg_suf));
+            more_search->setIs_plugin(false);
             more_search_list.append(more_search);
         }
+    }
+    for(int i = 0; i < pagePluginEntrysList.size(); ++i)
+    {
+        more_search = new more_search_obj();
+        more_search->setType("Plugin");
+        more_search->setName_code(std::get<0>(pagePluginEntrysList.at(i)));
+        more_search->setName(std::get<3>(pagePluginEntrysList.at(i)));
+        more_search->setPluginQmlPath(std::get<2>(pagePluginEntrysList.at(i)));
+        more_search->setAbsoluteQmlPath(std::get<1>(pagePluginEntrysList.at(i))+"/"+std::get<2>(pagePluginEntrysList.at(i)));
+        more_search->setIs_plugin(true);
+        more_search_list.append(more_search);
     }
     rootContext->setContextProperty("more_search_list", QVariant::fromValue(more_search_list));
 }
@@ -1460,6 +1529,21 @@ void Offline_small_search::set_top_bar_height(qreal top_bar_height)
 
 void Offline_small_search::startCamera()
 {
+    startCamera(cropView_obj);
+}
+
+void Offline_small_search::startCamera(QObject *wait_camera, QString img_source_name, QString img_camer_error_name)
+{
+    if(!wait_camera)
+    {
+        qDebug()<<"wait_camera have question"<<wait_camera;
+        wait_camera = cropView_obj;
+    }
+    wait_camera_obj = wait_camera;
+    QByteArray ba1 = img_camer_error_name.toLocal8Bit();
+    wait_camera_img_camer_error_name = strdup(ba1.data());
+    QByteArray ba2 = img_source_name.toLocal8Bit();
+    wait_camera_img_source_name = strdup(ba2.data());
 #ifdef Q_OS_ANDROID
     QAndroidJniObject::callStaticMethod<void>(
                 "qt/oss/OfflineSmallSearchActivity",
@@ -1471,7 +1555,8 @@ void Offline_small_search::startCamera()
         env->ExceptionDescribe();
         env->ExceptionClear();
     }
-    show_crop();
+    if(wait_camera == cropView_obj)
+        show_crop();
 #else
     /*
     if(view.last() != 13)
@@ -1528,16 +1613,21 @@ bool Offline_small_search::event(QEvent *e)
     {
         e->accept();
         capCustomEvent *sce = (capCustomEvent*)e;
-        cropView_obj->setProperty("source","");
+        if(!wait_camera_obj)
+        {
+            qDebug()<<"wait_camera_obj have question"<<wait_camera_obj;
+            return true;
+        }
+        wait_camera_obj->setProperty(wait_camera_img_source_name,"");
         if(sce->m_arg1 == 2)
         {
-            show_crop();
-            cropView_obj->setProperty("source","file://"+cp_grayimg_to_tmp(sce->m_arg2));
+            //show_crop();
+            wait_camera_obj->setProperty(wait_camera_img_source_name,"file://"+cp_grayimg_to_tmp(sce->m_arg2));
         }
         else
         {
             if(sce->m_arg1 != -2)
-                cropView_obj->setProperty("have_system_carema_error",true);
+                wait_camera_obj->setProperty(wait_camera_img_camer_error_name,true);
         }
         return true;
     }
@@ -1843,6 +1933,13 @@ void Offline_small_search::on_crop_ocr_init_finish(int batch)
 
 void Offline_small_search::on_unzip_finish(int batch,QString dir)
 {
+    if((dir.indexOf(qApp->applicationDirPath()+"/plugins") > -1)||(dir.indexOf(QDir::currentPath()+"/plugins") > -1))
+    {
+        QObject *pluginInstallFinsh_dialog_obj = rootObject->findChild<QObject*>("pluginInstallFinsh_messageDialog");
+        pluginInstallFinsh_dialog_obj->setProperty("pluginName",QVariant(pagePluginIdAndNameMapForInstall.value(unzip_oplu_map.value(batch,"Unknown"),unzip_oplu_map.value(batch,"Unknown Plugin"))));
+        QMetaObject::invokeMethod(pluginInstallFinsh_dialog_obj, "open");
+        return;
+    }
     QDirIterator dir_it(dir,QDir::Dirs|QDir::NoDotAndDotDot,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
     while (dir_it.hasNext())
     {
@@ -1919,7 +2016,7 @@ QColor Offline_small_search::rand_lightcolor(QString str)
 void Offline_small_search::check_update()
 {
     qDebug()<<"check update start";
-    m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.github.io/oss/Version")));
+    m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.oschina.io/oss/Version")));
     connect(m_reply,SIGNAL(finished()),this,SLOT(download_version_finish()));
 }
 
@@ -1936,7 +2033,7 @@ void Offline_small_search::download_version_finish()
         if(master_ver > OSS_VERSION_N)
         {
             qDebug()<<"download changelog";
-            m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.github.io/oss/Change")));
+            m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.oschina.io/oss/Change")));
             connect(m_reply,SIGNAL(finished()),this,SLOT(download_changelog_finish()));
         }
         else
@@ -2000,8 +2097,14 @@ QString Offline_small_search::systemType()
 #ifdef _WIN32
     return "WIN32";
 #endif
-#ifdef Q_OS_WIN32
-    return "WIN32";
+#ifdef Q_OS_OSX
+    return "OSX";
+#endif
+#ifdef Q_OS_IOS
+    return "IOS";
+#endif
+#ifdef Q_OS_WIN
+    return "WIN";
 #endif
 #ifdef Q_OS_ANDROID
     return "ANDROID";
@@ -2014,3 +2117,205 @@ QString Offline_small_search::systemType()
 #endif
     return "Unknow System";
 }
+//插件为了方便他人审阅代码,使用驼峰命名法
+void Offline_small_search::loadPlugins(QString pluginDir)
+{
+    if (pluginDir.isNull()||pluginDir.isEmpty())
+#ifdef Q_OS_ANDROID
+        pluginDir = QDir::currentPath()+"/plugins/";
+#else
+        pluginDir = qApp->applicationDirPath()+"/plugins";
+#endif
+    QDirIterator pluginsDir_it(pluginDir,QStringList(QString("meta.dat")),QDir::Files,QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+    while (pluginsDir_it.hasNext())
+    {
+        pluginsDir_it.next();
+        QSettings setting(pluginsDir_it.fileInfo().absoluteFilePath(),QSettings::IniFormat);
+        QString dirPath = pluginsDir_it.fileInfo().absolutePath();
+        QString pluginType = setting.value("PluginType").toString();
+        QMap<QString,QVariant> parm;
+        parm["tempDir"] = get_cache_dir()+"/plugin/temp";
+        parm["cacheDir"] = get_cache_dir()+"/plugin/cache";
+        parm["dataDir"] = get_data_dir()+"/plugin/data";
+        if (pluginType == "PagePlugin")
+        {
+            QString pluginID = setting.value("PluginID").toString();
+            if (pluginID.indexOf(QRegExp("[^0-9A-Za-z_]")) > -1)
+                continue;//插件标识符只能含有数字,英文字母,下划线
+            QString pluginName = setting.value("PluginName").toString();
+            pagePluginIdAndNameMap[pluginID] = pluginName;
+            QString pluginLibrary = setting.value("PluginLibrary").toString();
+            if (pluginLibrary.indexOf("../") > -1)
+                continue;//为了安全考虑,不加载带返回上级目录PluginLibrary
+            QPluginLoader loader(dirPath+"/"+pluginLibrary);
+            QObject *plugin = loader.instance();
+            if (plugin)
+            {
+                qDebug()<<"plugin entry"<<dirPath+"/"+pluginLibrary;
+                PageInterface *Page = qobject_cast<PageInterface *>(plugin);
+                if (Page)
+                {
+                    qDebug()<<"page entry"<<dirPath+"/"+pluginLibrary;
+                    Page->init(pluginPages_obj,parm);
+                    pagePluginInterfacsList[pluginID] = Page;
+                }
+                else
+                    continue;//失败即为不兼容,跳过该插件
+            }
+            else
+                continue;//失败即为不兼容,跳过该插件
+            QMap<QString, QVariant> pluginEntryQml = setting.value("PluginEntryQml").toMap();//K:QmlPath,V:QmlTitle
+            QMapIterator<QString, QVariant> pluginEntryQmlIterator(pluginEntryQml);
+            while (pluginEntryQmlIterator.hasNext()) {
+                pluginEntryQmlIterator.next();
+                if (pluginEntryQmlIterator.key().indexOf("../") > -1)
+                    continue;//为了安全考虑,不加载带返回上级目录PluginEntryQml
+                pagePluginEntrysList.append(std::tuple<QString,QString,QString,QString>(pluginID,dirPath,pluginEntryQmlIterator.key(),pluginEntryQmlIterator.value().toString()));
+            }
+            //其他元数据:PluginVersion,MetaVersion,BuildTime,Author,Introduction,Platform,Arch,Compiler
+        }
+    }
+}
+
+void Offline_small_search::installPlugins(QString opluFilePath)
+{
+    opluFilePath.remove(QRegExp("file:/*"));
+    if(opluFilePath.indexOf(QRegExp(":[/\\]")) < 0)
+        opluFilePath.prepend("/");
+    QFile opluFile(opluFilePath);
+    if(!opluFile.open(QFile::ReadOnly))
+        return;
+    QDataStream opluStream(&opluFile);
+    quint32 magicNumber;
+    opluStream >> magicNumber;
+    if(magicNumber != (quint32)0x6F706C75)//check magic number
+        return;
+    qint32 opluVersion;
+    opluStream >> opluVersion;
+    if(opluVersion == (qint32)1)//check oplu version
+        opluStream.setVersion(QDataStream::Qt_5_6);
+    else
+        return;
+    qint32 minVersion;
+    opluStream >> minVersion;
+    if((qint32)OSS_VERSION_N < (qint32)34)//check min oss version
+        return;
+    bool haveSign = false;
+    opluStream >> haveSign;
+    QByteArray sign;
+    opluStream >> sign;
+    QString opluID;
+    opluStream >> opluID;
+    QString opluName;
+    opluStream >> opluName;
+    QByteArray zip;
+    opluStream >> zip;
+    QString zipFilePath = get_cache_dir()+"/"+opluID+".zip";
+    QFile zipFile(zipFilePath);
+    if(zipFile.exists())
+        zipFile.remove();
+    zipFile.open(QFile::WriteOnly);
+    zipFile.write(zip);
+    zipFile.close();
+    ++unzip_batch;
+    unzip_oplu_map[unzip_batch] = opluID;
+    pagePluginIdAndNameMapForInstall[opluID] = opluName;
+    qDebug()<<qApp->applicationDirPath()+"/plugins/"+opluID;
+#ifdef Q_OS_ANDROID
+    Q_EMIT unzip(zipFilePath, QDir::currentPath()+"/plugins/"+opluID,unzip_batch);
+#else
+    Q_EMIT unzip(zipFilePath, qApp->applicationDirPath()+"/plugins/"+opluID,unzip_batch);
+#endif
+}
+
+bool Offline_small_search::verifyData(QString publicKey,const char *data,const char *signatureData)
+{
+    CryptoPP::StringSource pubKey(QString::fromLatin1(QByteArray::fromBase64(publicKey.toLatin1()).toHex().toUpper()).toStdString(), true, new CryptoPP::HexDecoder);
+    CryptoPP::RSASS<CryptoPP::PKCS1v15, CryptoPP::SHA>::Verifier pub(pubKey);
+    CryptoPP::StringSource signatureString(signatureData, true, new CryptoPP::HexDecoder);
+    if (signatureString.MaxRetrievable() != pub.SignatureLength())
+        return false;
+    CryptoPP::SecByteBlock signature(pub.SignatureLength());
+    signatureString.Get(signature, signature.size());
+
+    CryptoPP::VerifierFilter *verifierFilter = new CryptoPP::VerifierFilter(pub);
+    verifierFilter->Put(signature, pub.SignatureLength());
+    CryptoPP::StringSource dataString(data, true, verifierFilter);
+
+    return verifierFilter->GetLastResult();
+}
+
+int Offline_small_search::checkOplu(QString opluFilePath)
+{
+    opluFilePath.remove(QRegExp("file:/*"));
+    if(opluFilePath.indexOf(QRegExp(":[/\\]")) < 0)
+        opluFilePath.prepend("/");
+    QFile opluFile(opluFilePath);
+    if(!opluFile.open(QFile::ReadOnly))
+        return -1;//File don't exist or can't open.
+    QDataStream opluStream(&opluFile);
+    quint32 magicNumber;
+    opluStream >> magicNumber;
+    if(magicNumber != (quint32)0x6F706C75)//check magic number
+        return -2;//It isn't oplu file.
+    qint32 opluVersion;
+    opluStream >> opluVersion;
+    if(opluVersion == (qint32)1)//check oplu version
+        opluStream.setVersion(QDataStream::Qt_5_6);
+    else
+        return -3;//Unsupported oplu version.
+    qint32 minVersion;
+    opluStream >> minVersion;
+    if((qint32)OSS_VERSION_N < (qint32)34)//check min oss version
+        return -4;//oss version too old.
+    bool haveSign = false;
+    opluStream >> haveSign;
+    QByteArray sign;
+    opluStream >> sign;
+    QString opluID;
+    opluStream >> opluID;
+    QString opluName;
+    opluStream >> opluName;
+    QByteArray zip;
+    opluStream >> zip;
+    if(haveSign)
+    {
+        bool isGoodSign = verifyData("MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAz0wjADRHZSnDqWPpIt7cY/dRqbOKrkZo8Vbm4WmjmpOzj2mUG0OzLQuy0krkWdeCGIqjYsNXo1z577w5zlm6nPHFTZigYdUXh9F1ncaZ7Wp31owenWOkzrlVID/gKWhT1LjUC7nRZAaR4W9jcUJxlh+BLELCKA8YSJjC9AaRpxotxBsXB/lt1MuMTr9UWrDNM12SU5V0/Yv3IO/hjyvTsbADAT7PMjxLYBmPs8Qm2HN7Ly/ivBV93EndyqOQIkqhSLvRWwjtaLlW9ijio91OMruj7nxdu5pkQg4gGZg9snSV2GAUVM1Nvh+jfgNHPEBXQlpfCliskSv05aBRFsCA3QIBEQ==",(opluID.toUtf8()+opluName.toUtf8()+zip).data(),sign.data());
+        if(isGoodSign)
+            return 5;//签名效验成功
+        else
+            return 0;//签名效验失败,插件包可能经过篡改或插件包受到破坏或插件包的签名不受信任
+    }
+    else
+    {
+        QString hashData = QCryptographicHash::hash(opluID.toUtf8()+opluName.toUtf8()+zip,QCryptographicHash::Md5);
+        if(hashData == sign)
+            return 2;//插件包数据MD5效验通过,但无签名
+        else
+            return 1;//MD5效验失败,插件包可能经过篡改或插件包受到破坏
+    }
+}
+
+void Offline_small_search::show_plugin_pages(QString pluginID,QString pluginQmlPath,QString absoluteQmlPath)
+{
+    if(view.last() != 14)
+        view.append(14);
+    setCurrentIndex(14);
+    if(!(absoluteQmlPath.isEmpty()||absoluteQmlPath.isNull()||absoluteQmlPath == ""))
+    {
+        if(!(pluginID.isEmpty()||pluginID.isNull()||pluginID == ""||pluginQmlPath.isEmpty()||pluginQmlPath.isNull()||pluginQmlPath == ""))
+        {
+            pagePluginInterfacsList[pluginID]->initAfterLoad(pluginQmlPath);
+        }
+        qDebug()<<absoluteQmlPath;
+        pluginPages_obj->setProperty("needReplace",absoluteQmlPath);
+        //QMetaObject::invokeMethod(pluginPages_obj, "replace", Q_ARG(QUrl, absoluteQmlPath));
+    }
+}
+
+void Offline_small_search::addChildToPluginPagesObject(QObject *obj)
+{
+    obj->setParent(pluginPages_obj);
+}
+
+//插件代码结束

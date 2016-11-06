@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
     context->setContextProperty(QStringLiteral("initialWidth"), geometry.width());
     context->setContextProperty(QStringLiteral("initialHeight"), geometry.height());
     context->setContextProperty("main_widget", &w);
+    context->setContextProperty("MainProgram", &w);
     w.init_con(context);
     w.init_data();
     /*

@@ -102,7 +102,7 @@ QString crop::crop_ocr_orig(QString imagepath, QVariant cropPoints, float min_co
     Mat image;
     qreal width = 0;
     qreal height = 0;
-
+    QByteArray imagepathB = imagepath.toLocal8Bit();
     if(getCropPoints(points, cropPoints.toMap(), img))
     {
         QLineF topLine(points.value("topLeft"), points.value("topRight"));
@@ -122,7 +122,7 @@ QString crop::crop_ocr_orig(QString imagepath, QVariant cropPoints, float min_co
             height = rightLine.length();
         }
 
-        Mat img = imread(imagepath.toLocal8Bit().data(),COLOR_BGR2GRAY);
+        Mat img = imread(imagepathB.data(),COLOR_BGR2GRAY);
         if(img.total() < 1) return "";
         int img_height = height;
         int img_width = width;
@@ -148,7 +148,7 @@ QString crop::crop_ocr_orig(QString imagepath, QVariant cropPoints, float min_co
     }
     else
     {
-        image = cv::imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+        image = cv::imread(imagepathB.data(), CV_LOAD_IMAGE_GRAYSCALE);
         //img.save("tmp/trans.jpg", "jpg", 100);
     }
     //medianBlur(image,image,3);
@@ -256,6 +256,7 @@ QStringList crop::crop_ocr_list(QString imagepath, QVariant cropPoints, QString 
         imagepath = "/"+imagepath;
 #endif
     }
+    QByteArray imagepathB = imagepath.toLocal8Bit();
     qDebug()<<imagepath;
     QImage img(imagepath);
     QMap<QString, QPointF> points;
@@ -278,7 +279,7 @@ QStringList crop::crop_ocr_list(QString imagepath, QVariant cropPoints, QString 
         } else {
             height = rightLine.length();
         }
-        Mat img = imread(imagepath.toLocal8Bit().data(),COLOR_BGR2GRAY);
+        Mat img = imread(imagepathB.data(),COLOR_BGR2GRAY);
         if(img.total() < 1) return QStringList();
         int img_height = height;
         int img_width = width;
@@ -296,7 +297,7 @@ QStringList crop::crop_ocr_list(QString imagepath, QVariant cropPoints, QString 
         warpPerspective(img, image, warpMatrix, Size(img_width,img_height), INTER_LINEAR, BORDER_CONSTANT);
     }
     else
-        image = cv::imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+        image = cv::imread(imagepathB.data(), CV_LOAD_IMAGE_GRAYSCALE);
     int orig_width = image.cols;
     int orig_heigth = image.rows;
     int rotate = rotateFix(image);
@@ -414,13 +415,14 @@ void crop::rotate(QString imagepath, int rotate_n)
         imagepath = "/"+imagepath;
 #endif
     }
-    Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    QByteArray imagepathB = imagepath.toLocal8Bit();
+    Mat srcImg = imread(imagepathB.data(), CV_LOAD_IMAGE_GRAYSCALE);
     if(rotate_n == 90)
     {
         Mat t,dst;
         transpose(srcImg,t);
         flip(t,dst,1);
-        imwrite(imagepath.toLocal8Bit().data(),dst);
+        imwrite(imagepathB.data(),dst);
     }
     else
     {
@@ -429,7 +431,7 @@ void crop::rotate(QString imagepath, int rotate_n)
             Mat t,dst;
             transpose(srcImg,t);
             flip(t,dst,0);
-            imwrite(imagepath.toLocal8Bit().data(),dst);
+            imwrite(imagepathB.data(),dst);
         }
         else
         {
@@ -483,7 +485,8 @@ bool crop::getCropPoints(QMap<QString, QPointF> &points, QMap<QString, QVariant>
 
 int crop::rotateFix(QString imagepath)
 {
-    Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    QByteArray imagepathB = imagepath.toLocal8Bit();
+    Mat srcImg = imread(imagepathB.data(), CV_LOAD_IMAGE_GRAYSCALE);
     if(srcImg.empty())
         return 0;
     else return rotateFix(srcImg);
@@ -624,7 +627,8 @@ void crop::on_init(QString tessdata_path, QString lang, int batch)
 
 void crop::zoomFix(QString imagepath, int angle, int width, int height)
 {
-    Mat srcImg = imread(imagepath.toLocal8Bit().data(), CV_LOAD_IMAGE_GRAYSCALE);
+    QByteArray imagepathB = imagepath.toLocal8Bit();
+    Mat srcImg = imread(imagepathB.data(), CV_LOAD_IMAGE_GRAYSCALE);
     if(srcImg.empty())
         return;
     else zoomFix(srcImg,angle,width,height);

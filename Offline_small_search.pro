@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-lessThan(QT_VERSION, "5.5.0") {
-    error("Qt 5.5.0 or above is required to build Offline_small_search.")
+lessThan(QT_VERSION, "5.6.1") {
+    error("Qt 5.6.1 or above is required to build Offline_small_search.")
 }
 
-QT       += core gui widgets qml quick quickwidgets network multimedia quick-private
+QT       += core gui widgets qml quick quickwidgets network multimedia quick-private quickcontrols2
 
 TARGET = Offline_small_search
 TEMPLATE = app
@@ -69,7 +69,8 @@ HEADERS  += \
     parse/namedentities.h \
     parse/strcasecmp.h \
     parse/stringutils.h \
-    parse/utf8convert.h
+    parse/utf8convert.h \
+    interfaces.h
 
 RESOURCES += \
     qml.qrc \
@@ -139,7 +140,7 @@ android {
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
     LIBS +=-L$$PWD/build-bin/lib/ \
-        -Wl,-Bstatic,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
+        -Wl,-Bstatic,-lcryptopp,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
 
     DISTFILES += \
