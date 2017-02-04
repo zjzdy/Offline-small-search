@@ -38,14 +38,12 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 ####网盘
 * 百度网盘: [http://pan.baidu.com/s/1mhnmlEK](http://pan.baidu.com/s/1mhnmlEK) 密码: 396f
-* 360云盘: [https://yunpan.cn/cx8yUeFyJypM5](https://yunpan.cn/cx8yUeFyJypM5) 密码: 0205
 
 ##共享的离线包地址
 注意：离线包版本请用最新版,程序不保证兼容旧版本的离线包.
 * 中小学试题离线包 [http://pan.baidu.com/s/1o7KGd8Q](http://pan.baidu.com/s/1o7KGd8Q) 密码: cqwx
 * 古诗文离线包 [http://pan.baidu.com/s/1i4P9ZDj](http://pan.baidu.com/s/1i4P9ZDj) 密码: hre8
 * 开发文档离线包 [http://pan.baidu.com/s/1geD2PLD](http://pan.baidu.com/s/1geD2PLD) 密码: mc6s
-* 开发文档离线包(360云盘分流) [https://yunpan.cn/c6Fn4Ly4SSGqq](https://yunpan.cn/c6Fn4Ly4SSGqq) 密码: 6311
 * 离线包打包器 [http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build](http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build)
 * 如果需要分享离线包,可联系我在此页面添加下载链接
 * 因服务器资源有限,程序内的在线下载模块暂不开放离线包的下载,请自行下载添加
