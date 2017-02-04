@@ -140,7 +140,7 @@ android {
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
     LIBS +=-L$$PWD/build-bin/lib/ \
-        -Wl,-Bstatic,-lcryptopp,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-lxapian,-luuid,-lzim,-llzma,-Bdynamic -lz #-ltesseract
+        -Wl,-Bstatic,-lcryptopp,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-ltegra_hal,-lxapian,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
 
     DISTFILES += \
