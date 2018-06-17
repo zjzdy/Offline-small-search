@@ -1,12 +1,12 @@
-#Offline-small-search  (离线小搜)
+# Offline-small-search  (离线小搜)
 离线搜索软件,现支持离线搜题,搜古诗文,搜开发文档,等等.可自行打包离线包.
 ------------
 声明:所有离线包版权归其所有者所有,与本软件及软件开发人员无关,本软件仅提供搜索功能.
 
 本软件采用GPL协议发布,希望所有人都能一起来改进本软件.
 
-###项目地址:
-Git@OSC:[http://git.oschina.net/zjzdy/Offline-small-search](http://git.oschina.net/zjzdy/Offline-small-search)
+### 项目地址:
+码云:[http://gitee.com/zjzdy/Offline-small-search](http://gitee.com/zjzdy/Offline-small-search)
 
 GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzdy/Offline-small-search)
 
@@ -14,7 +14,18 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 当前版本: v2.3.0_Beta
 
-##功能及特点
+## FindK
+当前版本已不再作为主要维护, 下一代版本FindK正在开发, 敬请期待
+[https://gitee.com/zjzdy/FindK](https://gitee.com/zjzdy/FindK)
+初始版本进度:
+* 储存格式: 60%
+* 编码处理: 85%
+* 界面: 35%
+* 检索优化: 0%
+* 图像处理: 0%
+* 辅助工具: 20%
+
+## 功能及特点
 * 离线全文检索,采用高度压缩打包的ZIM文件存储数据
 * 可任意自行打包或添加离线包
 * 网址自定义,支持外部链接
@@ -25,55 +36,53 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 * 简体繁体自动转换搜索,无论繁体还是简体都可以找到
 * 更多功能等待发现
 
-##下载
-####Git@OSC
-* Android: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Android)
-* Windows: [http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows](http://git.oschina.net/zjzdy/Offline-small-search/tree/master/bin/Windows)
-* All: [http://git.oschina.net/zjzdy/Offline-small-search/releases/](http://git.oschina.net/zjzdy/Offline-small-search/releases/)
+## 下载
+#### 码云
+* Android: [http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Android](http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Android)
+* Windows: [http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Windows](http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
+* All: [http://gitee.com/zjzdy/Offline-small-search/releases/](http://gitee.com/zjzdy/Offline-small-search/releases/)
 
-####GitHub
+#### GitHub
 * Android: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android)
 * Windows: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
 * All: [https://github.com/zjzdy/Offline-small-search/releases](https://github.com/zjzdy/Offline-small-search/releases)
 
-####网盘
+#### 网盘
 * 百度网盘: [http://pan.baidu.com/s/1mhnmlEK](http://pan.baidu.com/s/1mhnmlEK) 密码: 396f
-* 360云盘: [https://yunpan.cn/cx8yUeFyJypM5](https://yunpan.cn/cx8yUeFyJypM5) 密码: 0205
 
-##共享的离线包地址
+## 共享的离线包地址
 注意：离线包版本请用最新版,程序不保证兼容旧版本的离线包.
 * 中小学试题离线包 [http://pan.baidu.com/s/1o7KGd8Q](http://pan.baidu.com/s/1o7KGd8Q) 密码: cqwx
 * 古诗文离线包 [http://pan.baidu.com/s/1i4P9ZDj](http://pan.baidu.com/s/1i4P9ZDj) 密码: hre8
 * 开发文档离线包 [http://pan.baidu.com/s/1geD2PLD](http://pan.baidu.com/s/1geD2PLD) 密码: mc6s
-* 开发文档离线包(360云盘分流) [https://yunpan.cn/c6Fn4Ly4SSGqq](https://yunpan.cn/c6Fn4Ly4SSGqq) 密码: 6311
-* 离线包打包器 [http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build](http://git.oschina.net/zjzdy/Offline_Small_Search_pkg_build)
+* 离线包打包器 [http://gitee.com/zjzdy/Offline_Small_Search_pkg_build](http://gitee.com/zjzdy/Offline_Small_Search_pkg_build)
 * 如果需要分享离线包,可联系我在此页面添加下载链接
 * 因服务器资源有限,程序内的在线下载模块暂不开放离线包的下载,请自行下载添加
 * 申明：离线包的内容版权归用原所有者所有,未申明相关版权的请在下载后24小时内删除,产生的后果程序开发者不负任何责任
 
-##软件主要开发者:
+## 软件主要开发者:
 * zjzdy(zjzengdongyang@163.com)
 
-##截图
+## 截图
 ![Main](Screenshots/main.png)
 
 ![More_search](Screenshots/more_search.png)
 
-##编译
-##Windows版本编译
+## 编译
+## Windows版本编译
 本过程基于Qt 5.6.1 for Windows(msys2 mingw32)或Qt 5.7.0 for Windows(用msys2 mingw32环境自行编译), OpenCV 3.1.0, Xapian 1.4.0, xz 5.2.2, Leptonica 1.73编写,Windows x86_64(win7及以上)环境运行.
 
 所有代码均在msys2的mingw32_shell中运行.
-###0.准备项目
+### 0.准备项目
 安装必须的软件,下载或克隆项目.
 ```
 pacman -Syu
 pacman -S --noconfirm --needed mingw-w64-i686-tesseract-ocr mingw-w64-i686-qt-creator mingw-w64-i686-qt5-static mingw-w64-i686-qt5 mingw-w64-i686-leptonica mingw-w64-i686-opencv mingw-w64-i686-xz mingw-w64-i686-zlib mingw-w64-i686-toolchain base-devel git unzip p7zip xz tar wget zip
-git clone http://git.oschina.net/zjzdy/Offline-small-search
+git clone http://gitee.com/zjzdy/Offline-small-search
 cd Offline-small-search/
 export ossbuild=$PWD
 ```
-###1.编译 Xapian
+### 1.编译 Xapian
 到Xapian的官网去下载最新版本的Xapian core
 
 下载地址:[http://xapian.org/download](http://xapian.org/download)
@@ -88,7 +97,7 @@ make
 make install
 cd ../
 ```
-###2.编译 zimlib
+### 2.编译 zimlib
 ```
 cd zimlib/
 ./autogen.sh
@@ -97,7 +106,7 @@ make
 make install
 cd ../
 ```
-###3.编译 离线小搜
+### 3.编译 离线小搜
 0.对部分头文件进行处理
 ```
 cp /mingw32/include/tesseract/tesscallback.h /mingw32/include/tesseract/tesscallback.h.bak
@@ -127,7 +136,7 @@ make install
 在QtCreator中添加Qt Versions和构建套件(Kits),重复3.1-3.5步骤
 ```
 
-###4.安装 离线小搜
+### 4.安装 离线小搜
 还原对系统文件的修改
 ```
 rm /mingw32/include/tesseract/tesscallback.h
@@ -247,7 +256,7 @@ cp /mingw32/bin/zlib1.dll oss_bin/
 ```
 已经安装离线小搜在oss_bin/
 ------
-##Android版本编译
+## Android版本编译
 以下内容可以根据最新版本自行修改
 
 本过程基于Qt 5.7.0 for Android, OpenCV 3.1.0, Xapian 1.4.0, xz 5.2.2, e2fsprogs 1.43.1, Leptonica 1.73, tess-two 6.0.2编写, Windows x86_64(win7及以上), ant 1.9.7,android-ndk r12b, android-sdk-windows 25.1.7, jdk1.8.0_92环境运行.
@@ -255,7 +264,7 @@ cp /mingw32/bin/zlib1.dll oss_bin/
 所有代码均在msys2中运行.
 
 msys2下载地址:[http://msys2.github.io/](http://msys2.github.io/)
-###0.准备项目
+### 0.准备项目
 安装必须的软件,下载或克隆项目.
 
 Qt下载地址:[http://www.qt.io/download-open-source/#section-2](http://www.qt.io/download-open-source/#section-2)
@@ -263,11 +272,11 @@ Qt下载地址:[http://www.qt.io/download-open-source/#section-2](http://www.qt.
 下载并安装Qt for Android以及Qt Creator
 ```
 pacman -S --noconfirm --needed base-devel git unzip p7zip xz tar wget python
-git clone http://git.oschina.net/zjzdy/Offline-small-search
+git clone http://gitee.com/zjzdy/Offline-small-search
 cd Offline-small-search/
 export ossbuild=$PWD
 ```
-###1.Android NDK
+### 1.Android NDK
 到Android NDK的官网去下载对应系统版本的Android NDK到本目录($PWD)下并运行 (注意把windows改成对应的系统)
 
 下载地址:[https://developer.android.com/ndk/downloads/index.html?hl=zh-cn](https://developer.android.com/ndk/downloads/index.html?hl=zh-cn)
@@ -287,7 +296,7 @@ mkdir build-bin/lib
 mkdir build-bin/include
 unzip img_include.zip -d build-bin/include/
 ```
-###2.安装 OpenCV
+### 2.安装 OpenCV
 到OpenCV的官网去下载最新版本的OpenCV android sdk
 
 下载地址:[http://opencv.org/downloads.html](http://opencv.org/downloads.html)
@@ -307,7 +316,7 @@ unzip OpenCV-3.1.0-android-sdk.zip OpenCV-android-sdk/sdk/native/jni/include/** 
 cp -rf ./build-bin/include/OpenCV-android-sdk/sdk/native/jni/include/* ./build-bin/include/
 rm -rf build-bin/include/OpenCV-android-sdk
 ```
-###3.编译 liblzma
+### 3.编译 liblzma
 到XZ Utils的官网去下载最新版本的XZ Utils
 
 下载地址:[http://tukaani.org/xz/](http://tukaani.org/xz/)
@@ -322,7 +331,7 @@ make
 make install
 cd ../
 ```
-###4.编译 libuuid
+### 4.编译 libuuid
 到e2fsprogs的官网去下载最新版本的e2fsprogs
 
 下载地址:[http://e2fsprogs.sourceforge.net](http://e2fsprogs.sourceforge.net/)
@@ -356,7 +365,7 @@ cd ../
 			//if (ofd >= 0)
 			//	(void) fchmod(ofd, 0444);
 ```
-###5.编译 Xapian
+### 5.编译 Xapian
 到Xapian的官网去下载最新版本的Xapian core
 
 下载地址:[http://xapian.org/download](http://xapian.org/download)
@@ -373,7 +382,7 @@ make
 make install
 cd ../
 ```
-###6.编译 Leptonica
+### 6.编译 Leptonica
 到Leptonica的官网去下载最新版本的Leptonica
 
 下载地址:[http://www.leptonica.com/download.html](http://www.leptonica.com/download.html)
@@ -388,7 +397,7 @@ make
 make install
 cd ../
 ```
-###7.编译 tess-two
+### 7.编译 tess-two
 到tess-two的releases去下载最新版本的tess-two
 
 下载地址:[https://github.com/rmtheis/tess-two/releases](https://github.com/rmtheis/tess-two/releases)
@@ -421,7 +430,7 @@ sed -i 's/template <class T> struct remove_reference;//g' build-bin/include/tess
 sed -i 's/template<typename T> struct remove_reference { typedef T type; };//g' build-bin/include/tesseract/tesscallback.h
 sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };//g' build-bin/include/tesseract/tesscallback.h
 ```
-###8.编译 zimlib
+### 8.编译 zimlib
 ```
 cd zimlib/
 ./autogen.sh
@@ -430,7 +439,7 @@ make
 make install
 cd ../
 ```
-###9.编译 Crypto++
+### 9.编译 Crypto++
 到Crypto++的Github的Releases去下载最新版本的Crypto++
 
 下载地址:[https://github.com/weidai11/cryptopp/releases](https://github.com/weidai11/cryptopp/releases)
@@ -469,7 +478,7 @@ cd ../
 sed -i 's/typedef SIGNED/typedef TESS_SIGNED/g' ./build-bin/include/tesseract/host.h
 sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/platform.h
 ```
-###10.编译 离线小搜
+### 10.编译 离线小搜
 1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
 
 2.打开Qt Creator
@@ -484,7 +493,7 @@ sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/plat
 
 7.点击构建
 
-##感谢以下的项目,排名不分先后:
+## 感谢以下的项目,排名不分先后:
 * Qt: [http://www.qt.io/](http://www.qt.io/)
 * Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://git.wikimedia.org/summary/openzim](https://git.wikimedia.org/summary/openzim)
 * Xpian: [http://xapian.org](http://xapian.org)
@@ -498,12 +507,12 @@ sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/plat
 * Dash: [https://kapeli.com](https://kapeli.com)
 
 
-##已知问题
+## 已知问题
 1. 在浏览内容的界面按返回键有极小几率闪退,如果可复现请开issues(需要提供具体离线包和复现操作).
 
 2. 部分js或css及嵌套html会加载失败(将在3.0版修复)
 
-##TODO
+## TODO
 1. 进行3.0版的重构(此项将于2017年高考完成后进行)
 	+ 1.1 采用网页服务器方式进行内容浏览(预计使用Tufao)
 	+ 1.2 整理界面代码和业务逻辑
