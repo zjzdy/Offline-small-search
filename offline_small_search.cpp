@@ -1779,6 +1779,7 @@ void Offline_small_search::download_data_finish()
     }
     if(m_reply->error() == QNetworkReply::NoError)
     {
+        qDebug()<<"download" << m_reply->readBufferSize();
         QFile file(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name));
         file.open(QIODevice::WriteOnly|QIODevice::Append);
         file.write(m_reply->readAll());
@@ -1791,6 +1792,10 @@ void Offline_small_search::download_data_finish()
         if(wait_img_obj) wait_img_obj->setProperty("progress",QObject::tr("解压中"));
         Q_EMIT unzip(get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name), get_data_dir()+"/"+m_reply->url().toString().remove(only_file_name).remove(".zip"),unzip_batch);
         //file.remove();
+    }
+    else
+    {
+        qDebug()<<"download fail:"<<m_reply->url()<<m_reply->errorString();
     }
 }
 
@@ -1817,6 +1822,21 @@ void Offline_small_search::onReadyRead()
 void Offline_small_search::obj_list_insert(QString key, QObject *obj)
 {
     obj_list.insert(key,obj);
+}
+
+QString Offline_small_search::get_sdcard_dir()
+{
+    QString sdPath;
+#ifdef Q_OS_ANDROID
+    QAndroidJniObject path =
+        QAndroidJniObject::callStaticObjectMethod(
+                "qt/oss/OfflineSmallSearchActivity",
+                "getSdcardPath", "()Ljava/lang/String;");
+    sdPath = path.toString();
+#else
+    sdPath = QDir::currentPath();
+#endif
+    return sdPath;
 }
 
 QString Offline_small_search::get_data_dir()
@@ -2016,7 +2036,7 @@ QColor Offline_small_search::rand_lightcolor(QString str)
 void Offline_small_search::check_update()
 {
     qDebug()<<"check update start";
-    m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.oschina.io/oss/Version")));
+    m_reply = m_down.get(QNetworkRequest(QUrl("https://zjzdy.oschina.io/oss/Version")));
     connect(m_reply,SIGNAL(finished()),this,SLOT(download_version_finish()));
 }
 
@@ -2033,7 +2053,7 @@ void Offline_small_search::download_version_finish()
         if(master_ver > OSS_VERSION_N)
         {
             qDebug()<<"download changelog";
-            m_reply = m_down.get(QNetworkRequest(QUrl("http://zjzdy.oschina.io/oss/Change")));
+            m_reply = m_down.get(QNetworkRequest(QUrl("https://zjzdy.oschina.io/oss/Change")));
             connect(m_reply,SIGNAL(finished()),this,SLOT(download_changelog_finish()));
         }
         else
@@ -2231,14 +2251,14 @@ void Offline_small_search::installPlugins(QString opluFilePath)
 bool Offline_small_search::verifyData(QString publicKey,const char *data,const char *signatureData)
 {
     CryptoPP::StringSource pubKey(QString::fromLatin1(QByteArray::fromBase64(publicKey.toLatin1()).toHex().toUpper()).toStdString(), true, new CryptoPP::HexDecoder);
-    CryptoPP::RSASS<CryptoPP::PKCS1v15, CryptoPP::SHA>::Verifier pub(pubKey);
+    CryptoPP::RSASS<CryptoPP::PKCS1v15, CryptoPP::SHA1>::Verifier pub(pubKey);
     CryptoPP::StringSource signatureString(signatureData, true, new CryptoPP::HexDecoder);
     if (signatureString.MaxRetrievable() != pub.SignatureLength())
         return false;
     CryptoPP::SecByteBlock signature(pub.SignatureLength());
     signatureString.Get(signature, signature.size());
 
-    CryptoPP::VerifierFilter *verifierFilter = new CryptoPP::VerifierFilter(pub);
+    CryptoPP::SignatureVerificationFilter *verifierFilter = new CryptoPP::SignatureVerificationFilter(pub);
     verifierFilter->Put(signature, pub.SignatureLength());
     CryptoPP::StringSource dataString(data, true, verifierFilter);
 

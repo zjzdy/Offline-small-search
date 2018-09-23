@@ -122,7 +122,7 @@ Rectangle {
         selectMultiple: false
         selectExisting: true
         //selectFolder: true
-        folder: "file:///sdcard"
+        folder: "file://"+main_widget.get_sdcard_dir()
         nameFilters: [ "离线包和插件包 (*.idx *.zim *.pkg *.oplu)" ,"离线包 (*.idx *.zim *.pkg)" ,"插件包 (*.oplu)" ,"All files (*)"]
         onFolderChanged: console.log(choose_dir2.folder)
         onAccepted: {

@@ -1,7 +1,7 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick 2.8
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Material 2.0
+import QtQuick.Controls.Material 2.3
 
 Page {
     id: page
@@ -17,7 +17,9 @@ Page {
         objectName: "swipeView"
         anchors.fill: parent
         currentIndex: 0
-        onCurrentIndexChanged: tabBar.currentIndex = currentIndex
+        onCurrentIndexChanged: {
+            tabBar.currentIndex = currentIndex
+        }
         Main {
             a_pd: page.a_pd
             id: main
@@ -45,6 +47,7 @@ Page {
         background: Rectangle {
             color: "#f0f0f0"
         }
+        anchors.margins: 0
         spacing: 2
         MTabButton {
             height: parent.height

@@ -1,13 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-08-13T08:12:23
-#
-#-------------------------------------------------
-
-lessThan(QT_VERSION, "5.6.1") {
-    error("Qt 5.6.1 or above is required to build Offline_small_search.")
-}
-
 QT       += core gui widgets qml quick quickwidgets network multimedia quick-private quickcontrols2
 
 TARGET = Offline_small_search
@@ -139,8 +129,10 @@ android {
     QT += androidextras
     DEPENDPATH += $$PWD/build-bin/include/
     INCLUDEPATH += $$PWD/build-bin/include/
+	ANDROID_EXTRA_LIBS += $$PWD/build-bin/lib/libcrypto.so
+	ANDROID_EXTRA_LIBS += $$PWD/build-bin/lib/libssl.so
     LIBS +=-L$$PWD/build-bin/lib/ \
-        -Wl,-Bstatic,-lcryptopp,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg,-lwebp,-ltbb,-ltegra_hal,-lxapian,-lzim,-llzma,-Bdynamic -lz #-ltesseract
+        -Wl,-Bstatic,-lcryptopp,-lopencv_photo,-lopencv_imgcodecs,-lopencv_ml,-lopencv_imgproc,-lopencv_flann,-lopencv_core,-ltess,-llept,-lIlmImf,-ltiff,-ljasper,-lpng,-ljpeg-turbo,-lwebp,-ltbb,-ltegra_hal,-lcpufeatures,-lprotobuf,-lxapian,-lzim,-llzma,-Bdynamic -lz #-ltesseract
 
 
     DISTFILES += \
@@ -162,3 +154,19 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat

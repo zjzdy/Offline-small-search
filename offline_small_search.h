@@ -48,8 +48,8 @@
 #include <cryptopp/rsa.h>
 #include <cryptopp/hex.h>
 using namespace cv;
-#define OSS_VERSION_N 34
-#define OSS_VERSION "V2.3.0_beta"
+#define OSS_VERSION_N 35
+#define OSS_VERSION "V2.3.0"
 
 class Offline_small_search : public QObject
 {
@@ -123,6 +123,7 @@ public Q_SLOTS:
     Q_INVOKABLE QString get_cache_dir();
     Q_INVOKABLE QString get_text_from_url(QString url);
     Q_INVOKABLE QString get_text_with_other_from_url(QString url);
+    Q_INVOKABLE QString get_sdcard_dir();
     Q_INVOKABLE QString get_data_dir();
     Q_INVOKABLE QString md5(QString str);
     Q_INVOKABLE void search(QStringList type, QString str, bool highter = true);

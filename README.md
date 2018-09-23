@@ -37,15 +37,8 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 * 更多功能等待发现
 
 ## 下载
-#### 码云
-* Android: [http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Android](http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Android)
-* Windows: [http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Windows](http://gitee.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
-* All: [http://gitee.com/zjzdy/Offline-small-search/releases/](http://gitee.com/zjzdy/Offline-small-search/releases/)
-
-#### GitHub
-* Android: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Android)
-* Windows: [https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows](https://github.com/zjzdy/Offline-small-search/tree/master/bin/Windows)
-* All: [https://github.com/zjzdy/Offline-small-search/releases](https://github.com/zjzdy/Offline-small-search/releases)
+* 码云: [http://gitee.com/zjzdy/Offline-small-search/releases/](http://gitee.com/zjzdy/Offline-small-search/releases/)
+* GitHub: [https://github.com/zjzdy/Offline-small-search/releases](https://github.com/zjzdy/Offline-small-search/releases)
 
 #### 网盘
 * 百度网盘: [http://pan.baidu.com/s/1mhnmlEK](http://pan.baidu.com/s/1mhnmlEK) 密码: 396f
@@ -259,7 +252,7 @@ cp /mingw32/bin/zlib1.dll oss_bin/
 ## Android版本编译
 以下内容可以根据最新版本自行修改
 
-本过程基于Qt 5.8.0 for Android, OpenCV 3.2.0, Xapian 1.4.2, xz 5.2.3, Leptonica 1.74.1, tess-two 6.1.1, cryptopp 5.6.5编写, Windows x86_64(win7及以上),android-ndk r13b, android-sdk-windows 25.2.5, jdk1.8.0_92环境运行.
+本过程基于Qt 5.11.2 for Android, OpenCV 3.4.3, Xapian 1.4.7, xz 5.2.4, Leptonica 1.74.4, tess-two 9.0.0, cryptopp 7.0.0编写, Windows x86_64(win7及以上),android-ndk r10e, android-sdk-windows 28.0.2, jdk1.8.0_152环境运行.
 
 所有代码均在msys2中运行.
 
@@ -277,20 +270,23 @@ cd Offline-small-search/
 export ossbuild=$PWD
 ```
 ### 1.Android NDK和SDK(下列步骤可能需要梯子)
-到Android NDK的官网去下载对应系统版本的Android NDK到本目录($PWD)下并运行 (注意把windows改成对应的系统)
+到Android NDK的官网去下载对应系统版本的Android NDK到本目录($PWD)下并运行 (注意把windows改成对应的系统,不要下载r18以及更新的版本)
 
-下载地址:[https://developer.android.com/ndk/downloads/index.html?hl=zh-cn](https://developer.android.com/ndk/downloads/index.html?hl=zh-cn)
+下载地址:[https://github.com/android-ndk/ndk/wiki](https://github.com/android-ndk/ndk/wiki)
 
-以下使用android-ndk-r13b-windows-x86_64.zip
+以下使用android-ndk-r10e-windows-x86_64.zip(不知为何大家都用r10e作为预编译的NDK版本,在此随大流)
 ```
-wget http://dl.google.com/android/repository/android-ndk-r13b-windows-x86_64.zip
-unzip android-ndk-r13b-windows-x86_64.zip
-cd android-ndk-r13b/
+wget https://dl.google.com/android/repository/android-ndk-r10e-windows-x86_64.zip
+unzip android-ndk-r10e-windows-x86_64.zip
+cd android-ndk-r10e/
 export NDK_ROOT=$PWD
 export ANDROID_NDK_ROOT=$PWD
 export PATH=$PWD:$PATH
-sed -i "s/host_tag = get_host_tag_or_die()/host_tag = 'windows-x86_64'/g" ./build/tools/make_standalone_toolchain.py
-./build/tools/make_standalone_toolchain.py --arch=arm --stl=gnustl --api=16 --install-dir=../arm-linux-androideabi-4.9
+#(Python版本)
+#sed -i "s/host_tag = get_host_tag_or_die()/host_tag = 'windows-x86_64'/g" ./build/tools/make_standalone_toolchain.py
+#./build/tools/make_standalone_toolchain.py --arch=arm --stl=gnustl --api=21 --install-dir=../arm-linux-androideabi-4.9
+#(sh版本)
+./build/tools/make-standalone-toolchain.sh --arch=arm --stl=gnustl --platform=android-16 --toolchain=arm-linux-androideabi-4.9 --install-dir=../arm-linux-androideabi-4.9
 cd ../
 mkdir build-bin
 mkdir build-bin/lib
@@ -302,33 +298,32 @@ unzip img_include.zip -d build-bin/include/
 
 下载地址:[https://developer.android.com/studio/index.html#downloads](https://developer.android.com/studio/index.html#downloads)
 
-现在Android SDK已经合并到Android Studio,不提供单独的安装包下载,如果觉得Android Studio安装包太大或安装麻烦,可使用旧版Android SDK的下载地址:[http://dl.google.com/android/android-sdk_r24.4.1-windows.zip](http://dl.google.com/android/android-sdk_r24.4.1-windows.zip)下载安装,然后更新到最新版.
+现在Android SDK已经合并到Android Studio,不提供单独的安装包下载,如果觉得Android Studio安装包太大或安装麻烦,可使用旧版Android SDK的下载地址:[https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip](https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip)下载安装,然后更新到最新版.
 
 然后安装以下工具包:
 ```
 Android SDK Tools
 Android SDK Platform-tools
-Android SDK Build-tools, revision 19.1
-Android SDK Build-tools, revision 22.0.1
-Android SDK Build-tools, revision 25.0.2
+Android SDK Build-tools, revision 28.0.2
 ```
 ### 2.安装 OpenCV
 到OpenCV的官网去下载最新版本的OpenCV android sdk
 
-下载地址:[http://opencv.org/downloads.html](http://opencv.org/downloads.html)
+下载地址:[https://opencv.org/releases.html](https://opencv.org/releases.html)
 
-以下使用opencv-3.2.0-android-sdk.zip
+以下使用opencv-3.4.3-android-sdk.zip
 ```
-wget https://github.com/opencv/opencv/releases/download/3.2.0/opencv-3.2.0-android-sdk.zip
-unzip opencv-3.2.0-android-sdk.zip OpenCV-android-sdk/sdk/native/libs/armeabi-v7a/* OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/* -d ./build-bin/lib
-cp build-bin/lib/OpenCV-android-sdk/sdk/native/libs/armeabi-v7a/* build-bin/lib/OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/* ./build-bin/lib
+wget https://github.com/opencv/opencv/releases/download/3.4.3/opencv-3.4.3-android-sdk.zip
+unzip opencv-3.4.3-android-sdk.zip OpenCV-android-sdk/sdk/native/staticlibs/armeabi-v7a/* OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/* -d ./build-bin/lib
+cp build-bin/lib/OpenCV-android-sdk/sdk/native/staticlibs/armeabi-v7a/* build-bin/lib/OpenCV-android-sdk/sdk/native/3rdparty/libs/armeabi-v7a/* ./build-bin/lib
 rm -rf build-bin/lib/OpenCV-android-sdk
 mv ./build-bin/lib/liblibjasper.a ./build-bin/lib/libjasper.a
-mv ./build-bin/lib/liblibjpeg.a ./build-bin/lib/libjpeg.a
+mv ./build-bin/lib/liblibjpeg-turbo.a ./build-bin/lib/libjpeg-turbo.a
 mv ./build-bin/lib/liblibpng.a ./build-bin/lib/libpng.a
+mv ./build-bin/lib/liblibprotobuf.a ./build-bin/lib/libprotobuf.a
 mv ./build-bin/lib/liblibtiff.a ./build-bin/lib/libtiff.a
 mv ./build-bin/lib/liblibwebp.a ./build-bin/lib/libwebp.a
-unzip opencv-3.2.0-android-sdk.zip OpenCV-android-sdk/sdk/native/jni/include/** -d ./build-bin/include/
+unzip opencv-3.4.3-android-sdk.zip OpenCV-android-sdk/sdk/native/jni/include/** -d ./build-bin/include/
 cp -rf ./build-bin/include/OpenCV-android-sdk/sdk/native/jni/include/* ./build-bin/include/
 rm -rf build-bin/include/OpenCV-android-sdk
 ```
@@ -337,12 +332,12 @@ rm -rf build-bin/include/OpenCV-android-sdk
 
 下载地址:[http://tukaani.org/xz/](http://tukaani.org/xz/)
 
-以下使用xz-5.2.3.tar.xz
+以下使用xz-5.2.4.tar.xz
 ```
-wget http://tukaani.org/xz/xz-5.2.3.tar.xz
-tar -xf xz-5.2.3.tar.xz
-cd xz-5.2.3/
-./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc
+wget https://tukaani.org/xz/xz-5.2.4.tar.xz
+tar -xf xz-5.2.4.tar.xz
+cd xz-5.2.4/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc
 make
 make install
 cd ../
@@ -352,12 +347,12 @@ cd ../
 
 下载地址:[http://xapian.org/download](http://xapian.org/download)
 
-以下使用xapian-core-1.4.2.tar.xz
+以下使用xapian-core-1.4.7.tar.xz
 ```
-wget http://oligarchy.co.uk/xapian/1.4.2/xapian-core-1.4.2.tar.xz
-tar -xf xapian-core-1.4.2.tar.xz
-cd xapian-core-1.4.2/
-./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --enable-backend-inmemory=no --enable-static
+wget https://oligarchy.co.uk/xapian/1.4.7/xapian-core-1.4.7.tar.xz
+tar -xf xapian-core-1.4.7.tar.xz
+cd xapian-core-1.4.7/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" --enable-backend-inmemory=no --enable-static
 sed -i 's/#include "safesysstat.h"/#include "safesysstat.h"\n#include "safeerrno.h"/g' common/proc_uuid.cc
 make
 make install
@@ -368,12 +363,12 @@ cd ../
 
 下载地址:[http://www.leptonica.com/download.html](http://www.leptonica.com/download.html)
 
-以下使用leptonica-1.74.1.tar.gz
+以下使用leptonica-1.74.4.tar.gz
 ```
-wget http://www.leptonica.com/source/leptonica-1.74.1.tar.gz
-tar -xf leptonica-1.74.1.tar.gz
-cd leptonica-1.74.1/
-./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
+wget http://www.leptonica.com/source/leptonica-1.74.4.tar.gz
+tar -xf leptonica-1.74.4.tar.gz
+cd leptonica-1.74.4/
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
 make
 make install
 cd ../
@@ -384,9 +379,10 @@ cd ../
 下载地址:[https://github.com/rmtheis/tess-two/releases](https://github.com/rmtheis/tess-two/releases)
 ```
 export winossbuild=`cygpath -m ${ossbuild}`
-wget https://github.com/rmtheis/tess-two/archive/6.1.1.tar.gz
-tar -xf 6.1.1.tar.gz
-cd tess-two-6.1.1/
+wget https://github.com/rmtheis/tess-two/archive/9.0.0.tar.gz
+tar -xf 9.0.0.tar.gz
+cd tess-two-9.0.0/
+sed -i 's/android:minSdkVersion=\"9\"/android:minSdkVersion=\"16\"/g' tess-two/AndroidManifest.xml
 sed -i 's/LOCAL_SHARED_LIBRARIES/LOCAL_STATIC_LIBRARIES/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
 sed -i 's/BUILD_SHARED_LIBRARY/BUILD_STATIC_LIBRARY/g' tess-two/jni/com_googlecode_tesseract_android/Android.mk
 sed -i 's/LEPTONICA_PATH/#LEPTONICA_PATH/g' tess-two/jni/Android.mk
@@ -394,8 +390,9 @@ sed -i 's/LIBJPEG_PATH/#LIBJPEG_PATH/g' tess-two/jni/Android.mk
 sed -i 's/LIBPNG_PATH/#LIBPNG_PATH/g' tess-two/jni/Android.mk
 sed -i 's/NDK_TOOLCHAIN_VERSION := clang/NDK_TOOLCHAIN_VERSION := 4.9/g' tess-two/jni/Application.mk
 sed -i 's/APP_ABI/APP_ABI := armeabi-v7a #/g' tess-two/jni/Application.mk
-echo "APP_CPPFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -fPIC -I${winossbuild}/build-bin/include -I${winossbuild}/build-bin/include/leptonica -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
-echo "APP_CFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -fPIC -I${winossbuild}/build-bin/include -I${winossbuild}/build-bin/include/leptonica -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+sed -i 's/android-9/android-16/g' tess-two/jni/Application.mk
+echo "APP_CPPFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -fPIC -I${winossbuild}/build-bin/include -I${winossbuild}/build-bin/include/leptonica -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
+echo "APP_CFLAGS += -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -fPIC -I${winossbuild}/build-bin/include -I${winossbuild}/build-bin/include/leptonica -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
 echo "APP_LFLAGS += -Wl,--fix-cortex-a8 -fPIC -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
 echo "APP_LDFLAGS += -Wl,--fix-cortex-a8 -fPIC -L${winossbuild}/build-bin/lib -Wl,--gc-sections" >> tess-two/jni/Application.mk
 rm -rf tess-two/jni/com_googlecode_leptonica_android
@@ -415,7 +412,7 @@ sed -i 's/template<typename T> struct remove_reference<T&> { typedef T type; };/
 ```
 cd zimlib/
 ./autogen.sh
-./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3 -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
+./configure --prefix="${ossbuild}/build-bin/" --host=arm-linux-androideabi CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe" CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe" CXXCPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe" AR="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ar.exe" AS="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-as.exe" NM="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-nm.exe" OBJDUMP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-objdump.exe" STRIP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-strip.exe" RANLIB="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-ranlib.exe" LDFLAGS=" -L${ossbuild}/arm-linux-androideabi-4.9/arm-linux-androideabi/lib -L${ossbuild}/build-bin/lib -Wl,--fix-cortex-a8 -Wl,--gc-sections" CPPFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -DANDROID_BUILD -DANDROID" CFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wl,--fix-cortex-a8 -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu11 -DANDROID_BUILD -DANDROID" CXXFLAGS=" -Wno-psabi -march=armv7-a -mfloat-abi=softfp -mfpu=neon -ffunction-sections -DNDEBUG -Wa,--noexecstack -fno-builtin-memmove -O2 -Os -mthumb -D_REENTRANT -fPIC -I${ossbuild}/build-bin/include -std=gnu++11 -DANDROID_BUILD -DANDROID" 
 make
 make install
 cd ../
@@ -429,13 +426,15 @@ cd ../
 
 注:在链接可执行文件(如exe文件)中出错可以无视,只要编译出libcryptopp.a即可
 ```
-wget https://github.com/weidai11/cryptopp/archive/CRYPTOPP_5_6_5.zip
-unzip CRYPTOPP_5_6_5.zip
-cd cryptopp-CRYPTOPP_5_6_5/
-#sed -i 's/\"darwin-x86_64\" \"linux-x86\" \"darwin-x86\"/\"darwin-x86_64\" \"windows-x86_64\" \"linux-x86\" \"darwin-x86\" \"windows-x86\"/g' ./setenv-android.sh
-#AOSP_API="android-16" ./setenv-android.sh neon gnu
+wget https://github.com/weidai11/cryptopp/archive/CRYPTOPP_7_0_0.zip
+unzip CRYPTOPP_7_0_0.zip
+cd cryptopp-CRYPTOPP_7_0_0/
+sed -i 's/\"darwin-x86_64\" \"linux-x86\" \"darwin-x86\"/\"darwin-x86_64\" \"windows-x86_64\" \"linux-x86\" \"darwin-x86\" \"windows-x86\"/g' ./setenv-android.sh
+./setenv-android.sh neon gnu
 export IS_ANDROID=1
+export IS_NEON=1
 export ANDROID_FLAGS="-march=armv7-a -mfpu=neon -mfloat-abi=softfp -Wl,--fix-cortex-a8 -funwind-tables -fexceptions -frtti -I${ossbuild}/arm-linux-androideabi-4.9/sysroot/usr/include"
+export CXXFLAGS=${ANDROID_FLAGS}
 export CPP="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-cpp.exe"
 export CC="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-gcc.exe"
 export CXX="${ossbuild}/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-g++.exe"
@@ -459,7 +458,39 @@ cd ../
 sed -i 's/typedef SIGNED/typedef TESS_SIGNED/g' ./build-bin/include/tesseract/host.h
 sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/platform.h
 ```
-### 9.编译 离线小搜
+
+### 9.为安卓7+设备编译openssl
+到openssl的官网去下载最新1.0.2版本的openssl
+
+下载地址:[https://www.openssl.org/source](https://www.openssl.org/source)
+```
+export MACHINE=armv7
+export RELEASE=2.6.37
+export SYSTEM=android
+export ARCH=arm
+export ANDROID_NDK="${NDK_ROOT}"
+export CROSS_COMPILE="arm-linux-androideabi-"
+export OPENSSL_VERSION="openssl-1.0.2p"
+export ANDROID_ARCH="arch-arm"
+export ANDROID_EABI="arm-linux-androideabi-4.9"
+export ANDROID_API="android-16"
+export ANDROID_SYSROOT="${NDK_ROOT}/platforms/android-16/arch-arm"
+export CROSS_SYSROOT="$ANDROID_SYSROOT"
+export NDK_SYSROOT="$ANDROID_SYSROOT"
+export SYSROOT="$ANDROID_SYSROOT"
+export ANDROID_TOOLCHAIN="${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin"
+export ANDROID_DEV="${NDK_ROOT}/platforms/android-16/arch-arm/usr"
+export PATH="$ANDROID_TOOLCHAIN":"$PATH"
+wget https://www.openssl.org/source/openssl-1.0.2p.tar.gz
+tar -xf openssl-1.0.2p.tar.gz
+cd openssl-1.0.2p/
+./configure --prefix="${ossbuild}/build-bin/" no-hw no-engine shared android-armv7
+make depend
+make CALC_VERSIONS="SHLIB_COMPAT=; SHLIB_SOVER=" build_libs
+cp libssl.so ${ossbuild}/build-bin/lib/
+cp libcrypto.so ${ossbuild}/build-bin/lib/
+```
+### 10.编译 离线小搜
 1.配置好Android (armeabi-v7a) for Qt的环境(包括SDK,NDK,ant,Java)
 
 2.打开Qt Creator
@@ -470,13 +501,13 @@ sed -i 's/define SIGNED/define TESS_SIGNED/g' ./build-bin/include/tesseract/plat
 
 5.选择Release
 
-6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-25,勾选Use Gradle或下载并配置[Apache Ant](http://ant.apache.org/bindownload.cgi).
+6.在"项目"选项的"构建步骤"里的"Build Android APK"中的"Android build SDK"选择android-23,勾选Use Gradle或下载并配置[Apache Ant](http://ant.apache.org/bindownload.cgi).
 
 7.点击构建
 
 ## 感谢以下的项目,排名不分先后:
 * Qt: [http://www.qt.io/](http://www.qt.io/)
-* Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://phabricator.wikimedia.org/diffusion/GOZI/repository/master/](https://phabricator.wikimedia.org/diffusion/GOZI/repository/master/)
+* Zimlib: [http://www.openzim.org/wiki/Zimlib](http://www.openzim.org/wiki/Zimlib) [https://github.com/openzim/libzim](https://github.com/openzim/libzim)
 * Xpian: [http://xapian.org](http://xapian.org)
 * libuuid: [http://e2fsprogs.sourceforge.net](http://e2fsprogs.sourceforge.net/)
 * OpenCV: [http://www.opencv.org](http://www.opencv.org)
