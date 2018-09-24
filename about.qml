@@ -104,7 +104,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             anchors.margins: -30*rectangle2.width/720
-            onClicked: main_widget.openUrl("http://git.oschina.net/zjzdy/Offline-small-search")
+            onClicked: main_widget.openUrl("https://git.oschina.net/zjzdy/Offline-small-search")
         }
     }
 
@@ -120,7 +120,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             anchors.margins: -30*rectangle2.width/720
-            onClicked: main_widget.openUrl("http://zjzdy.oschina.io/oss")
+            onClicked: main_widget.openUrl("https://zjzdy.oschina.io/oss")
         }
     }
     Flickable {

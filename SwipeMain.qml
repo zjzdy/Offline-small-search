@@ -20,6 +20,7 @@ Page {
         onCurrentIndexChanged: {
             tabBar.currentIndex = currentIndex
         }
+
         Main {
             a_pd: page.a_pd
             id: main
@@ -47,7 +48,6 @@ Page {
         background: Rectangle {
             color: "#f0f0f0"
         }
-        anchors.margins: 0
         spacing: 2
         MTabButton {
             height: parent.height

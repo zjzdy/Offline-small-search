@@ -15,10 +15,16 @@
 #include <QAndroidJniObject>
 #include <jni.h>
 #endif
+#ifdef Q_OS_ANDROID
+#include "backbuttonhandler.h"
+#endif
 
 #ifdef QT_WEBVIEW_WEBENGINE_BACKEND
 #include <QtWebEngine>
 #endif // QT_WEBVIEW_WEBENGINE_BACKEND
+#ifndef USE_WEBKIT
+#include <QtWebView>
+#endif // USE_WEBKIT
 
 #ifdef Q_OS_ANDROID
 QObject *g_listener = 0;
@@ -85,6 +91,9 @@ int main(int argc, char *argv[])
         const QPoint pos = geometry.topLeft() + QPoint(offset.width(), offset.height());
         geometry = QRect(pos, size);
     }
+#ifndef USE_WEBKIT
+    QtWebView::initialize();
+#endif
     /*
 #ifndef Q_OS_ANDROID
     QString splash_path;
@@ -112,6 +121,9 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(w.get_version());
 #ifdef Q_OS_ANDROID
     g_listener = (QObject*)&w;
+#endif
+#ifdef Q_OS_ANDROID
+    BackButtonHandler backButtonHandler(&w);
 #endif
 
 #ifdef QT_WEBVIEW_WEBENGINE_BACKEND

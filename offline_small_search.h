@@ -48,7 +48,7 @@
 #include <cryptopp/rsa.h>
 #include <cryptopp/hex.h>
 using namespace cv;
-#define OSS_VERSION_N 35
+#define OSS_VERSION_N 36
 #define OSS_VERSION "V2.3.0"
 
 class Offline_small_search : public QObject

@@ -12,7 +12,16 @@ GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com
 
 主页: [http://zjzdy.oschina.io/oss/](http://zjzdy.oschina.io/oss/)
 
-当前版本: v2.3.0_Beta
+当前版本: v2.3.0
+
+## v2.3.0更新说明
+此版本目前为安卓专享更新, 该版本与2.3.0_beta相比, 无功能更新, 只是维护性更新.
+* 更新部分依赖库及其编译说明, 并修复新版依赖库引入的问题
+* 修复安卓6+的权限问题
+* 修复安卓7+的系统依赖问题
+* 修复安卓9+可能的http连接问题
+* 更改内置下载链接为https协议
+* 更改默认手动添加路径为系统提供的外置储存位置
 
 ## FindK
 当前版本已不再作为主要维护, 下一代版本FindK正在开发, 敬请期待

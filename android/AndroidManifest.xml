@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="2.3.0" android:versionCode="35" android:installLocation="auto">
-    <application android:largeHeap="true" android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon">
+<manifest package="zjzdy.offline.small.search" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="2.3.0" android:versionCode="36" android:installLocation="auto">
+    <application android:largeHeap="true" android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="离线小搜" android:icon="@drawable/icon" android:usesCleartextTraffic="true">
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="qt.oss.OfflineSmallSearchActivity" android:label="离线小搜" android:screenOrientation="unspecified" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

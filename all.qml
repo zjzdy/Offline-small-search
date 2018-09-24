@@ -68,98 +68,20 @@ ApplicationWindow {
         currentIndex: 0
         focus: true
         Keys.enabled: true
-        Keys.onBackPressed: {
-            //console.log(currentIndex)
-            /*
-            if(tabview.currentIndex < 4)
-                exit_messageDialog.visible = true;
-            else main_widget.show_back()
-            if(tabview.currentIndex == 4) {
-                main_widget.offline_pkg_list_to_data_file()
-                main_widget.init_search_from_offline_pkg_list()
-            }
-            if(tabview.currentIndex == 5)
-                custom1.write_custom()
-            */
-            if(tabview.currentIndex == 0)
-                exit_messageDialog.visible = true;
-            else main_widget.show_back()
-            if(tabview.currentIndex == 1) {
-                main_widget.offline_pkg_list_to_data_file()
-                main_widget.init_search_from_offline_pkg_list()
-            }
-            if(tabview.currentIndex == 2)
-                custom1.write_custom()
-        }
-        Keys.onEscapePressed: {
-            /*
-            if(tabview.currentIndex < 4)
-                exit_messageDialog.visible = true;
-            else main_widget.show_back()
-            if(tabview.currentIndex == 4) {
-                main_widget.offline_pkg_list_to_data_file()
-                main_widget.init_search_from_offline_pkg_list()
-            }
-            if(tabview.currentIndex == 5)
-                custom1.write_custom()
-            */
-            if(tabview.currentIndex == 0)
-                exit_messageDialog.visible = true;
-            else main_widget.show_back()
-            if(tabview.currentIndex == 1) {
-                main_widget.offline_pkg_list_to_data_file()
-                main_widget.init_search_from_offline_pkg_list()
-            }
-            if(tabview.currentIndex == 2)
-                custom1.write_custom()
-        }
-
-        /*
-        contentItem: ListView {
-            model: tabview.contentModel
-            currentIndex: tabview.currentIndex
-
-            spacing: tabview.spacing
-            orientation: Qt.Horizontal
-            snapMode: ListView.SnapOneItem
-            boundsBehavior: Flickable.StopAtBounds
-
-            highlightRangeMode: ListView.StrictlyEnforceRange
-            preferredHighlightBegin: 0
-            preferredHighlightEnd: 0
-            highlightMoveDuration: 250
-            interactive: false
-        }*/
-        /*
-        Tab {
-            title: "Main"
-            Main {
-                a_pd: app.pd
-                id: main
+        Keys.onPressed: {
+            if (event.key === Qt.Key_Back || event.key === Qt.Key_Escape) {
+                if(tabview.currentIndex == 0)
+                    exit_messageDialog.visible = true;
+                else main_widget.show_back()
+                if(tabview.currentIndex == 1) {
+                    main_widget.offline_pkg_list_to_data_file()
+                    main_widget.init_search_from_offline_pkg_list()
+                }
+                if(tabview.currentIndex == 2)
+                    custom1.write_custom()
+                event.accepted = true;
             }
         }
-        Tab {
-            title: "More"
-            More {
-                a_pd: app.pd
-                id: more
-            }
-        }
-        Tab {
-            title: "More_search"
-            MoreSearch {
-                a_pd: app.pd
-                id: moreSearch
-            }
-        }
-        Tab {
-            title: "History"
-            History {
-                a_pd: app.pd
-                id: history
-            }
-        }
-        */
 
         Tab {
             title: "SwipeMain"
@@ -246,52 +168,7 @@ ApplicationWindow {
                 id: pluginPages
             }
         }
-        /*
-        SwipeMain {
-            a_pd: app.pd
-            id: swipeview
-        }
-        Pkg {
-            a_pd: app.pd
-            id: pkg
-        }
-        Custom {
-            a_pd: app.pd
-            id: cstom
-        }
-        About {
-            a_pd: app.pd
-            id:about
-        }
-        Search {
-            a_pd: app.pd
-            id: search
-        }
-        SearchResult {
-            a_pd: app.pd
-            id: searchResult
-        }
-        Result {
-            a_pd: app.pd
-            id: result
-        }
-        Mark {
-            a_pd: app.pd
-            id:mark
-        }
-        Crop {
-            a_pd: app.pd
-            id: crop
-        }
-        OnlineDownload {
-            a_pd: app.pd
-            id: onlineDownload
-        }
-        Camera {
-            a_pd: app.pd
-            id: camera
-        }
-        */
+
         frameVisible: false
         tabsVisible: false
     }

@@ -128,7 +128,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            text: qsTr("您还没添加离线包呢! 请到\"更多\"界面的下载离线包下载或访问主页获取更多离线包: http://zjzdy.oschina.io/oss")
+            text: qsTr("您还没添加离线包呢! 请到\"更多\"界面的下载离线包下载或访问主页获取更多离线包: https://zjzdy.oschina.io/oss")
             font.pixelSize: 45*Math.min(rectangle2.a_max/1280,a_pd/12)
             elide: Text.ElideLeft
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere

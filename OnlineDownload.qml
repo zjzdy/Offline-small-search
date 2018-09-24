@@ -417,7 +417,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        text: qsTr("更多离线请访问主页: \n http://zjzdy.oschina.io/oss")
+        text: qsTr("更多离线请访问主页: \n https://zjzdy.oschina.io/oss")
         font.pixelSize: 40*Math.min(rectangle2.a_max/1280,a_pd/12)
         elide: Text.ElideLeft
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -425,7 +425,7 @@ Rectangle {
         z: 3
         MouseArea {
             anchors.fill: parent
-            onClicked: main_widget.openUrl("http://zjzdy.oschina.io/oss")
+            onClicked: main_widget.openUrl("https://zjzdy.oschina.io/oss")
         }
     }
 

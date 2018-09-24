@@ -16,12 +16,14 @@ win32:!qtHaveModule(webengine):qtHaveModule(webkit) {
         RESOURCES += WebKit_qml/Webkit_qml.qrc
 } else {
     RESOURCES += Result.qrc
+    QT        += webview
 }
 
 QMAKE_CFLAGS += -std=gnu11
 QMAKE_CXXFLAGS += -std=gnu++11
 
-SOURCES += main.cpp \
+SOURCES += \
+    main.cpp \
     offline_small_search.cpp \
     offline_pkg.cpp \
     Xapian_search_thread.cpp \
@@ -40,7 +42,7 @@ SOURCES += main.cpp \
     parse/stringutils.cc \
     parse/utf8convert.cc
 
-HEADERS  += \
+HEADERS += \
     offline_small_search.h \
     offline_pkg.h \
     Xapian_search_thread.h \
@@ -123,6 +125,8 @@ unix:!macx:!android {
 
 
 android {
+    SOURCES += backbuttonhandler.cpp
+    HEADERS += backbuttonhandler.h
     QMAKE_CFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
     QMAKE_CXXFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
     QMAKE_LFLAGS += -Wl,--fix-cortex-a8 -Wl,--gc-sections -Wl,-z,noexecstack
@@ -154,19 +158,3 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
-
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradlew \
-    android/res/values/libs.xml \
-    android/build.gradle \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat \
-    android/AndroidManifest.xml \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradlew \
-    android/res/values/libs.xml \
-    android/build.gradle \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
