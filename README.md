@@ -10,7 +10,7 @@
 
 GitHub Mirror:[https://github.com/zjzdy/Offline-small-search](https://github.com/zjzdy/Offline-small-search)
 
-主页: [http://zjzdy.oschina.io/oss/](http://zjzdy.oschina.io/oss/)
+主页: [https://zjzdy.gitee.io/oss/](https://zjzdy.gitee.io/oss/)
 
 当前版本: v2.3.0
 
